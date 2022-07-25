@@ -1,0 +1,14 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+node_modules/
+
+# dotenv environment variable files
+.env
+.env.enc
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
