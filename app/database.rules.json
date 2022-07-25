@@ -1,0 +1,14 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "admin": {
+      ".read": true,
+      ".write": false
+    },
+    "currencies": {
+      ".read": true,
+      ".write": "auth.uid == root.child('admin').child(auth.uid).val() == true"
+    }
+  }
+}

@@ -1,0 +1,338 @@
+[
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "feeWei",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "prizeWei",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "maxParticipants",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "portfolio_size",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "delegatedOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "delegatedManager",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "enum SignalHandled.RelevantFactType",
+				"name": "_fact",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_fee",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_prize",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_maxParticipants",
+				"type": "uint256"
+			}
+		],
+		"name": "RelevantFact",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "enum SignalHandled.RelevantFactType",
+				"name": "_fact",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_competitionAddress",
+				"type": "address"
+			}
+		],
+		"name": "RelevantFact",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "enum SignalHandled.RelevantFactType",
+				"name": "_fact",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "RelevantFact",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "enum SignalHandled.RelevantFactType",
+				"name": "_fact",
+				"type": "uint8"
+			}
+		],
+		"name": "RelevantFact",
+		"type": "event"
+	},
+	{
+		"stateMutability": "nonpayable",
+		"type": "fallback"
+	},
+	{
+		"inputs": [],
+		"name": "TESTgetState",
+		"outputs": [
+			{
+				"internalType": "enum CompetitionStates.StatesType",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "assignManager",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getCompetitionParams",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMembersCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "manager",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "membersPortfoliosCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "mgrClaimResidue",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "mgrCloseForNewEntries",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "recipientAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amountWei",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct Competition.WinnerRecipientType[]",
+				"name": "winners",
+				"type": "tuple[]"
+			}
+		],
+		"name": "mgrProclaimWinnersMatrix",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "register",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "string[]",
+						"name": "items",
+						"type": "string[]"
+					}
+				],
+				"internalType": "struct Competition.Portfolio",
+				"name": "portfolio",
+				"type": "tuple"
+			}
+		],
+		"name": "submitPortfolio",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	}
+]

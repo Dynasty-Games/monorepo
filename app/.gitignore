@@ -1,0 +1,7 @@
+node_modules
+.firebase
+.git
+www/**/*.js
+www/*.js
+www/*.txt
+scripts.js
