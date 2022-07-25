@@ -1,1 +1,1 @@
-# -Dynasty-Contest__Monorepo
+# Dynasty-Contest__Monorepo
