@@ -51,6 +51,11 @@ export default customElements.define('portfolio-item', class PortfolioItem exten
   reset() {
     this.salary = 0
     this.placeholder = true
+    this.name = undefined
+    this.symbol = undefined
+    this.id = undefined
+    this.image = undefined
+    this.requestUpdate()
   }
 
   get styleTemplate() {

@@ -1,0 +1,19 @@
+{
+  "name": "@dynasty-games/abis",
+  "version": "0.1.13",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dynasty-Games/abis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dynasty-Games/abis/issues"
+  },
+  "homepage": "https://github.com/Dynasty-Games/abis#readme"
+}

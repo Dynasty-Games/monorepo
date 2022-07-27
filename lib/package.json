@@ -1,0 +1,18 @@
+{
+  "name": "@dynasty-games/lib",
+  "version": "0.1.4",
+  "main": "dist/lib.js",
+  "module": "src/lib.js",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node index.js",
+    "build": "rollup -c"
+  },
+  "description": "project-template",
+  "repository": "https://github.com/vandeurenglenn/lib",
+  "author": "vandeurenglenn <vandeurenglenn@gmail.com>",
+  "devDependencies": {
+    "rollup": "^2.75.7"
+  }
+}

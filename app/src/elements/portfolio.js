@@ -20,6 +20,9 @@ export default customElements.define('portfolio-element', class PortfolioElement
     },
     edits: {
       type: Number
+    },
+    positionsFilled: {
+      type: Number
     }
   }
   constructor() {
@@ -57,6 +60,7 @@ export default customElements.define('portfolio-element', class PortfolioElement
   }
 
   #itemRemoved(detail) {
+    this.positionsFilled -= 1
     this.submitDisabled = true
     this.shadowRoot.querySelector(`[index="${detail.index}"]`).reset()
   }
@@ -72,12 +76,13 @@ export default customElements.define('portfolio-element', class PortfolioElement
     let i = 0
     let salary = currentCompetition.maxSalary
     const els = Array.from(this.shadowRoot.querySelectorAll(`[index]`))
-    els.forEach(el => el.placeholder = true)
+    els.forEach(el => el.reset())
+    this.positionsFilled = 0
     for (const id of ids) {
 
       const item = currentCompetition.items[currentCompetition.rankById.indexOf(id)]
       const el = this.shadowRoot.querySelector(`[index="${i}"]`)
-
+      this.positionsFilled += 1
       el.placeholder = false
       el.setAttribute('name', item.name)
       el.setAttribute('image', item.image)
@@ -108,6 +113,7 @@ export default customElements.define('portfolio-element', class PortfolioElement
     el.setAttribute('id', item.id)
     el.setAttribute('salary', item.salary)
 
+    this.positionsFilled += 1
     if (els.length === 1) this.submitDisabled = false
   }
 
@@ -121,6 +127,7 @@ export default customElements.define('portfolio-element', class PortfolioElement
   }
 
   #clear() {
+    this.positionsFilled = 0
     currentCompetition.portfolio = []
     pubsub.publish('load-user-portfolio', [])
     pubsub.publish('portfolio-salary-reset')
@@ -178,11 +185,15 @@ export default customElements.define('portfolio-element', class PortfolioElement
 
           const balance = await gdcContract.balanceOf(connector.accounts[0])
           if (Number(_ethers.utils.formatUnits(balance)) < params.feeDGC.toNumber()) {
-            tx = await treasury.deposit(params.feeDGC.toString())
+            tx = await treasury.deposit(_ethers.utils.parseUnits(params.feeDGC.toString()))
             if (tx.wait) await tx.wait()
           }
 
-          if (this.edits === 0) {
+          
+          const snap = await firebase.get(firebase.ref(firebase.database, `competitions/${currentCompetition.address.toLowerCase()}/${connector.accounts[0].toLowerCase()}`))
+          const exists = await snap.exists()
+          if (!exists) {
+          // if (this.edits === 0) {
             tx = await contract.register_submit(currentCompetition.portfolio, {gasLimit: 21000000})
           } else {
             tx = await contract.editPortfolio(currentCompetition.portfolio, {gasLimit: 21000000})
@@ -273,7 +284,7 @@ export default customElements.define('portfolio-element', class PortfolioElement
       `)}
     </flex-column>
     
-    <competition-bar positionsFilled="0" positions="8" @clear="${this.#clear}"  @save="${this.#save}" @submit="${this.#enter}" ?submit-disabled="${this.submitDisabled}" edits="${this.edits}"></competition-bar>
+    <competition-bar positionsFilled="${this.positionsFilled}" positions="8" @clear="${this.#clear}"  @save="${this.#save}" @submit="${this.#enter}" ?submit-disabled="${this.submitDisabled}" edits="${this.edits}"></competition-bar>
     `
   }
 })

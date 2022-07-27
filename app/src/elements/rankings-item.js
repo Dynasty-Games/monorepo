@@ -87,7 +87,7 @@ export default customElements.define('rankings-item', class RankingsItem extends
 
       }
     </style>
-    ${this.points}
+    ${this.points}<span> FP</span>
     <flex-one></flex-one>
 
     ${this.address}

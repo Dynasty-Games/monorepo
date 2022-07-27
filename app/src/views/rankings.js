@@ -30,6 +30,7 @@ export default customElements.define('rankings-view', class RankingsView extends
 
   async #setCompetition() {
     const params = await getCompetition(this.#competition)
+    console.log(params);
     this.competitionName = params[0]['name']
     this.category = params[0]['category']
     this.startTime = params[0]['startTime']

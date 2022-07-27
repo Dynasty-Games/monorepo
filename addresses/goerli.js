@@ -1,0 +1,5 @@
+export default {
+  DynastyContest: '0x35103acF25259f5beE93537c75783cb206bbA250',
+  Treasury: '0x5EE12468e62182Fd46BAAC09a59e5BFaa5d7f1Ec',
+  USDDToken: '0x08141A9CB1b268Ce8c4f1f19355D56d71f49aeF7'
+}

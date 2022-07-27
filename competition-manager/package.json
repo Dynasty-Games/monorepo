@@ -1,0 +1,31 @@
+{
+  "name": "@dynasty-games/competition-manager",
+  "version": "0.1.3",
+  "description": "",
+  "main": "dist/manager.js",
+  "module": "src/manager.js",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@dynasty-games/abis": "^0.1.10",
+    "@dynasty-games/addresses": "^0.2.10",
+    "@dynasty-games/lib": "^0.1.4",
+    "dotenv": "^16.0.1",
+    "ethers": "^5.6.9",
+    "firebase": "^9.8.4",
+    "firebase-admin": "^11.0.0",
+    "node-cron": "^3.0.1",
+    "node-fetch": "^2.0.0",
+    "secure-env": "^1.2.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "rollup": "^2.75.7"
+  }
+}

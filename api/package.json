@@ -1,0 +1,39 @@
+{
+  "name": "@dynasty/rest-api",
+  "version": "1.0.1",
+  "description": "",
+  "main": "api.js",
+  "module": "lib/api.js",
+  "scripts": {
+    "c": "rollup -c",
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dynasty-Games/dynasty-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dynasty-Games/dynasty-api/issues"
+  },
+  "homepage": "https://github.com/Dynasty-Games/dynasty-api#readme",
+  "dependencies": {
+    "@dynasty-games/abis": "^0.1.5",
+    "@dynasty-games/addresses": "^0.2.12",
+    "@dynasty-games/lib": "^0.1.4",
+    "@koa/cors": "^3.3.0",
+    "@koa/router": "^10.1.1",
+    "dotenv": "^16.0.1",
+    "ethers": "^5.6.9",
+    "koa": "^2.13.4"
+  },
+  "devDependencies": {
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "node-fetch": "^2.6.7",
+    "rollup": "^2.75.6",
+    "tape": "^5.5.3"
+  }
+}
