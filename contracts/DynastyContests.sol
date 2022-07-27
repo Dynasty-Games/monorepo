@@ -76,8 +76,8 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
     }
 
     function isLive(uint256 category_, uint256 style_, uint256 competitionId) public view returns (bool) {
-      Competition memory competition = _competitions[category_][style_][competitionId];
-      return competition.liveTime >= block.timestamp && competition.endTime >= block.timestamp;
+      Competition memory competition_ = _competitions[category_][style_][competitionId];
+      return competition_.liveTime <= block.timestamp && competition_.endTime >= block.timestamp;
     }
 
     function members(uint256 category_, uint256 style_, uint256 competitionId) public view returns (address[] memory) {
@@ -98,7 +98,7 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
     function submitPortfolio(uint256 category_, uint256 style_, uint256 competitionId, string[] memory items) public {
       Competition memory competition = _competitions[category_][style_][competitionId];
 
-      require(competition.startTime < block.timestamp, 'competition not started');
+      require(competition_.startTime < block.timestamp, 'competition not started');
       require(competition.liveTime > block.timestamp, 'competition already live or ended');
 
       require(items.length == competition.portfolioSize, 'Invalid portfolioSize');
