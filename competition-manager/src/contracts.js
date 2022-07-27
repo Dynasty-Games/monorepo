@@ -1,7 +1,7 @@
-import addresses from './../node_modules/@dynasty-games/addresses/goerli'
+import addresses from './../../addresses/goerli.json'
 import { getDefaultProvider, Contract, utils, providers, Wallet } from 'ethers'
-import ContestABI from './../node_modules/@dynasty-games/abis/DynastyContest-ABI.json'
-import CompetitionABI from './../node_modules/@dynasty-games/abis/Competition-ABI.json'
+import ContestABI from './../../abis/DynastyContests.json'
+
 import secureEnv from 'secure-env'
 
 const args = process.argv
@@ -22,11 +22,6 @@ export const provider = getDefaultProvider(network, {
   etherscan: '6XI8Q8NA96JFB71WA8VV9TM42K8H4DVIBN'
 })
 
-export const wallet = new Wallet(config.PRIVATE_KEY, provider)
+export const wallet = new Wallet(config.goerli_PRIVATE_KEY, provider)
 
-export const dynastyContest = new Contract(addresses.DynastyContest, ContestABI, wallet)
-
-
-export const competitionAddresses = dynastyContest.getCompetitionsList
-
-export const getCompetitionContract = address => new Contract(address, CompetitionABI, wallet)
+export const dynastyContest = new Contract(addresses.DynastyContests, ContestABI, wallet)

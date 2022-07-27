@@ -1,8 +1,8 @@
 
 const { Contract } = require('ethers')
-const ABI = require('../build/abis/DynastyContests.json')
-const treasuryABI = require('../build/abis/DynastyTreasury.json')
-const { DynastyContests, DynastyTreasury, FakeUSDC } = require('../build/addresses/goerli.json')
+const ABI = require('../abis/DynastyContests.json')
+const treasuryABI = require('../abis/DynastyTreasury.json')
+const { DynastyContests, DynastyTreasury, FakeUSDC } = require('../addresses/goerli.json')
 
 module.exports = async (signer) => {
   const contract = new Contract(DynastyContests, ABI, signer)  

@@ -541,6 +541,82 @@
         "type": "uint256"
       }
     ],
+    "name": "competition",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "prizePool",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "portfolioSize",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "freeSubmits",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "startTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liveTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "endTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum DynastyContests.States",
+            "name": "state",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct DynastyContests.Competition",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "category_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "style_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "competitionId",
+        "type": "uint256"
+      }
+    ],
     "name": "competitionState",
     "outputs": [
       {

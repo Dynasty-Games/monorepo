@@ -1,4 +1,3 @@
-import {competitionAddresses, getCompetitionContract} from './contracts'
 import fetch from 'node-fetch'
 import { calculateFantasyPoints } from '@dynasty-games/lib'
 import {writeFileSync} from 'fs'

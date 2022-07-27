@@ -9,20 +9,20 @@ import './firebase'
 import {create, close, rankings} from './tasks/tasks.js'
 import {config} from './contracts'
 
-const login = () => firebase.signInWithEmailAndPassword(firebase.auth, config.EMAIL, config.PASSWORD)
+const login = () => firebase.signInWithEmailAndPassword(firebase.auth, config.EMAIL, config.PASSWORD);
 
 
-firebase.onAuthStateChanged(firebase.auth, (user) => {
-  if (user) {
-    // const uid = user.uid;
-  } else {
-    // login again if logged out due to network etc
-    login()
-  }
-});
+// firebase.onAuthStateChanged(firebase.auth, (user) => {
+//   if (user) {
+//     // const uid = user.uid;
+//   } else {
+//     // login again if logged out due to network etc
+//     login()
+//   }
+// });
 
 (async () => {
-  await login()
+  // await login()
   const tasks = [create(), close(), rankings()]
   //await tasks[1].job() // try closing on each start
 tasks[0].job()

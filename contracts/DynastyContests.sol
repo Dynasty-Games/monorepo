@@ -67,6 +67,10 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
       _addToken(0, 'DynastyCredit');
     }
 
+    function competition(uint256 category_, uint256 style_, uint256 competitionId) public view returns (Competition memory) {
+      return _competitions[category_][style_][competitionId];
+    }
+
     function competitionState(uint256 category_, uint256 style_, uint256 competitionId) public view returns (States) {
       return _competitions[category_][style_][competitionId].state;
     }
