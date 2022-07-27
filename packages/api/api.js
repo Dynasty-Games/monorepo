@@ -4,10 +4,9 @@ var Koa = require('koa');
 var cors = require('@koa/cors');
 var Router = require('@koa/router');
 var fetch = require('node-fetch');
-var competitionABI = require('@dynasty-games/abis/Competition-ABI.json');
 var ethers = require('ethers');
-var addresses$1 = require('@dynasty-games/addresses/goerli.json');
-var contestsABI = require('@dynasty-games/abis/DynastyContest-ABI.json');
+var addresses = require('@dynasty-games/addresses/goerli.json');
+require('@dynasty-games/abis/DynastyContest-ABI.json');
 require('path');
 var DynastyContest = require('@dynasty-games/abis/USDDToken.json');
 require('dotenv/config');
@@ -19,9 +18,7 @@ var Koa__default = /*#__PURE__*/_interopDefaultLegacy(Koa);
 var cors__default = /*#__PURE__*/_interopDefaultLegacy(cors);
 var Router__default = /*#__PURE__*/_interopDefaultLegacy(Router);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
-var competitionABI__default = /*#__PURE__*/_interopDefaultLegacy(competitionABI);
-var addresses__default = /*#__PURE__*/_interopDefaultLegacy(addresses$1);
-var contestsABI__default = /*#__PURE__*/_interopDefaultLegacy(contestsABI);
+var addresses__default = /*#__PURE__*/_interopDefaultLegacy(addresses);
 var DynastyContest__default = /*#__PURE__*/_interopDefaultLegacy(DynastyContest);
 
 globalThis.__cache__ = globalThis.__cache__ || {};
@@ -140,6 +137,1460 @@ router$2.get('/currency-icon', async (ctx, next) => {
   ctx.body = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/${ctx.query.symbol.toLowerCase()}.svg`;
 });
 
+var DynastyContests = "0xAF2AeE530624018543cf67Cb064Ee9a90F04412E";
+
+var contestsABI = [
+	{
+		inputs: [
+			{
+				internalType: "string",
+				name: "uri_",
+				type: "string"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "constructor"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "operator",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "bool",
+				name: "approved",
+				type: "bool"
+			}
+		],
+		name: "ApprovalForAll",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			},
+			{
+				indexed: false,
+				internalType: "string",
+				name: "name",
+				type: "string"
+			}
+		],
+		name: "CategoryChange",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: false,
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "Paused",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "previousAdminRole",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "newAdminRole",
+				type: "bytes32"
+			}
+		],
+		name: "RoleAdminChanged",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "sender",
+				type: "address"
+			}
+		],
+		name: "RoleGranted",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "sender",
+				type: "address"
+			}
+		],
+		name: "RoleRevoked",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			},
+			{
+				indexed: false,
+				internalType: "string",
+				name: "name",
+				type: "string"
+			}
+		],
+		name: "StyleChange",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			},
+			{
+				indexed: false,
+				internalType: "string",
+				name: "name",
+				type: "string"
+			}
+		],
+		name: "TokenAdded",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "operator",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256[]",
+				name: "ids",
+				type: "uint256[]"
+			},
+			{
+				indexed: false,
+				internalType: "uint256[]",
+				name: "values",
+				type: "uint256[]"
+			}
+		],
+		name: "TransferBatch",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "operator",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "TransferSingle",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: false,
+				internalType: "address",
+				name: "erc20Token",
+				type: "address"
+			}
+		],
+		name: "TreasuryChange",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: false,
+				internalType: "string",
+				name: "value",
+				type: "string"
+			},
+			{
+				indexed: true,
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			}
+		],
+		name: "URI",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: false,
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "Unpaused",
+		type: "event"
+	},
+	{
+		inputs: [
+		],
+		name: "DEFAULT_ADMIN_ROLE",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "MANAGER_ROLE",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "MINTER_ROLE",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "PAUSER_ROLE",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "string",
+				name: "name",
+				type: "string"
+			}
+		],
+		name: "addCategory",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "string",
+				name: "name",
+				type: "string"
+			}
+		],
+		name: "addStyle",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			},
+			{
+				internalType: "string",
+				name: "name",
+				type: "string"
+			}
+		],
+		name: "addToken",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			}
+		],
+		name: "balanceOf",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address[]",
+				name: "accounts",
+				type: "address[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "ids",
+				type: "uint256[]"
+			}
+		],
+		name: "balanceOfBatch",
+		outputs: [
+			{
+				internalType: "uint256[]",
+				name: "",
+				type: "uint256[]"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "categoriesLength",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			}
+		],
+		name: "category",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256[]",
+				name: "categories_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "styles_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "competitionIds_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "amounts",
+				type: "uint256[]"
+			},
+			{
+				internalType: "address[]",
+				name: "members_",
+				type: "address[]"
+			},
+			{
+				internalType: "uint256",
+				name: "tokenId_",
+				type: "uint256"
+			}
+		],
+		name: "closeCompetitionBatch",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "competitionId",
+				type: "uint256"
+			}
+		],
+		name: "competition",
+		outputs: [
+			{
+				components: [
+					{
+						internalType: "string",
+						name: "name",
+						type: "string"
+					},
+					{
+						internalType: "uint256",
+						name: "price",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "prizePool",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "portfolioSize",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "freeSubmits",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "startTime",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "liveTime",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "endTime",
+						type: "uint256"
+					},
+					{
+						internalType: "enum DynastyContests.States",
+						name: "state",
+						type: "uint8"
+					}
+				],
+				internalType: "struct DynastyContests.Competition",
+				name: "",
+				type: "tuple"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "competitionId",
+				type: "uint256"
+			}
+		],
+		name: "competitionState",
+		outputs: [
+			{
+				internalType: "enum DynastyContests.States",
+				name: "",
+				type: "uint8"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			}
+		],
+		name: "competitionsByCategoryAndStyle",
+		outputs: [
+			{
+				components: [
+					{
+						internalType: "string",
+						name: "name",
+						type: "string"
+					},
+					{
+						internalType: "uint256",
+						name: "price",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "prizePool",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "portfolioSize",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "freeSubmits",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "startTime",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "liveTime",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "endTime",
+						type: "uint256"
+					},
+					{
+						internalType: "enum DynastyContests.States",
+						name: "state",
+						type: "uint8"
+					}
+				],
+				internalType: "struct DynastyContests.Competition[]",
+				name: "",
+				type: "tuple[]"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256[]",
+				name: "categories_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "styles_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "string[]",
+				name: "names_",
+				type: "string[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "prices_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "pricePools_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "portfolioSizes_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "submits",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "startTimes_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "liveTimes_",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "endTimes_",
+				type: "uint256[]"
+			}
+		],
+		name: "createCompetitionBatch",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			}
+		],
+		name: "getRoleAdmin",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "grantRole",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "hasRole",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "operator",
+				type: "address"
+			}
+		],
+		name: "isApprovedForAll",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "competitionId",
+				type: "uint256"
+			}
+		],
+		name: "isLive",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "competitionId",
+				type: "uint256"
+			},
+			{
+				internalType: "address",
+				name: "member",
+				type: "address"
+			}
+		],
+		name: "memberPortfolio",
+		outputs: [
+			{
+				components: [
+					{
+						internalType: "string[]",
+						name: "items",
+						type: "string[]"
+					},
+					{
+						internalType: "uint256",
+						name: "submits",
+						type: "uint256"
+					}
+				],
+				internalType: "struct DynastyContests.Portfolio",
+				name: "",
+				type: "tuple"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "competitionId",
+				type: "uint256"
+			}
+		],
+		name: "members",
+		outputs: [
+			{
+				internalType: "address[]",
+				name: "",
+				type: "address[]"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			},
+			{
+				internalType: "bytes",
+				name: "data",
+				type: "bytes"
+			}
+		],
+		name: "mint",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256[]",
+				name: "ids",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "amounts",
+				type: "uint256[]"
+			},
+			{
+				internalType: "bytes",
+				name: "data",
+				type: "bytes"
+			}
+		],
+		name: "mintBatch",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "pause",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "paused",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "renounceRole",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "string",
+				name: "name",
+				type: "string"
+			}
+		],
+		name: "replaceCategory",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "string",
+				name: "name",
+				type: "string"
+			}
+		],
+		name: "replacestyle",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "revokeRole",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256[]",
+				name: "ids",
+				type: "uint256[]"
+			},
+			{
+				internalType: "uint256[]",
+				name: "amounts",
+				type: "uint256[]"
+			},
+			{
+				internalType: "bytes",
+				name: "data",
+				type: "bytes"
+			}
+		],
+		name: "safeBatchTransferFrom",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			},
+			{
+				internalType: "bytes",
+				name: "data",
+				type: "bytes"
+			}
+		],
+		name: "safeTransferFrom",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "operator",
+				type: "address"
+			},
+			{
+				internalType: "bool",
+				name: "approved",
+				type: "bool"
+			}
+		],
+		name: "setApprovalForAll",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "treasury",
+				type: "address"
+			}
+		],
+		name: "setTreasury",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			},
+			{
+				internalType: "string",
+				name: "uri",
+				type: "string"
+			}
+		],
+		name: "setURI",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			}
+		],
+		name: "setURI",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			}
+		],
+		name: "style",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "stylesLength",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "competitionId",
+				type: "uint256"
+			},
+			{
+				internalType: "string[]",
+				name: "items",
+				type: "string[]"
+			}
+		],
+		name: "submitPortfolio",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes4",
+				name: "interfaceId",
+				type: "bytes4"
+			}
+		],
+		name: "supportsInterface",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "tokens",
+		outputs: [
+			{
+				internalType: "string[]",
+				name: "",
+				type: "string[]"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			}
+		],
+		name: "totalCompetitions",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "competitionId",
+				type: "uint256"
+			}
+		],
+		name: "totalMembers",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "id",
+				type: "uint256"
+			}
+		],
+		name: "totalSupply",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "unpause",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		name: "uri",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	}
+];
+
 const network$1 = ethers.providers.getNetwork('goerli');
 
 var provider$1 = ethers.getDefaultProvider(network$1, {
@@ -149,137 +1600,94 @@ var provider$1 = ethers.getDefaultProvider(network$1, {
   etherscan: '6XI8Q8NA96JFB71WA8VV9TM42K8H4DVIBN'
 });
 
-const queue$1 = [];
-
-const job$1 = async (contract, data) => {
-  const open = await contract.isOpen();
-  if (open) {
-    const params = await contract.competitionParams();
-    const participants = await contract.membersCount();
-    const isOpen = await contract.isOpen();
-    data.open.push(contract.address);
-    data.params[contract.address] = {
-      address: contract.address,
-      style: params.style,
-      category: params.category,
-      closeTime: Number(params.closeTime.toString()) * 1000,
-      feeDGC: ethers.utils.formatUnits(params.feeDGC, 0),
-      interestPct: ethers.utils.formatUnits(params.interestPct, 0),
-      portfolioSize: params.portfolioSize.toNumber(),
-      participants: participants.toNumber(),
-      name: params.name,
-      startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      totalPrizeDGC: ethers.utils.formatUnits(params.totalPrizeDGC, 0),
-      isOpen
-    };
-  }
-  return data
-};
-
-const _runQueue$1 = (contracts, data) => Promise.all(contracts.map(contract => job$1(contract, data)));
-const runQueue$1 = async data => {
-  await _runQueue$1(queue$1.splice(0, queue$1.length > 12 ? 12 : queue$1.length), data);
-  if (queue$1.length > 0) return runQueue$1(data)
-};
-
-var competitions$1 = async () => {
-  const contract = await new ethers.Contract(addresses$1.DynastyContest, contestsABI__default["default"], provider$1);
-  let addresses = await contract.getCompetitionsList();
-
-  let data = {
-    addresses,
-    open: [],
-    params: {}
-  };
-
-  addresses = [...addresses].reverse();
-
-  for (const address of addresses) {
-    const contract = new ethers.Contract(address, competitionABI__default["default"], provider$1);
-    queue$1.push(contract);
-  }
-  await runQueue$1(data);
-  return data
-};
-
+const contract$1 = new ethers.Contract(DynastyContests, contestsABI, provider$1);
 const queue = [];
 
-const job = async ({contract, category, style}, data) => {
-  const open = await contract.isOpen();
-  if (open) {
-    const params = await contract.competitionParams();
-    const participants = await contract.membersCount();
-    const isOpen = await contract.isOpen();
-    data.open.push(contract.address);
-    data.params[contract.address] = {
-      address: contract.address,
-      style: params.style,
-      category: params.category,
-      closeTime: Number(params.closeTime.toString()) * 1000,
-      feeDGC: ethers.utils.formatUnits(params.feeDGC, 0),
-      interestPct: ethers.utils.formatUnits(params.interestPct, 0),
+const job = async ({category, style, id}, data) => {
+  const state = await contract$1.competitionState(category, style, id);
+  console.log(state);
+  if (state === 0) {
+    const params = await contract$1.competition(category, style, id);
+    const participants = await contract$1.totalMembers(category, style, id);
+    data.open.push({
+      style,
+      category,
+      closeTime: Number(params.endTime.toString()) * 1000,
+      liveTime: Number(params.liveTime.toString()) * 1000,
+      price: ethers.utils.formatUnits(params.price, 0),
       portfolioSize: params.portfolioSize.toNumber(),
       participants: participants.toNumber(),
       name: params.name,
       startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      totalPrizeDGC: ethers.utils.formatUnits(params.totalPrizeDGC, 0),
-      isOpen
-    };
+      prizePool: ethers.utils.formatUnits(params.prizePool, 0),
+      state: 'open'
+    });
+  } else {
+    data.closed.push({
+      style,
+      category,
+      closeTime: Number(params.closeTime.toString()) * 1000,
+      liveTime: Number(params.liveTime.toString()) * 1000,
+      price: ethers.utils.formatUnits(params.price, 0),
+      portfolioSize: params.portfolioSize.toNumber(),
+      participants: participants.toNumber(),
+      name: params.name,
+      startTime: Number(params.startTime.toNumber() * 1000).toString(),
+      prizePool: ethers.utils.formatUnits(params.prizePool, 0),
+      state: 'open'
+    });
   }
   return data
 };
 
-const _runQueue = (contracts, data) => Promise.all(contracts.map(contract => job(contract, data)));
+const _runQueue = (competitions, data) => Promise.all(competitions.map(competition => job(competition, data)));
+
 const runQueue = async data => {
   await _runQueue(queue.splice(0, queue.length > 12 ? 12 : queue.length), data);
   if (queue.length > 0) return runQueue(data)
 };
 
-var categories = async () => {
-  const contract = await new ethers.Contract(addresses$1.DynastyContest, contestsABI__default["default"], provider$1);
-  const categoriesLength = await contract.categoriesLength();
-  const stylesLength = await contract.stylesLength();
-  
-  for (let category = 0; category < categoriesLength; i++) {
-    for (let i = 0; i < stylesLength; i++) {
-      queue.push({
-        contract,
-        category,
-        style
-      });
-    }  
-  }
+var competitions$1 = async () => {
+  const category = 0;
+  const style = 0;
+
+  const totalCompetitions = await contract$1.totalCompetitions(category, style);
+
 
   let data = {
-    addresses,
     open: [],
-    params: {}
+    closed: []
   };
-  return runQueue(data)
+
+  for (let i = 0; i <= totalCompetitions; i++) { 
+    queue.push({category, style, id: totalCompetitions - i});
+  }
+  await runQueue(data);
+  return data
 };
 
 const router$1 = new Router__default["default"]();
 
-router$1.get('/competitionsByCategory', async ctx => {
+// router.get('/competitionsByCategory', async ctx => {
   
-  let data = cache.get('/categories');
-  if (!data) {
-    data = await categories();
-    cache.add('/categories', data);
-  }
-  ctx.body = data[ctx.query.category];
-});
+//   let data = cache.get('/categories')
+//   if (!data) {
+//     data = await categories()
+//     cache.add('/categories', data)
+//   }
+//   ctx.body = data[ctx.query.category]
+// })
 
 /**
  * fetch('/contest?id=lambomaker')
  */
 router$1.get('/competitions', async ctx => {
   let data = cache.get('competitions');
-  if (data) ctx.body = data.addresses;
+  if (data) ctx.body = data.closed;
   else {
     data = await competitions$1();
     cache.add('competitions', data);
-    ctx.body = data.addresses;
+    ctx.body = [...data.open, ...data.closed];
   }
 });
 
@@ -291,58 +1699,6 @@ router$1.get('/open-competitions', async ctx => {
     cache.add('competitions', data);
     ctx.body = data.open;
   }
-});
-
-router$1.get('/competitions/params', async ctx => {
-  const wantedAddress = ctx.query.address;
-  const data = cache.get('competitions');
-  let cachedItems = cache.get('competition-params');
-
-  let addresses;
-  if (cachedItems?.addresses?.length > 0) addresses = data.addresses.filter(address => cachedItems.addresses.indexOf(address) === -1);
-  else {
-    addresses = data.addresses;
-    cachedItems = {
-      addresses: [],
-      params: []
-    };
-  }
-
-  const contracts = addresses.map(address => new ethers.Contract(address, competitionABI__default["default"], provider$1));
-  let params = await Promise.all(contracts.map(contract => contract.competitionParams()));
-  const participants = await Promise.all(contracts.map(contract => contract.membersCount()));
-
-  params = [...cachedItems.params, ...params.map((current, i) => ({
-    address: contracts[i].address,
-    participants: participants[i].toNumber(),
-    category: current.category,
-    feeDGC: ethers.utils.formatUnits(current.feeDGC, 0),
-    interestPct: ethers.utils.formatUnits(current.interestPct, 0),
-    name: current.name,
-    style: current.style,
-    portfolioSize: current.portfolioSize.toNumber(),
-    closeTime: Number(current.closeTime.toString()) * 1000,
-    startTime: Number(current.startTime.toNumber()) * 1000,
-    totalPrizeDGC: ethers.utils.formatUnits(current.totalPrizeDGC, 0)
-  }))];
-
-  cache.add('competition-params', {
-    addresses: [...addresses, ...cachedItems.addresses],
-    params
-  });
-
-  if (wantedAddress) {
-    ctx.body = params.filter(c => c.address?.toLowerCase() === wantedAddress.toLowerCase());
-  } else {
-    ctx.body = params;
-  }
-});
-
-router$1.get('/open-competitions/params', async ctx => {
-  const wantedAddress = ctx.query.address;
-  const data = cache.get('competitions');
-
-  ctx.body = wantedAddress ? data.params[wantedAddress] : Object.values(data.params);
 });
 
 // import cache from './../cache'

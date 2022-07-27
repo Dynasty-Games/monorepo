@@ -1701,8 +1701,12 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
     }
 
     function isLive(uint256 category_, uint256 style_, uint256 competitionId) public view returns (bool) {
-      Competition memory competition = _competitions[category_][style_][competitionId];
-      return competition.liveTime >= block.timestamp && competition.endTime >= block.timestamp;
+      Competition memory competition_ = _competitions[category_][style_][competitionId];
+      return competition_.liveTime <= block.timestamp && competition_.endTime >= block.timestamp;
+    }
+
+    function totalMembers(uint256 category_, uint256 style_, uint256 competitionId) public view returns (uint256) {
+      return _members[category_][style_][competitionId].length;
     }
 
     function members(uint256 category_, uint256 style_, uint256 competitionId) public view returns (address[] memory) {
@@ -1721,22 +1725,22 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
     * 0 = DynastyCredit
     */
     function submitPortfolio(uint256 category_, uint256 style_, uint256 competitionId, string[] memory items) public {
-      Competition memory competition = _competitions[category_][style_][competitionId];
+      Competition memory competition_ = _competitions[category_][style_][competitionId];
 
-      require(competition.startTime < block.timestamp, 'competition not started');
-      require(competition.liveTime > block.timestamp, 'competition already live or ended');
+      require(competition_.startTime < block.timestamp, 'competition not started');
+      require(competition_.liveTime > block.timestamp, 'competition already live or ended');
 
-      require(items.length == competition.portfolioSize, 'Invalid portfolioSize');
+      require(items.length == competition_.portfolioSize, 'Invalid portfolioSize');
       Portfolio memory portfolio = _portfolios[category_][style_][competitionId][msg.sender];
       
 
-      if (portfolio.submits != 0 && portfolio.submits <= competition.freeSubmits) {
+      if (portfolio.submits != 0 && portfolio.submits <= competition_.freeSubmits) {
         // todo implement metatx
       } else {        
-        _treasury.deposit(msg.sender, competition.price * 10**8);
+        _treasury.deposit(msg.sender, competition_.price * 10**8);
       
-        uint256 amount = competition.price - (competition.price / 100 * _treasury.fee());
-        competition.prizePool += amount;
+        uint256 amount = competition_.price - (competition_.price / 100 * _treasury.fee());
+        competition_.prizePool += amount;
       }
     
       if (portfolio.submits == 0) {
@@ -1790,21 +1794,21 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
       require(liveTime > startTime, 'invalid liveTime');
       require(endTime > liveTime, 'invalid endTime');
 
-      Competition memory competition;
-      competition.name = name;
-      competition.price = price;
-      competition.prizePool = prizePool;
-      competition.portfolioSize = portfolioSize;
-      competition.freeSubmits = submits;
-      competition.startTime = startTime;
-      competition.liveTime = liveTime;
-      competition.endTime = endTime;
-      competition.state = States.OPEN;
+      Competition memory competition_;
+      competition_.name = name;
+      competition_.price = price;
+      competition_.prizePool = prizePool;
+      competition_.portfolioSize = portfolioSize;
+      competition_.freeSubmits = submits;
+      competition_.startTime = startTime;
+      competition_.liveTime = liveTime;
+      competition_.endTime = endTime;
+      competition_.state = States.OPEN;
       
       _totalCompetitions[category_][style_] += 1;
 
       uint256 competitionsId = _totalCompetitions[category_][style_] - 1;
-      _competitions[category_][style_][competitionsId] = competition;
+      _competitions[category_][style_][competitionsId] = competition_;
     }
 
     function createCompetitionBatch(
@@ -1836,8 +1840,8 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
     }
 
     function _closeCompetition(uint256 category_, uint256 style_, uint256 competitionId_, uint256[] memory amounts_, address[] memory members_, uint256 tokenId_) internal {
-      Competition memory competition = _competitions[category_][style_][competitionId_];
-      require(competition.endTime < block.timestamp, 'Competition not ready to close');
+      Competition memory competition_ = _competitions[category_][style_][competitionId_];
+      require(competition_.endTime < block.timestamp, 'Competition not ready to close');
       _competitions[category_][style_][competitionId_].state = States.CLOSED;
 
       uint256 _amounts;
@@ -1845,7 +1849,7 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
         _amounts + amounts_[i];
         _mint(members_[i], tokenId_, amounts_[i], '');
       }
-      require(_amounts == competition.prizePool, 'invalid reward distribution');
+      require(_amounts == competition_.prizePool, 'invalid reward distribution');
     }
 
     function closeCompetitionBatch(uint256[] memory categories_, uint256[] memory styles_, uint256[] memory competitionIds_, uint256[] memory amounts, address[] memory members_, uint256 tokenId_) public onlyRole(MANAGER_ROLE) {

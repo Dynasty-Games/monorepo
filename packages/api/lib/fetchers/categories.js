@@ -37,7 +37,7 @@ const runQueue = async data => {
 }
 
 export default async () => {
-  const contract = await new Contract(DynastyContest, contestsABI, provider)
+  const contract = new Contract(DynastyContest, contestsABI, provider)
   const categoriesLength = await contract.categoriesLength()
   const stylesLength = await contract.stylesLength()
   

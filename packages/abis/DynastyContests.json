@@ -1348,6 +1348,35 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "category_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "style_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "competitionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "totalMembers",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "id",
         "type": "uint256"
       }

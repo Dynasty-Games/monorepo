@@ -7,8 +7,8 @@ const setup = require('./setup.js')
 const close = require('./close.js')
 const info = require('./info.js')
 const config = require('./../project-deploy.config.json')
-const ABI = require('./../build/abis/FakeUSDC.json')
-const { FakeUSDC, DynastyTreasury } = require('./../build/addresses/goerli.json')
+const ABI = require('./../packages/abis/FakeUSDC.json')
+const { FakeUSDC, DynastyTreasury } = require('./../packages/addresses/goerli.json')
 
 let network
 let secret
@@ -41,7 +41,7 @@ test('contracts', async tape => {
   console.log('setting up contracts')
   ok = await setup(signer)
   tape.ok(ok, 'setup contracts')
-
+return
   console.log('creating competitions')
   ok = await create(signer)
   tape.ok(ok, 'create competitions')

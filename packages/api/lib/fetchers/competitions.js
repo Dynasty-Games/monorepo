@@ -1,58 +1,69 @@
-import {DynastyContest} from '@dynasty-games/addresses/goerli.json'
-import contestsABI from '@dynasty-games/abis/DynastyContest-ABI.json'
-import competitionABI from '@dynasty-games/abis/Competition-ABI.json'
+import {DynastyContests} from './../../../addresses/goerli.json'
+import contestsABI from './../../../abis/DynastyContests.json'
 import { Contract, utils } from 'ethers'
 import provider from './../provider'
 
+const contract = new Contract(DynastyContests, contestsABI, provider)
 const queue = []
 
-const job = async (contract, data) => {
-  
-  
-  if (open) {
-    const params = await contract.competitionParams()
-    const participants = await contract.membersCount()
-    const isOpen = await contract.isOpen()
-    data.open.push(contract.address)
-    data.params[contract.address] = {
-      address: contract.address,
-      style: params.style,
-      category: params.category,
-      closeTime: Number(params.closeTime.toString()) * 1000,
-      feeDGC: utils.formatUnits(params.feeDGC, 0),
-      interestPct: utils.formatUnits(params.interestPct, 0),
+const job = async ({category, style, id}, data) => {
+  const state = await contract.competitionState(category, style, id)
+  console.log(state);
+  if (state === 0) {
+    const params = await contract.competition(category, style, id)
+    const participants = await contract.totalMembers(category, style, id)
+    data.open.push({
+      style,
+      category,
+      closeTime: Number(params.endTime.toString()) * 1000,
+      liveTime: Number(params.liveTime.toString()) * 1000,
+      price: utils.formatUnits(params.price, 0),
       portfolioSize: params.portfolioSize.toNumber(),
       participants: participants.toNumber(),
       name: params.name,
       startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      totalPrizeDGC: utils.formatUnits(params.totalPrizeDGC, 0),
-      isOpen
-    }
+      prizePool: utils.formatUnits(params.prizePool, 0),
+      state: 'open'
+    })
+  } else {
+    data.closed.push({
+      style,
+      category,
+      closeTime: Number(params.closeTime.toString()) * 1000,
+      liveTime: Number(params.liveTime.toString()) * 1000,
+      price: utils.formatUnits(params.price, 0),
+      portfolioSize: params.portfolioSize.toNumber(),
+      participants: participants.toNumber(),
+      name: params.name,
+      startTime: Number(params.startTime.toNumber() * 1000).toString(),
+      prizePool: utils.formatUnits(params.prizePool, 0),
+      state: 'open'
+    })
   }
   return data
 }
 
-const _runQueue = (contracts, data) => Promise.all(contracts.map(contract => job(contract, data)))
+const _runQueue = (competitions, data) => Promise.all(competitions.map(competition => job(competition, data)))
+
 const runQueue = async data => {
   await _runQueue(queue.splice(0, queue.length > 12 ? 12 : queue.length), data)
   if (queue.length > 0) return runQueue(data)
 }
 
 export default async () => {
-  const contract = await new Contract(DynastyContest, contestsABI, provider)
-  let addresses = await contract.getCompetitionsList()
+  const category = 0
+  const style = 0
+
+  const totalCompetitions = await contract.totalCompetitions(category, style)
+
 
   let data = {
-    addresses,
     open: [],
-    params: {}
+    closed: []
   }
 
-  addresses = [...addresses].reverse()
-
-  for (const address of addresses) {
-    const contract = new Contract(address, competitionABI, provider)
-    queue.push(contract)
+  for (let i = 0; i <= totalCompetitions; i++) { 
+    queue.push({category, style, id: totalCompetitions - i})
   }
   await runQueue(data)
   return data

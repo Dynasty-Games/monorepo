@@ -1,7 +1,7 @@
-const childABI = require('./../build/abis/DynastyContestsChild.json')
-const rootABI = require('./../build/abis/DynastyContestsRoot.json')
+const childABI = require('./../packages/abis/DynastyContestsChild.json')
+const rootABI = require('./../packages/abis/DynastyContestsRoot.json')
 const { Contract, utils } = require('ethers')
-const { DynastyContestsChild, DynastyContestsRoot } = require('../build/addresses/goerli.json')
+const { DynastyContestsChild, DynastyContestsRoot } = require('../packages/addresses/goerli.json')
 
 // todo set ffxroot and child
 module.exports = async (signer) => {

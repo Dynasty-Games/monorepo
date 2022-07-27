@@ -3,7 +3,6 @@ import erc20 from './data/abis/erc20'
 import addresses from './../node_modules/@dynasty-games/addresses/goerli'
 import ContestABI from './../node_modules/@dynasty-games/abis/DynastyContest-ABI.json'
 import CompetitionABI from './../node_modules/@dynasty-games/abis/Competition-ABI.json'
-import { calculateFantasyPoints } from './../node_modules/@dynasty-games/lib/src/lib'
 
 const network = providers.getNetwork('goerli')
 
