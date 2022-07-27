@@ -7,7 +7,8 @@ import provider from './../provider'
 const queue = []
 
 const job = async (contract, data) => {
-  const open = await contract.isOpen()
+  
+  
   if (open) {
     const params = await contract.competitionParams()
     const participants = await contract.membersCount()

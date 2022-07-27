@@ -1,6 +1,5 @@
 import createCompetitionBatch from './create-competition-batch'
 import closeCompetition from './close-competition'
-import {competitionAddresses, getCompetitionContract} from './../contracts'
 import cron from 'node-cron'
 import { isOpen, getRankings, getCompetitionParams, getCompetitionsToClose, hasStarted, hasEnded, getCompetitionPortfolios, getOpenCompetitions, getStartedCompetitions } from './../utils'
 
@@ -16,7 +15,6 @@ export const create = () => {
     nextDay.setDate(date.getDate() + 1);
 
     const competitions = [
-      Math.round(new Date(`${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} 17:45:00`).getTime() / 1000), 
       Math.round(new Date(`${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} 19:00:00`).getTime() / 1000),
       Math.round(new Date(`${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} 21:00:00`).getTime() / 1000),
       Math.round(new Date(`${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} 23:00:00`).getTime() / 1000),
@@ -27,7 +25,8 @@ export const create = () => {
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 09:00:00`).getTime() / 1000),
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 11:00:00`).getTime() / 1000),
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 13:00:00`).getTime() / 1000),
-      Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 15:00:00`).getTime() / 1000)
+      Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 15:00:00`).getTime() / 1000),
+      Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 17:00:00`).getTime() / 1000), 
    ]
 
     await createCompetitionBatch(competitions)
