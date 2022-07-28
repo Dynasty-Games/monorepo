@@ -8,10 +8,9 @@ const queue = []
 
 const job = async ({category, style, id}, data) => {
   const state = await contract.competitionState(category, style, id)
-  console.log(state);
+  const params = await contract.competition(category, style, id)
+  const participants = await contract.totalMembers(category, style, id)
   if (state === 0) {
-    const params = await contract.competition(category, style, id)
-    const participants = await contract.totalMembers(category, style, id)
     data.open.push({
       style,
       category,
