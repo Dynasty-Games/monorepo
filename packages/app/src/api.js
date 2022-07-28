@@ -17,30 +17,32 @@ const provider = getDefaultProvider(network, {
 const usdc = new Contract(addresses.USDDToken, erc20, provider)
 const dynastyContest = new Contract(addresses.DynastyContest, ContestABI, provider)
 
+const apiURL = 'dynasty-api.leofcoin.org'
+
 globalThis.contracts = {
   usdc,
   dynastyContest
 }
 
 export const currencies = async () => {
-  let response = await fetch('https://dynasty-api.leofcoin.org/currencies?limit=250&pages=2')
+  let response = await fetch(`https://${apiURL}/currencies?limit=250&pages=2`)
   response = await response.json()
   return response.slice(0, 300)
 }
 
 export const competitionAddresses = async () => {
-  let response = await fetch(`https://dynasty-api.leofcoin.org/competitions`)
+  let response = await fetch(`https://${apiURL}/competitions`)
   return response.json()
 }
 
 export const competitions = async () => {
-  let response = await fetch(`https://dynasty-api.leofcoin.org/competitions`)
+  let response = await fetch(`https://${apiURL}/competitions`)
   response = await response.json()
   return response
 }
 
 export const openCompetitions = async () => {
-  let response = await fetch(`https://dynasty-api.leofcoin.org/open-competitions`)
+  let response = await fetch(`https://${apiURL}/open-competitions`)
   const date = new Date()
   response = await response.json()
   response = response.reduce((set, current) => {
@@ -58,8 +60,8 @@ export const openCompetitions = async () => {
 export const competitionContract = address => new Contract(address, CompetitionABI, provider)
 
 
-export const competition = async address => {
-  let response = await fetch(`https://dynasty-api.leofcoin.org/competitions/params?address=${address}`)
+export const competition = async (category, style, id) => {
+  let response = await fetch(`https://${apiURL}/competition?category=${category}&style=${style}&id=${id}`)
   return response.json()
 }
 

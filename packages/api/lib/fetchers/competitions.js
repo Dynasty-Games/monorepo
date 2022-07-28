@@ -10,36 +10,34 @@ const job = async ({category, style, id}, data) => {
   const state = await contract.competitionState(category, style, id)
   const params = await contract.competition(category, style, id)
   const participants = await contract.totalMembers(category, style, id)
+  const time = new Date().getTime()
+  const isLive = time < Number(params.liveTime.toString()) * 1000
+
+  const competition = {
+    style,
+    category,
+    id: params.id.toNumber(),
+    closeTime: Number(params.endTime.toString()) * 1000,
+    liveTime: Number(params.liveTime.toString()) * 1000,
+    price: utils.formatUnits(params.price, 0),
+    portfolioSize: params.portfolioSize.toNumber(),
+    participants: participants.toNumber(),
+    name: params.name,
+    startTime: Number(params.startTime.toNumber() * 1000).toString(),
+    prizePool: utils.formatUnits(params.prizePool, 0),
+    state,
+    isLive
+  }
+
   if (state === 0) {
-    data.open.push({
-      style,
-      category,
-      id: params.id.toNumber(),
-      closeTime: Number(params.endTime.toString()) * 1000,
-      liveTime: Number(params.liveTime.toString()) * 1000,
-      price: utils.formatUnits(params.price, 0),
-      portfolioSize: params.portfolioSize.toNumber(),
-      participants: participants.toNumber(),
-      name: params.name,
-      startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      prizePool: utils.formatUnits(params.prizePool, 0),
-      state: 'open'
-    })
+    if (isLive) {
+      data.live.push(competition)
+    } else {
+      data.open.push(competition)
+    }
+    
   } else {
-    data.closed.push({
-      style,
-      category,
-      id: params.id.toNumber(),
-      closeTime: Number(params.closeTime.toString()) * 1000,
-      liveTime: Number(params.liveTime.toString()) * 1000,
-      price: utils.formatUnits(params.price, 0),
-      portfolioSize: params.portfolioSize.toNumber(),
-      participants: participants.toNumber(),
-      name: params.name,
-      startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      prizePool: utils.formatUnits(params.prizePool, 0),
-      state: 'open'
-    })
+    data.closed.push(competition)
   }
   return data
 }
@@ -60,6 +58,7 @@ export default async () => {
 
   let data = {
     open: [],
+    live: [],
     closed: []
   }
 
