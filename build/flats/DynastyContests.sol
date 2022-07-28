@@ -1644,6 +1644,7 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
 
     struct Competition {
       string name;
+      uint256 id;
       uint256 price;
       uint256 prizePool;
       uint256 portfolioSize;
@@ -1793,9 +1794,11 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
       require(startTime > block.timestamp, 'invalid startTime');
       require(liveTime > startTime, 'invalid liveTime');
       require(endTime > liveTime, 'invalid endTime');
+      uint256 competitionsId = _totalCompetitions[category_][style_];
 
       Competition memory competition_;
       competition_.name = name;
+      competition_.id = competitionsId;
       competition_.price = price;
       competition_.prizePool = prizePool;
       competition_.portfolioSize = portfolioSize;
@@ -1806,8 +1809,7 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
       competition_.state = States.OPEN;
       
       _totalCompetitions[category_][style_] += 1;
-
-      uint256 competitionsId = _totalCompetitions[category_][style_] - 1;
+      
       _competitions[category_][style_][competitionsId] = competition_;
     }
 

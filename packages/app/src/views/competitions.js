@@ -16,7 +16,7 @@ export default customElements.define('competitions-view', class CompetitionsView
 
   #click(event) {
     const target = event.composedPath()[0]
-    location.hash = `#!/competition?competition=${target.getAttribute('address')}`
+    location.hash = `#!/competition?category=${target.getAttribute('category')}&style=${target.getAttribute('style')}&competition=${target.getAttribute('competition')}`
   }
 
   back() {
@@ -35,6 +35,7 @@ export default customElements.define('competitions-view', class CompetitionsView
   async #parseContest(contest) {
     this._contest = contest
     let items = await openCompetitions()
+    console.log(items);
     const byName = items.reduce((set, current) => {
       set[current.name] = set[current.name] || { name: current.name, items: [] }
       set[current.name].items.push(current)
@@ -43,6 +44,8 @@ export default customElements.define('competitions-view', class CompetitionsView
     }, {})
     items = []
     items.push({
+      category: 0,
+      style: 0,
       type: 'classic',
       description: 'create a 8 crypto lineup',
       items: JSON.stringify(Object.values(byName))

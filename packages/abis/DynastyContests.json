@@ -552,6 +552,11 @@
           },
           {
             "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "price",
             "type": "uint256"
           },
@@ -649,6 +654,11 @@
             "internalType": "string",
             "name": "name",
             "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",

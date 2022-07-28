@@ -34,13 +34,13 @@ export const competitionAddresses = async () => {
 }
 
 export const competitions = async () => {
-  let response = await fetch(`https://dynasty-api.leofcoin.org/competitions/params`)
+  let response = await fetch(`https://dynasty-api.leofcoin.org/competitions`)
   response = await response.json()
   return response
 }
 
 export const openCompetitions = async () => {
-  let response = await fetch(`https://dynasty-api.leofcoin.org/open-competitions/params`)
+  let response = await fetch(`https://dynasty-api.leofcoin.org/open-competitions`)
   const date = new Date()
   response = await response.json()
   response = response.reduce((set, current) => {
