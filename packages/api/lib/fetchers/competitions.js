@@ -18,7 +18,7 @@ const job = async ({category, style, id}, data) => {
     style,
     category,
     id: params.id.toNumber(),
-    closeTime: Number(params.endTime.toString()) * 1'0'00,
+    closeTime: Number(params.endTime.toString()) * 1000,
     liveTime: Number(params.liveTime.toString()) * 1000,
     price: utils.formatUnits(params.price, 0),
     portfolioSize: params.portfolioSize.toNumber(),
