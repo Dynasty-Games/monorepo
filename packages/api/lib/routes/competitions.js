@@ -61,7 +61,7 @@ router.get('/competitions', async ctx => {
     cache.add('competitions', data)
     ctx.body = [...data.live, ...data.open, ...data.closed]
   }
-  return filter(ctx)
+  filter(ctx)
 })
 
 router.get('/open-competitions', async ctx => {
@@ -72,7 +72,7 @@ router.get('/open-competitions', async ctx => {
     cache.add('competitions', data)
     ctx.body = data.open
   }
-  return filter(ctx)
+  filter(ctx)
 })
 
 router.get('/closed-competitions', async ctx => {
@@ -83,7 +83,7 @@ router.get('/closed-competitions', async ctx => {
     cache.add('competitions', data)
     ctx.body = data.closed
   }
-  return filter(ctx)
+  filter(ctx)
 })
 
 router.get('/live-competitions', async ctx => {
@@ -94,7 +94,7 @@ router.get('/live-competitions', async ctx => {
     cache.add('competitions', data)
     ctx.body = data.live
   }
-  return filter(ctx)
+  filter(ctx)
 })
 
 export default router
