@@ -9,7 +9,7 @@ const router = new Router();
 const filter = ctx => {
   
   const { category, style, id } = ctx.request.query
-  if (params.category && params.style && params.id) {
+  if (category && style && id) {
     ctx.body = ctx.body.filter(item => item.category === category && item.style === style && item.id == id)
     return
   }
@@ -35,7 +35,7 @@ const filter = ctx => {
   }
 
   if (style) {
-    ctx.body = ctx.body.filter(item => item.category === category)
+    ctx.body = ctx.body.filter(item => item.style === style)
     return
   }
 }
