@@ -10,33 +10,33 @@ const filter = ctx => {
   
   const { category, style, id } = ctx.request.query
   if (category && style && id) {
-    ctx.body = ctx.body.filter(item => item.category === category && item.style === style && item.id == id)
-    return
+    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.style === Number(style) && item.id === Number(id))
+    return ctx.body
   }
 
   if (category && id) {
-    ctx.body = ctx.body.filter(item => item.category === category && item.id === id)
-    return
+    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.id === Number(id))
+    return ctx.body
   }
 
   if (style && id) {
-    ctx.body = ctx.body.filter(item => item.id === id && item.style === style)
-    return
+    ctx.body = ctx.body.filter(item => item.id === Number(id) && item.style === Number(style))
+    return ctx.body
   }
 
   if (category && style) {
-    ctx.body = ctx.body.filter(item => item.category === category && item.style === style)
-    return
+    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.style === Number(style))
+    return ctx.body
   }
 
   if (category) {
-    ctx.body = ctx.body.filter(item => item.category === category)
-    return
+    ctx.body = ctx.body.filter(item => item.category === Number(category))
+    return ctx.body
   }
 
   if (style) {
-    ctx.body = ctx.body.filter(item => item.style === style)
-    return
+    ctx.body = ctx.body.filter(item => item.style === Number(style))
+    return ctx.body
   }
 }
 
