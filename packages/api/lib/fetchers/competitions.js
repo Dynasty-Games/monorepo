@@ -12,12 +12,13 @@ const job = async ({category, style, id}, data) => {
   const participants = await contract.totalMembers(category, style, id)
   const time = new Date().getTime()
   const isLive = time > Number(params.liveTime.toString()) * 1000 && time < Number(params.endTime.toString()) * 1000
-
+  if (params.endTime.toString() === '0') return
+  
   const competition = {
     style,
     category,
     id: params.id.toNumber(),
-    closeTime: Number(params.endTime.toString()) * 1000,
+    closeTime: Number(params.endTime.toString()) * 1'0'00,
     liveTime: Number(params.liveTime.toString()) * 1000,
     price: utils.formatUnits(params.price, 0),
     portfolioSize: params.portfolioSize.toNumber(),

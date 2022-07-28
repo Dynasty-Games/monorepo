@@ -5,10 +5,9 @@ var cors = require('@koa/cors');
 var Router = require('@koa/router');
 var fetch = require('node-fetch');
 var ethers = require('ethers');
-var addresses = require('@dynasty-games/addresses/goerli.json');
+require('@dynasty-games/addresses/goerli.json');
 require('@dynasty-games/abis/DynastyContest-ABI.json');
-require('path');
-var DynastyContest = require('@dynasty-games/abis/USDDToken.json');
+require('express');
 require('dotenv/config');
 var lib = require('@dynasty-games/lib');
 
@@ -18,8 +17,6 @@ var Koa__default = /*#__PURE__*/_interopDefaultLegacy(Koa);
 var cors__default = /*#__PURE__*/_interopDefaultLegacy(cors);
 var Router__default = /*#__PURE__*/_interopDefaultLegacy(Router);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
-var addresses__default = /*#__PURE__*/_interopDefaultLegacy(addresses);
-var DynastyContest__default = /*#__PURE__*/_interopDefaultLegacy(DynastyContest);
 
 globalThis.__cache__ = globalThis.__cache__ || {};
 
@@ -137,7 +134,24 @@ router$2.get('/currency-icon', async (ctx, next) => {
   ctx.body = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/${ctx.query.symbol.toLowerCase()}.svg`;
 });
 
-var DynastyContests = "0xAF2AeE530624018543cf67Cb064Ee9a90F04412E";
+var FakeUSDC$1 = "0xab5417222849D9bF8F55059502E86bDDdb496fB5";
+var DynastyTreasury = "0xE7C5B5Cd9DF18281C043084A4dF872d942C2af33";
+var DynastyContests = "0xABb9114368cdf817CE5F1de7239CA392b8A8D086";
+var RLPReader = "0x193481aDcd1223c80105c5431A9028b49B7D99a4";
+var MerklePatriciaProof = "0xc7D9c2A86e23dB3eAd63A731c0a39890Ba64207E";
+var Merkle = "0x05DB74e048b48E98e04cA0cc6eA2ABe3d7De2744";
+var ExitPayloadReader = "0x43126E5EC8738658723d1Fa3cA1cA4C14Fa4d8C6";
+var FxStateRootTunnel = "0xf4C2893E33bA5f84CCc66B6775a4AaB1Ab06020b";
+var addresses = {
+	FakeUSDC: FakeUSDC$1,
+	DynastyTreasury: DynastyTreasury,
+	DynastyContests: DynastyContests,
+	RLPReader: RLPReader,
+	MerklePatriciaProof: MerklePatriciaProof,
+	Merkle: Merkle,
+	ExitPayloadReader: ExitPayloadReader,
+	FxStateRootTunnel: FxStateRootTunnel
+};
 
 var contestsABI = [
 	{
@@ -702,6 +716,11 @@ var contestsABI = [
 					},
 					{
 						internalType: "uint256",
+						name: "id",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
 						name: "price",
 						type: "uint256"
 					},
@@ -799,6 +818,11 @@ var contestsABI = [
 						internalType: "string",
 						name: "name",
 						type: "string"
+					},
+					{
+						internalType: "uint256",
+						name: "id",
+						type: "uint256"
 					},
 					{
 						internalType: "uint256",
@@ -1605,37 +1629,36 @@ const queue = [];
 
 const job = async ({category, style, id}, data) => {
   const state = await contract$1.competitionState(category, style, id);
-  console.log(state);
+  const params = await contract$1.competition(category, style, id);
+  const participants = await contract$1.totalMembers(category, style, id);
+  const time = new Date().getTime();
+  const isLive = time > Number(params.liveTime.toString()) * 1000 && time < Number(params.endTime.toString()) * 1000;
+
+  const competition = {
+    style,
+    category,
+    id: params.id.toNumber(),
+    closeTime: Number(params.endTime.toString()) * 1000,
+    liveTime: Number(params.liveTime.toString()) * 1000,
+    price: ethers.utils.formatUnits(params.price, 0),
+    portfolioSize: params.portfolioSize.toNumber(),
+    participants: participants.toNumber(),
+    name: params.name,
+    startTime: Number(params.startTime.toNumber() * 1000).toString(),
+    prizePool: ethers.utils.formatUnits(params.prizePool, 0),
+    state,
+    isLive
+  };
+
   if (state === 0) {
-    const params = await contract$1.competition(category, style, id);
-    const participants = await contract$1.totalMembers(category, style, id);
-    data.open.push({
-      style,
-      category,
-      closeTime: Number(params.endTime.toString()) * 1000,
-      liveTime: Number(params.liveTime.toString()) * 1000,
-      price: ethers.utils.formatUnits(params.price, 0),
-      portfolioSize: params.portfolioSize.toNumber(),
-      participants: participants.toNumber(),
-      name: params.name,
-      startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      prizePool: ethers.utils.formatUnits(params.prizePool, 0),
-      state: 'open'
-    });
+    if (isLive) {
+      data.live.push(competition);
+    } else {
+      data.open.push(competition);
+    }
+    
   } else {
-    data.closed.push({
-      style,
-      category,
-      closeTime: Number(params.closeTime.toString()) * 1000,
-      liveTime: Number(params.liveTime.toString()) * 1000,
-      price: ethers.utils.formatUnits(params.price, 0),
-      portfolioSize: params.portfolioSize.toNumber(),
-      participants: participants.toNumber(),
-      name: params.name,
-      startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      prizePool: ethers.utils.formatUnits(params.prizePool, 0),
-      state: 'open'
-    });
+    data.closed.push(competition);
   }
   return data
 };
@@ -1656,6 +1679,7 @@ var competitions$1 = async () => {
 
   let data = {
     open: [],
+    live: [],
     closed: []
   };
 
@@ -1667,6 +1691,40 @@ var competitions$1 = async () => {
 };
 
 const router$1 = new Router__default["default"]();
+
+const filter = ctx => {
+  
+  const { category, style, id } = ctx.request.query;
+  if (category && style && id) {
+    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.style === Number(style) && item.id === Number(id));
+    return ctx.body
+  }
+
+  if (category && id) {
+    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.id === Number(id));
+    return ctx.body
+  }
+
+  if (style && id) {
+    ctx.body = ctx.body.filter(item => item.id === Number(id) && item.style === Number(style));
+    return ctx.body
+  }
+
+  if (category && style) {
+    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.style === Number(style));
+    return ctx.body
+  }
+
+  if (category) {
+    ctx.body = ctx.body.filter(item => item.category === Number(category));
+    return ctx.body
+  }
+
+  if (style) {
+    ctx.body = ctx.body.filter(item => item.style === Number(style));
+    return ctx.body
+  }
+};
 
 // router.get('/competitionsByCategory', async ctx => {
   
@@ -1683,12 +1741,13 @@ const router$1 = new Router__default["default"]();
  */
 router$1.get('/competitions', async ctx => {
   let data = cache.get('competitions');
-  if (data) ctx.body = data.closed;
+  if (data) ctx.body = [...data.live, ...data.open, ...data.closed];
   else {
     data = await competitions$1();
     cache.add('competitions', data);
-    ctx.body = [...data.open, ...data.closed];
+    ctx.body = [...data.live, ...data.open, ...data.closed];
   }
+  filter(ctx);
 });
 
 router$1.get('/open-competitions', async ctx => {
@@ -1699,7 +1758,606 @@ router$1.get('/open-competitions', async ctx => {
     cache.add('competitions', data);
     ctx.body = data.open;
   }
+  filter(ctx);
 });
+
+router$1.get('/closed-competitions', async ctx => {
+  let data = cache.get('competitions');
+  if (data) ctx.body = data.closed;
+  else {
+    data = await competitions$1();
+    cache.add('competitions', data);
+    ctx.body = data.closed;
+  }
+  filter(ctx);
+});
+
+router$1.get('/live-competitions', async ctx => {
+  let data = cache.get('competitions');
+  if (data) ctx.body = data.live;
+  else {
+    data = await competitions$1();
+    cache.add('competitions', data);
+    ctx.body = data.live;
+  }
+  filter(ctx);
+});
+
+var FakeUSDC = [
+	{
+		inputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "constructor"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Approval",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "previousAdminRole",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "newAdminRole",
+				type: "bytes32"
+			}
+		],
+		name: "RoleAdminChanged",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "sender",
+				type: "address"
+			}
+		],
+		name: "RoleGranted",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "sender",
+				type: "address"
+			}
+		],
+		name: "RoleRevoked",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Transfer",
+		type: "event"
+	},
+	{
+		inputs: [
+		],
+		name: "DEFAULT_ADMIN_ROLE",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "MINTER_ROLE",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			}
+		],
+		name: "allowance",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "approve",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "balanceOf",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "burn",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "burnFrom",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "decimals",
+		outputs: [
+			{
+				internalType: "uint8",
+				name: "",
+				type: "uint8"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "subtractedValue",
+				type: "uint256"
+			}
+		],
+		name: "decreaseAllowance",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			}
+		],
+		name: "getRoleAdmin",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "grantRole",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "hasRole",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "addedValue",
+				type: "uint256"
+			}
+		],
+		name: "increaseAllowance",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "mint",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "minterBurn",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "name",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "renounceRole",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "revokeRole",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes4",
+				name: "interfaceId",
+				type: "bytes4"
+			}
+		],
+		name: "supportsInterface",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "symbol",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "totalSupply",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "transfer",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "transferFrom",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	}
+];
 
 // import cache from './../cache'
 // import WebSocket from 'websocket'
@@ -1719,7 +2377,7 @@ const provider = ethers.getDefaultProvider(network, {
 // random key for tests
 const signer = new ethers.Wallet(process.env?.FAUCET_PRIVATE_KEY, provider);
 
-const contract = new ethers.Contract(addresses__default["default"].USDDToken, DynastyContest__default["default"], signer);
+const contract = new ethers.Contract(addresses.FakeUSDC, FakeUSDC, signer);
 
 const timedOutMessage = ctx => {
   ctx.body = `${ctx.request.query.address} on timeout till ${new Date(timedOut[ctx.request.query.address] + 43200 * 1000)}`;
@@ -1728,7 +2386,7 @@ const timedOutMessage = ctx => {
 router.get('/faucet', async ctx => {
   try {
     if (timedOut[ctx.request.query.address] + 43200 < Math.round(new Date().getTime() / 1000)) return timedOutMessage(ctx)
-    let tx = await contract.freemint(ctx.request.query.address, ethers.utils.parseUnits('100'));
+    let tx = await contract.mint(ctx.request.query.address, ethers.utils.parseUnits('100'));
     const hash = tx.hash;
     await tx.wait();
     tx = await signer.sendTransaction({
@@ -1740,7 +2398,7 @@ router.get('/faucet', async ctx => {
     ctx.body = JSON.stringify({
       dgc: hash,
       ether: tx.hash,
-      address: addresses__default["default"].USDDToken
+      address: addresses.FakeUSDC
     });
     // TODO: finish timeout
     timedOut[ctx.request.query.address] = Math.round(new Date().getTime() / 1000);

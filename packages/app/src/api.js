@@ -61,6 +61,7 @@ export const competitionContract = address => new Contract(address, CompetitionA
 
 
 export const competition = async (category, style, id) => {
+  console.log(category, style, id);
   let response = await fetch(`https://${apiURL}/competitions?category=${category}&style=${style}&id=${id}`)
   return response.json()
 }
