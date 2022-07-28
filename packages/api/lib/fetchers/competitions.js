@@ -15,6 +15,7 @@ const job = async ({category, style, id}, data) => {
     data.open.push({
       style,
       category,
+      id: params.id.toNumber(),
       closeTime: Number(params.endTime.toString()) * 1000,
       liveTime: Number(params.liveTime.toString()) * 1000,
       price: utils.formatUnits(params.price, 0),
@@ -29,6 +30,7 @@ const job = async ({category, style, id}, data) => {
     data.closed.push({
       style,
       category,
+      id: params.id.toNumber(),
       closeTime: Number(params.closeTime.toString()) * 1000,
       liveTime: Number(params.liveTime.toString()) * 1000,
       price: utils.formatUnits(params.price, 0),
