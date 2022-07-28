@@ -103,7 +103,7 @@ export default customElements.define('competition-view', class CompetitionView e
     this.#setCompetition(value)
   }
 
-  async #setCompetition(address) {
+  async #setCompetition(category, style, id) {
     let items = await currencies()
     items = items.sort((a,b) => a.rank - b.rank)
     const rankById = []
@@ -112,13 +112,13 @@ export default customElements.define('competition-view', class CompetitionView e
       rankById.push(item.id)
     }
 
-
-    let params = await competition(address)
+    let params = await competition(category, style, id)
     params = params[0]
 
     globalThis.currentCompetition = {
-      category: 'crypto',
-      address: address.toLowerCase(),
+      category,
+      style,
+      id,
       params,
       items,
       rankById,

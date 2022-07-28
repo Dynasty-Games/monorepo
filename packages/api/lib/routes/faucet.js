@@ -1,9 +1,8 @@
 // import cache from './../cache'
 import {providers, getDefaultProvider, Contract, Wallet, utils } from 'ethers'
 import Router from '@koa/router'
-import { join } from 'path'
-import DynastyContest from '@dynasty-games/abis/USDDToken.json'
-import addresses from '@dynasty-games/addresses/goerli.json'
+import FakeUSDC from './../../../abis/FakeUSDC.json'
+import addresses from './../../../addresses/goerli.json'
 import 'dotenv/config'
 // import WebSocket from 'websocket'
 const router = new Router()
@@ -22,7 +21,7 @@ const provider = getDefaultProvider(network, {
 // random key for tests
 const signer = new Wallet(process.env?.FAUCET_PRIVATE_KEY, provider)
 
-const contract = new Contract(addresses.USDDToken, DynastyContest, signer)
+const contract = new Contract(addresses.FakeUSDC, FakeUSDC, signer)
 
 const timedOutMessage = ctx => {
   ctx.body = `${ctx.request.query.address} on timeout till ${new Date(timedOut[ctx.request.query.address] + 43200 * 1000)}`
@@ -31,7 +30,7 @@ const timedOutMessage = ctx => {
 router.get('/faucet', async ctx => {
   try {
     if (timedOut[ctx.request.query.address] + 43200 < Math.round(new Date().getTime() / 1000)) return timedOutMessage(ctx)
-    let tx = await contract.freemint(ctx.request.query.address, utils.parseUnits('100'))
+    let tx = await contract.mint(ctx.request.query.address, utils.parseUnits('100'))
     const hash = tx.hash
     await tx.wait()
     tx = await signer.sendTransaction({
@@ -43,7 +42,7 @@ router.get('/faucet', async ctx => {
     ctx.body = JSON.stringify({
       dgc: hash,
       ether: tx.hash,
-      address: addresses.USDDToken
+      address: addresses.FakeUSDC
     })
     // TODO: finish timeout
     timedOut[ctx.request.query.address] = Math.round(new Date().getTime() / 1000)

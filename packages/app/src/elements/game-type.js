@@ -54,7 +54,7 @@ export default customElements.define('game-type', class GameType extends LitElem
 
   #click(event) {
     const target = event.composedPath()[0]
-    if (!target.hasAttribute('disabled')) location.hash = `#!/competition?competition=${target.getAttribute('address')}`
+    if (!target.hasAttribute('disabled')) location.hash = `#!/competition?competition=${target.competition}&category=${target.category}&style=${target.style}`
   }
 
   async #toggle() {
@@ -137,7 +137,7 @@ export default customElements.define('game-type', class GameType extends LitElem
     <flex-column class="container" ?hidden=${!this.shown}>
       ${map(this.items, (item, i) => html`
         <game-type-info name="${item.name}">
-          ${map(item.items, item => html`<competition-info-item name="${item.name}" description="${item.description}" data-address="${item.address}" address="${item.address}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" participants="${item.participants}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>`)}
+          ${map(item.items, item => html`<competition-info-item name="${item.name}" competition=${item.id} description="${item.description}" style="${item.style}" category="${item.category}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" participants="${item.participants}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>`)}
         </game-type-info>
         `)}
 
