@@ -55,11 +55,11 @@ const filter = ctx => {
  */
 router.get('/competitions', async ctx => {
   let data = cache.get('competitions')
-  if (data) ctx.body = [...data.open, ...data.closed]
+  if (data) ctx.body = [...data.live, ...data.open, ...data.closed]
   else {
     data = await competitions()
     cache.add('competitions', data)
-    ctx.body = [...data.open, ...data.closed]
+    ctx.body = [...data.live, ...data.open, ...data.closed]
   }
   return filter(ctx)
 })
