@@ -15,4 +15,6 @@ export default async (walletProvider = 'metamask') => {
     document.dispatchEvent(new CustomEvent('accountsChange', {detail: [address]}))
     // document.dispatchEvent(new CustomEvent('networkChange', {detail: chainId}))
   }
+
+
 }

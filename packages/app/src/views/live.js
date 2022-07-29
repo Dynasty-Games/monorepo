@@ -1,11 +1,11 @@
-import './../elements/competition-info-item'
-import { closedCompetitions } from './../api'
-import './../elements/contest-type'
+import '../elements/competition-info-item'
+import { liveCompetitions } from '../api'
+import '../elements/contest-type'
 import {LitElement, html, css} from 'lit';
 import {map} from 'lit/directives/map.js'
 
 
-export default customElements.define('contests-view', class ContestsView extends LitElement {
+export default customElements.define('live-view', class LiveView extends LitElement {
   static properties = {
     items: {
       type: Array
@@ -18,7 +18,7 @@ export default customElements.define('contests-view', class ContestsView extends
 
   async #loadUserItems() {
     const contract = contracts.dynastyContest.connect(connector)
-    let competitions = await closedCompetitions()
+    let competitions = await liveCompetitions()
     const category = 0
     const style = 0
     let competitionMembers = await Promise.allSettled(

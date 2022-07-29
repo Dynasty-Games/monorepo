@@ -4,6 +4,7 @@ import {html, LitElement} from 'lit'
 import {map} from 'lit/directives/map.js'
 import './competition-bar'
 import { DynastyTreasury } from './../../../addresses/goerli.json'
+import { editPortfolio } from '../api'
 
 export default customElements.define('portfolio-element', class PortfolioElement extends LitElement {
   static properties = {
@@ -121,12 +122,7 @@ export default customElements.define('portfolio-element', class PortfolioElement
   }
 
   #save() {
-    let els = Array.from(this.shadowRoot.querySelectorAll(`[index]`))
-    els = els.filter(el => el.salary !== 0).map(el => el.id)
-    firebase.set(
-      firebase.child(globalThis.userRef, currentCompetition.address),
-      els
-    )
+    editPortfolio(currentCompetition)
   }
 
   #clear() {

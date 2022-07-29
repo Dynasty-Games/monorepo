@@ -40,20 +40,24 @@ export const competitions = async () => {
   return response
 }
 
+export const liveCompetitions = async () => {
+  let response = await fetch(`https://${apiURL}/live-competitions`)
+  response = await response.json()
+  return response
+}
+
 export const openCompetitions = async () => {
   let response = await fetch(`https://${apiURL}/open-competitions`)
   const date = new Date()
   response = await response.json()
-  response = response.reduce((set, current) => {
-    if (!set.exists[current.startTime]) {
+  return response
+}
 
-      set.exists[current.startTime] = true
-      set.items.push(current)
-    }
-
-    return set
-  }, { exists: {}, items: [] })
-  return response.items.filter(item => item.closeTime > date.getTime())
+export const closedCompetitions = async () => {
+  let response = await fetch(`https://${apiURL}/closed-competitions`)
+  const date = new Date()
+  response = await response.json()
+  return response
 }
 
 export const competition = async (category, style, id) => {
@@ -75,5 +79,28 @@ export const balance = async account => {
  * user DGC balance
  */
 export const gameCredits = () => {
+  return contracts.dynastyContest.balanceOf(connector.accounts[0], 0)
+}
 
+export const signMessage = (type, category, style, id, value) => {
+  let message = {
+    type,
+    value
+  }
+  if (type === 'editPortfolio') {    
+    message = {
+      ...message,
+      category,
+      style,
+      id,
+    }
+  }
+  const data = JSON.stringify(message).toString('hex')
+  const bytes = _ethers.utils.arrayify(data)
+  return connector.signMessage(bytes)
+}
+
+
+export const editPortfolio = async ({category, style, id, portfolio}) => {
+  fetch()
 }

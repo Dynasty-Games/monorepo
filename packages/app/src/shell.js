@@ -281,6 +281,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
         <competition-view data-route="competition" ?is-desktop="${this.isDesktop}"></competition-view>
         <history-view data-route="history"></history-view>
         <connect-view data-route="connect"></connect-view>
+        <live-view data-route="live"></live-view>
         <contests-view data-route="contests"></contests-view>
         <rankings-view data-route="rankings"></rankings-view>
         <member-rankings-view data-route="member-rankings"></member-rankings-view>

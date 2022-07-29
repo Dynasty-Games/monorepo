@@ -74,6 +74,11 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
         <custom-svg-icon icon="icons::news"></custom-svg-icon>
         news
       </a>
+
+      <a href="#!/live" data-route="live">
+        <custom-svg-icon icon="icons::track-changes"></custom-svg-icon>
+        live
+      </a>
     </custom-selector>
     `
 
