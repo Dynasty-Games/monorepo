@@ -13,7 +13,13 @@ export default customElements.define('rankings-view', class RankingsView extends
       type: Array
     },
     competition: {
-      type: String
+      type: String,
+    },
+    competitionStyle: {
+      type: String,
+    },
+    category: {
+      type: String,
     }
   }
   #competition
@@ -28,26 +34,30 @@ export default customElements.define('rankings-view', class RankingsView extends
     history.back()
   }
 
-  async #setCompetition() {
-    const params = await getCompetition(this.#competition)
-    console.log(params);
-    this.competitionName = params[0]['name']
-    this.category = params[0]['category']
-    this.startTime = params[0]['startTime']
-    this.feeDGC = _ethers.utils.formatUnits(params[0]['feeDGC'], 0)
-    const snap = await firebase.get(firebase.ref(firebase.database, `competitions/${this.#competition.toLowerCase()}/${connector.accounts[0].toLowerCase()}`))
-    this.items = await snap.val()
-  }
+  async setCompetition() {
+    let query = location.hash.split('?')
+    query = query.map(q => q.split('&'))
 
-  #_setCompetition(value) {
-    pubsub.subscribe("wallet.ready", this.#setCompetition.bind(this))
-    pubsub.subscribers?.["wallet.ready"]?.value && this.#setCompetition()
+    query.forEach(q => {
+      this[q]
+    })
+    const params = await getCompetition(this.category, this.competitionStyle, this.competition)
+    console.log(params);
+    this.competitionName = params.name
+    this.startTime = params.startTime
+    this.price = _ethers.utils.formatUnits(params.price, 0)
+
+    const contract = await contracts.dynastyContest.connect(connector)
+    let items = await contract.members(this.category, this.competitionStyle, this.competition)
+    items = items.map(address => ({address}))
+
+    this.items = items
   }
 
   set competition(value) {
     this.#competition = value
-    pubsub.subscribe("firebase.ready", this.#_setCompetition.bind(this))
-    pubsub.subscribers?.["firebase.ready"]?.value && this.#_setCompetition()
+    pubsub.subscribe("wallet.ready", this.setCompetition.bind(this))
+    pubsub.subscribers?.["wallet.ready"]?.value && this.setCompetition()
   }
 
   get competition() {
@@ -171,15 +181,15 @@ export default customElements.define('rankings-view', class RankingsView extends
         <flex-row class="info-header two">
           <flex-row class="inner-header">
             <span style="padding-right: 6px;">entry:</span>
-            <span>${this.feeDGC}</span>
+            <span>${this.price}</span>
             <flex-one></flex-one>
             <dynasty-countdown value="${this.startTime}" hide-past></dynasty-countdown>
           </flex-row>
         </flex-row>
 
         ${map(this.items, (item,  i) => html`
-          <rankings-item address="${item.member}" points="${item.points}" position="${i + 1}" @click="${() => {
-            location.hash = `#!/member-rankings?competition=${this.#competition}&member=${item.member}`
+          <rankings-item address="${item.address}" points="${item.points}" position="${i + 1}" @click="${() => {
+            location.hash = `#!/member-rankings?category=${this.category}&competitionStyle=${this.competitionStyle}&competition=${this.#competition}&member=${item.address}`
           }}"></rankings-item>
           `)}
       </flex-column>`

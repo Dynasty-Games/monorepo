@@ -54,7 +54,8 @@ export default customElements.define('contest-type', class ContestType extends L
 
   #click(event) {
     const target = event.composedPath()[0]
-    if (!target.hasAttribute('disabled')) location.hash = `#!/rankings?competition=${target.getAttribute('address')}`
+    if (!target.hasAttribute('disabled'))
+      location.hash = `#!/rankings?category=${target.category}&competitionStyle=${target.competitionStyle}&competition=${target.competition}`
   }
 
   async #toggle() {
@@ -130,7 +131,17 @@ export default customElements.define('contest-type', class ContestType extends L
     <flex-column class="container" ?hidden=${!this.shown}>
       ${map(this.items, item => html`
         <contest-type-info name="${item.name}">
-          ${map(item.items, item => html`<competition-info-item name="${item.name}" participants="${item.participants}" description="${item.description}" data-address="${item.address}" address="${item.address}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>`)}
+          ${map(item.items, item => html`<competition-info-item
+            name="${item.name}"
+            category="${item.category}"
+            competitionStyle=${item.style}
+            competition=${item.id}
+            participants="${item.participants}"
+            description="${item.description}"
+            startTime="${item.startTime.toString()}"
+            date="${item.startTime.toString()}"
+            @click="${this.#click}"
+            ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>`)}
         </contest-type-info>
         `)}
 

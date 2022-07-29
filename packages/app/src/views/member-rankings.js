@@ -2,11 +2,11 @@
 import {scrollbar} from './../shared/styles'
 import './../elements/member-rankings-item'
 import { competition as getCompetition, currencies as getCurrencies } from './../api'
-import { calendar } from './../time'
 import './../dynasty-elements/countdown.js'
 import { LitElement, html } from 'lit'
 
 import {map} from 'lit/directives/map.js'
+
 export default customElements.define('member-rankings-view', class MemberRankingsView extends LitElement {
   static properties = {
     items: {
@@ -29,40 +29,53 @@ export default customElements.define('member-rankings-view', class MemberRanking
   }
 
   async #setCompetition() {
-    const params = await getCompetition(this.#competition)
-    this.competitionName = params[0]['name']
-    this.category = params[0]['category']
-    this.startTime = params[0]['startTime']
-    this.feeDGC = _ethers.utils.formatUnits(params[0]['feeDGC'], 0)
-    const member = location.hash.split('member=')[1]
-    const snap = await firebase.get(firebase.ref(firebase.database, `competitions/${this.#competition.toLowerCase()}/${member}`))
-    let items = await snap.val()
+    let query = location.hash.split('?')
+    query.shift()
+    console.log(query);
+    query = query[0].split('&')
 
-    items = items.filter(item => item.member === member)[0].items
+    query.forEach(q => {
+      const parts = q.split('=')
+      const [key, value] = parts
+      if (key !== 'competition') this[key] = value
+    })
+    console.log(this.category, this.competitionStyle, this.#competition);
+    const params = await getCompetition(this.category, this.competitionStyle, this.#competition)
+
+    console.log(params);
+    this.competitionName = params.name
+    this.category = params.category
+    this.startTime = params.startTime
+    this.price = _ethers.utils.formatUnits(params.price, 0)
+
+    const member = location.hash.split('member=')[1]
+    const contract = await contracts.dynastyContest.connect(connector)
+
+    const portfolio = await contract.memberPortfolio(this.category, this.competitionStyle, this.#competition, member)
+
+    console.log(portfolio);
+
+    let items = portfolio.items
+
     let currencies = await getCurrencies()
     const currenciesById = {}
     for (const currency of currencies) {
       currenciesById[currency.id] = currency
     }
 
-    items = items.map(item => ({...item, ...currenciesById[item.id]}))
+    items = items.map(item => ({...currenciesById[item]}))
     // currencies = currencies.filter(currency => items.indexOf(currency.id) !== -1)
     this.items = items
   }
 
   #edit() {
-    location.hash = `#!/competition?competition=${this.#competition}`
-  }
-
-  #_setCompetition(value) {
-    pubsub.subscribe("wallet.ready", this.#setCompetition.bind(this))
-    pubsub.subscribers?.["wallet.ready"]?.value && this.#setCompetition()
+    location.hash = `#!/competition?category=${this.category}&competitionStyle=${this.competitionStyle}&competition=${this.#competition}`
   }
 
   set competition(value) {
     this.#competition = value
-    pubsub.subscribe("firebase.ready", this.#_setCompetition.bind(this))
-    pubsub.subscribers?.["firebase.ready"]?.value && this.#_setCompetition()
+    pubsub.subscribe("wallet.ready", this.#setCompetition.bind(this))
+    pubsub.subscribers?.["wallet.ready"]?.value && this.#setCompetition()
   }
 
   get competition() {
@@ -197,10 +210,10 @@ export default customElements.define('member-rankings-view', class MemberRanking
         <flex-row class="info-header two">
           <flex-row class="inner-header">
             <span style="padding-right: 6px;">entry:</span>
-            <span>${this.feeDGC}</span>
+            <span>${this.price}</span>
             <flex-one></flex-one>
             <flex-row>              
-              <custom-svg-icon icon="mode-edit" @click="${this.#edit}" ?shown="${connector.accounts[0].toLowerCase() === location.hash.split('member=')[1]}"></custom-svg-icon>
+              <custom-svg-icon icon="mode-edit" @click="${this.#edit}" ?shown="${connector?.accounts ? connector.accounts[0] === location.hash.split('member=')[1] : false}"></custom-svg-icon>
               <strong>edit</strong>
             </flex-row>
             

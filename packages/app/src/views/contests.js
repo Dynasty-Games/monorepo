@@ -17,22 +17,48 @@ export default customElements.define('contests-view', class ContestsView extends
   }
 
   async #loadUserItems() {
-    const competitionParams = await getCompetitions()
-    console.log(competitionParams);
-    let competitions = await Promise.all(competitionParams.map(async params => {
-      const snap = await firebase.get(firebase.ref(firebase.database, `competitions/${params.address.toLowerCase()}/${connector.accounts[0].toLowerCase()}`))
-      snap.params = params
-      return snap
-    }))
-    competitions = await Promise.all(competitions.filter(snap => snap.exists()))
-    competitions = competitions.reduce((set, current) => {
-      set[current.params.name] = set[current.params.name] || { name: current.params.name, items: [] }
-      set[current.params.name].items.push(current.params)
+    const contract = contracts.dynastyContest.connect(connector)
+    let competitions = await getCompetitions()
+    const category = 0
+    const style = 0
+    let competitionMembers = await Promise.allSettled(
+      competitions.map(
+        async ({category, style, id}, i) => {
+          const members = await contract.members(category, style, id)
+          return {
+            category,
+            style,
+            id,
+            members,
+            i
+          }
+        }
+        )
+    )
+
+    
+    
+    
+    competitionMembers = await Promise.all(competitionMembers.filter(({status, value}) => status === 'fulfilled' && value.members.indexOf(connector.accounts[0]) !== -1))
+    competitionMembers = competitionMembers.map(({value}) => value)
+    
+    // && value === connector.accounts[0]
+    console.log(competitionMembers)
+    console.log(competitions);
+    
+    competitionMembers = competitionMembers.reduce((set, current) => {
+      const params = competitions[current.i]
+      const name = competitions[current.i].name
+      params.members = current.members
+      set[name] = set[name] || { name, items: [] }
+      set[name].items.push(params)
       return set
     }, {})
-    if (Object.keys(competitions).length > 0) {
+
+    console.log(competitionMembers)
+    if (Object.keys(competitionMembers).length > 0) {
       this.items = [
-        {type: 'classic', description: 'create a 8 crypto lineup', items: JSON.stringify(Object.values(competitions))}
+        {type: 'classic', description: 'create a 8 crypto lineup', items: JSON.stringify(Object.values(competitionMembers))}
       ]
     }
     if (this.timeout) clearTimeout(this.timeout)
@@ -41,21 +67,11 @@ export default customElements.define('contests-view', class ContestsView extends
     }, 30000);
   }
 
-  loadUserItems() {
-    pubsub.subscribe("wallet.ready", this.#loadUserItems.bind(this))
-    pubsub.subscribers?.["wallet.ready"]?.value && this.#loadUserItems()
-  }
-
   async connectedCallback() {
     super.connectedCallback()
-
-    pubsub.subscribe("firebase.ready", this.loadUserItems.bind(this))
-    pubsub.subscribers?.["firebase.ready"]?.value && this.loadUserItems()
-  }
-
-  #click(event) {
-    const target = event.composedPath()[0]
-    location.hash = `#!/competition?competition=${target.getAttribute('address')}`
+    
+    pubsub.subscribe("wallet.ready", this.#loadUserItems.bind(this))
+    pubsub.subscribers?.["wallet.ready"]?.value && this.#loadUserItems()
   }
 
   back() {

@@ -156,53 +156,50 @@ export default customElements.define('portfolio-element', class PortfolioElement
     return 50000
   }
 
-  async #enter(event) { 
-
+  async #enter() {
       const contract = await globalThis.contracts.dynastyContest.connect(connector)
-      console.log(contract);
       const params = await contract.callStatic.competition(currentCompetition.category, currentCompetition.style, currentCompetition.id)
-      console.log(params);
-      const maxEdits = params.freeSubmits.toNumber()
+      // const maxEdits = params.freeSubmits.toNumber()
 
       // if (this.edits < maxEdits) {
-        try {
-          await this.#save()
-        } catch (e) {
-          
+      try {
+        await this.#save()
+      } catch (e) {
+        
+      }
+      if (currentCompetition.portfolio.length === params.portfolioSize.toNumber()) {
+        let tx
+        const USDC = contracts.usdc.connect(connector)
+        
+        
+
+        let allowance = await USDC.allowance(connector.accounts[0], DynastyTreasury)
+        
+        if (Number(_ethers.utils.formatUnits(allowance, 8)) < Number(params.price)) {
+          tx = await USDC.approve(DynastyTreasury, _ethers.utils.parseUnits('10', 8))
+          if (tx.wait) await tx.wait()
         }
-        if (currentCompetition.portfolio.length === params.portfolioSize.toNumber()) {
-          let tx
-          const USDC = contracts.usdc.connect(connector)
           
-          
+        // tx = await contract.submitPortfolio(currentCompetition.category, currentCompetition.style, currentCompetition.id, currentCompetition.portfolio)
+        
+        // if (tx.wait) await tx.wait()
 
-          let allowance = await USDC.allowance(connector.accounts[0], DynastyTreasury)
-          
-          if (Number(_ethers.utils.formatUnits(allowance, 8)) < Number(params.price)) {
-            tx = await USDC.approve(DynastyTreasury, _ethers.utils.parseUnits('10', 8))
-            if (tx.wait) await tx.wait()
+        
+        try {
+          tx = await contract.populateTransaction.submitPortfolio(currentCompetition.category, currentCompetition.style, currentCompetition.id, currentCompetition.portfolio)
+          tx = {
+            from: connector.accounts[0],
+            data: tx.data,
+            to: tx.to
           }
-            
-          // tx = await contract.submitPortfolio(currentCompetition.category, currentCompetition.style, currentCompetition.id, currentCompetition.portfolio)
-          
-          // if (tx.wait) await tx.wait()
-
-          
-          try {
-            tx = await contract.populateTransaction.submitPortfolio(currentCompetition.category, currentCompetition.style, currentCompetition.id, currentCompetition.portfolio)
-            tx = {
-              from: connector.accounts[0],
-              data: tx.data,
-              to: tx.to
-            }
-            if (localStorage.getItem('dynasty.selectedWalletProvider') === 'walletConnect') tx = await connector.signTransaction(tx)
-            tx = await connector.sendTransaction(tx)
-            if (tx.wait) await tx.wait()
-          } catch (e) {
-            alert(e)
-            console.error(e);
-            // alert(e)
-          }
+          if (localStorage.getItem('dynasty.selectedWalletProvider') === 'walletConnect') tx = await connector.signTransaction(tx)
+          tx = await connector.sendTransaction(tx)
+          if (tx.wait) await tx.wait()
+        } catch (e) {
+          alert(e)
+          console.error(e);
+          // alert(e)
+        }
       
       
           location.hash = '#!/contests'

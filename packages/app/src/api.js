@@ -57,7 +57,6 @@ export const openCompetitions = async () => {
 }
 
 export const competition = async (category, style, id) => {
-  console.log(category, style, id);
   let response = await fetch(`https://${apiURL}/competitions?category=${category}&style=${style}&id=${id}`)
   const params = await response.json()
   return params[0]
