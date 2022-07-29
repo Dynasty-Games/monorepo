@@ -1,6 +1,7 @@
 import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { execSync } from 'child_process'
+import cleaner from 'rollup-plugin-cleaner';
 import path from 'path'
 
 try {
@@ -21,6 +22,11 @@ export default [{
   },
   external: ['wallet-connect.js', 'src/wallet-connect.js', '@walletconnect/client', '@walletconnect', './wallet-connect.js', './../walletconnect/walletconnect.js'],
   plugins: [
+    cleaner({
+      targets: [
+        './www/**/*.js'
+      ]
+    }),
     json(),
     nodeResolve({
       browser: true
@@ -32,7 +38,12 @@ export default [{
     dir: 'www/themes',
     format: 'es',
   },
-  plugins: [
+  plugins: [    
+    cleaner({
+      targets: [
+        './www/**/*.js'
+      ]
+    }),
     json(),
     nodeResolve({
       browser: true

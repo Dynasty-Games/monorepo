@@ -14,8 +14,10 @@ export default customElements.define('competition-view', class CompetitionView e
     selected: { type: String },
     backHidden: { type: Boolean },
     competition: { type: String },
+    category: { type: String },
+    competitionStyle: { type: String },
     submitDisabled: { type: Boolean },
-    feeDGC: { type: String },
+    price: { type: String },
     startTime: { type: Number },
     date: {
       type: Number,
@@ -29,6 +31,10 @@ export default customElements.define('competition-view', class CompetitionView e
       reflect: true
     }
   }
+
+  #competition
+  #category
+  #competitionStyle
 
 
   constructor() {
@@ -59,16 +65,15 @@ export default customElements.define('competition-view', class CompetitionView e
 
 
   async _loadUserItems() {
-    const snap = await firebase.get(firebase.child(globalThis.userRef, currentCompetition.address.toLowerCase()))
+    pubsub.publish('load-user-portfolio', [])
+    
+    const snap = await firebase.get(firebase.child(globalThis.userRef, `${currentCompetition.category}/${currentCompetition.style}/${currentCompetition.id}`))
 
     if (await snap.exists()) {
-      let i = 0
       let ids = snap.val()
 
       ids = ids.filter(id => id.length > 0)
       pubsub.publish('load-user-portfolio', ids)
-    } else {
-      pubsub.publish('load-user-portfolio', [])
     }
   }
 
@@ -100,10 +105,23 @@ export default customElements.define('competition-view', class CompetitionView e
   }
 
   set competition(value) {
-    this.#setCompetition(value)
+    this.#competition = value
+    this.#setCompetition(this.#category, this.#competitionStyle, value)
+  }
+
+  set category(value) {
+    this.#category = value
+    this.#setCompetition(value, this.#competitionStyle, this.#competition)
+  }
+
+  set competitionStyle(value) {
+    this.#competitionStyle = value
+    this.#setCompetition(this.#category, value, this.#competition)
   }
 
   async #setCompetition(category, style, id) {
+    if (category === undefined || style === undefined || id === undefined) return
+
     let items = await currencies()
     items = items.sort((a,b) => a.rank - b.rank)
     const rankById = []
@@ -113,7 +131,7 @@ export default customElements.define('competition-view', class CompetitionView e
     }
 
     let params = await competition(category, style, id)
-    params = params[0]
+    console.log(params);
 
     globalThis.currentCompetition = {
       category,
@@ -127,7 +145,7 @@ export default customElements.define('competition-view', class CompetitionView e
     }
 
     this.startTime = params.startTime
-    this.feeDGC = params.feeDGC
+    this.price = params.price
     // this.competitionCategory = params.category
     this.competitionName = params.name
 
@@ -303,7 +321,7 @@ export default customElements.define('competition-view', class CompetitionView e
         <flex-row class="info-header two">
           <flex-row class="inner-header">
             <span style="padding-right: 6px;">entry:</span>
-            <span>${this.feeDGC}</span>
+            <span>${this.price}</span>
             <flex-one></flex-one>
             <dynasty-countdown value="${this.startTime}" hide-past></dynasty-countdown>
           </flex-row>

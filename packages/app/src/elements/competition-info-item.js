@@ -13,9 +13,14 @@ export default customElements.define('competition-info-item', class CompetitionI
     name: {
       type: String
     },
-    address: {
-      type: String,
-      reflect: true
+    category: {
+      type: Number
+    },
+    competitionStyle: {
+      type: Number
+    },
+    competition: {
+      type: Number
     },
     startTime: {
       type: Number

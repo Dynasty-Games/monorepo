@@ -2,13 +2,8 @@ import './portfolio-item'
 import './../dialogs/info'
 import {html, LitElement} from 'lit'
 import {map} from 'lit/directives/map.js'
-import erc20 from './../data/abis/erc20'
 import './competition-bar'
-import addresses from '@dynasty-games/addresses/goerli.json'
-import TreasuryABI from '@dynasty-games/abis/Treasury-ABI.json'
-import USDDToken from '@dynasty-games/abis/USDDToken.json'
-
-import { competitionContract } from './../api.js'
+import { DynastyTreasury } from './../../../addresses/goerli.json'
 
 export default customElements.define('portfolio-element', class PortfolioElement extends LitElement {
   static properties = {
@@ -67,19 +62,27 @@ export default customElements.define('portfolio-element', class PortfolioElement
 
   async #loadUserItems(ids) {
     this.submitDisabled = true
-    console.log(connector.accounts[0]);
-    let contract = await competitionContract(currentCompetition.address)
-    contract = await contract.connect(connector)
-    const edits = await contract.portfolioEditsCounter(connector.accounts[0])
-    console.log(edits);
-    this.edits = edits.toNumber()
+    const contract = await contracts.dynastyContest.connect(connector)
+    let edits
+    try {
+      const portfolio = await contract.memberPortfolio(currentCompetition.category, currentCompetition.style, currentCompetition.id, connector.accounts[0])
+      edits = portfolio.submits.toNumber()
+    } catch(e) {
+      edits = 0
+    }
+
+    this.edits = edits
+
     let i = 0
     let salary = currentCompetition.maxSalary
+    
     const els = Array.from(this.shadowRoot.querySelectorAll(`[index]`))
     els.forEach(el => el.reset())
-    this.positionsFilled = 0
-    for (const id of ids) {
+    console.log(els);
 
+    this.positionsFilled = 0
+
+    for (const id of ids) {
       const item = currentCompetition.items[currentCompetition.rankById.indexOf(id)]
       const el = this.shadowRoot.querySelector(`[index="${i}"]`)
       this.positionsFilled += 1
@@ -155,64 +158,46 @@ export default customElements.define('portfolio-element', class PortfolioElement
 
   async #enter(event) { 
 
-      let contract = await competitionContract(currentCompetition.address)
+      const contract = await globalThis.contracts.dynastyContest.connect(connector)
+      console.log(contract);
+      const params = await contract.callStatic.competition(currentCompetition.category, currentCompetition.style, currentCompetition.id)
+      console.log(params);
+      const maxEdits = params.freeSubmits.toNumber()
 
-      const params = await contract.callStatic.competitionParams()
-      contract = await contract.connect(connector)
-
-      const maxEdits = params.allowEdits
-
-      if (this.edits < maxEdits.toNumber()) {
-        await this.#save()
+      // if (this.edits < maxEdits) {
+        try {
+          await this.#save()
+        } catch (e) {
+          
+        }
         if (currentCompetition.portfolio.length === params.portfolioSize.toNumber()) {
-          const treasury = new _ethers.Contract(addresses.Treasury, TreasuryABI, connector)
-          const USDD = new _ethers.Contract(addresses.USDDToken, USDDToken, connector)
-          let allowance = await USDD.allowance(connector.accounts[0], treasury.address)
           let tx
-          if (Number(_ethers.utils.formatUnits(allowance)) < Number(_ethers.utils.formatUnits(params.feeDGC.toString()))) {
-            tx = await USDD.approve(treasury.address, _ethers.utils.parseUnits(params.feeDGC.toString()))
+          const USDC = contracts.usdc.connect(connector)
+          
+          
+
+          let allowance = await USDC.allowance(connector.accounts[0], DynastyTreasury)
+          
+          if (Number(_ethers.utils.formatUnits(allowance, 8)) < Number(params.price)) {
+            tx = await USDC.approve(DynastyTreasury, _ethers.utils.parseUnits('10', 8))
             if (tx.wait) await tx.wait()
           }
-
-          const gdc = await contracts.dynastyContest.dgcAddress()
-          const gdcContract = new _ethers.Contract(gdc, erc20, connector)
-          allowance = await gdcContract.allowance(connector.accounts[0], contract.address)
-
-          if (Number(_ethers.utils.formatUnits(allowance, 0)) < params.feeDGC.toNumber()) {
-            tx = await gdcContract.approve(contract.address, params.feeDGC.toNumber())
-            if (tx.wait) await tx.wait()
-          }
-
-          const balance = await gdcContract.balanceOf(connector.accounts[0])
-          if (Number(_ethers.utils.formatUnits(balance)) < params.feeDGC.toNumber()) {
-            tx = await treasury.deposit(_ethers.utils.parseUnits(params.feeDGC.toString()))
-            if (tx.wait) await tx.wait()
-          }
+            
+          // tx = await contract.submitPortfolio(currentCompetition.category, currentCompetition.style, currentCompetition.id, currentCompetition.portfolio)
+          
+          // if (tx.wait) await tx.wait()
 
           
-          const snap = await firebase.get(firebase.ref(firebase.database, `competitions/${currentCompetition.address.toLowerCase()}/${connector.accounts[0].toLowerCase()}`))
-          const exists = await snap.exists()
-          if (!exists) {
-          // if (this.edits === 0) {
-            tx = await contract.register_submit(currentCompetition.portfolio, {gasLimit: 21000000})
-          } else {
-            tx = await contract.editPortfolio(currentCompetition.portfolio, {gasLimit: 21000000})
-          }
-          
-          if (tx.wait) await tx.wait()
-
-          location.hash = '#!/contests'
-          this.edits += 1
-          // let tx = await contract.populateTransaction.submitPortfolio([els])
           try {
-            // tx = {
-            //   from: connector.accounts[0],
-            //   data: tx.data,
-            //   to: tx.to
-            // }
-            // if (localStorage.getItem('dynasty.selectedWalletProvider') === 'walletConnect') tx = await connector.signTransaction(tx)
-            // tx = await connector.sendTransaction(tx)
-            // if (tx.wait) await tx.wait()
+            tx = await contract.populateTransaction.submitPortfolio(currentCompetition.category, currentCompetition.style, currentCompetition.id, currentCompetition.portfolio)
+            tx = {
+              from: connector.accounts[0],
+              data: tx.data,
+              to: tx.to
+            }
+            if (localStorage.getItem('dynasty.selectedWalletProvider') === 'walletConnect') tx = await connector.signTransaction(tx)
+            tx = await connector.sendTransaction(tx)
+            if (tx.wait) await tx.wait()
           } catch (e) {
             alert(e)
             console.error(e);
@@ -220,8 +205,11 @@ export default customElements.define('portfolio-element', class PortfolioElement
           }
       
       
+          location.hash = '#!/contests'
+          this.edits += 1
 
-        }  }
+        }  
+      // }
   }
 
   render() {
