@@ -1,0 +1,37 @@
+{
+  "name": "@dynasty-games/storage",
+  "version": "1.0.0",
+  "description": "Storage handler & client for internal database interaction",
+  "main": "storage.js",
+  "module": "src/storage.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "c": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dynasty-Games/storage.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dynasty-Games/storage/issues"
+  },
+  "homepage": "https://github.com/Dynasty-Games/storage#readme",
+  "dependencies": {
+    "@vandeurenglenn/base32": "^1.1.0",
+    "datastore-core": "^7.0.2",
+    "datastore-fs": "^7.0.0",
+    "interface-datastore": "^6.1.1",
+    "it-all": "^1.0.6",
+    "koa": "^2.13.4",
+    "socket-request-client": "^1.6.3",
+    "socket-request-server": "^1.5.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "rollup": "^2.77.0",
+    "tape": "^5.5.3"
+  }
+}
