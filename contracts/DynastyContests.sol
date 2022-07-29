@@ -85,6 +85,11 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
       return _members[category_][style_][competitionId].length;
     }
 
+    function isMember(uint256 category_, uint256 style_, uint256 competitionId, address member_) public returns (bool) {
+      if (_portfolios[category_][style_][competitionId][member_].submits != 0) return true;
+      return false;
+    }
+
     function members(uint256 category_, uint256 style_, uint256 competitionId) public view returns (address[] memory) {
       require(hasRole(MANAGER_ROLE, msg.sender) || _portfolios[category_][style_][competitionId][msg.sender].submits != 0, 'not allowed');
       return _members[category_][style_][competitionId];
