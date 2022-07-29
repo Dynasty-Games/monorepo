@@ -30,7 +30,7 @@ const timedOutMessage = ctx => {
 router.get('/faucet', async ctx => {
   try {
     if (timedOut[ctx.request.query.address] + 43200 < Math.round(new Date().getTime() / 1000)) return timedOutMessage(ctx)
-    let tx = await contract.mint(ctx.request.query.address, utils.parseUnits('100'))
+    let tx = await contract.mint(ctx.request.query.address, utils.parseUnits('100', 8))
     const hash = tx.hash
     await tx.wait()
     tx = await signer.sendTransaction({
