@@ -167,7 +167,7 @@ export default customElements.define('live-view', class LiveView extends LitElem
     <flex-one></flex-one>
     <flex-column class="container">
       ${this.items?.length > 0 ? map(this.items, item => html`<contest-type description="${item.description}" type="${item.type}" items="${item.items}"></contest-type>`) : html`
-      <flex-column style="height: 100%; align-items: center; justify-content: center;"><h3>Your entered contests will appear here</h3></flex-column>
+      <flex-column style="height: 100%; align-items: center; justify-content: center;"><h3>Your live contests will appear here</h3></flex-column>
       `}
     </flex-column>
     <flex-one></flex-one>
