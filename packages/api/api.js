@@ -9,7 +9,7 @@ require('@dynasty-games/addresses/goerli.json');
 require('@dynasty-games/abis/DynastyContest-ABI.json');
 require('express');
 require('dotenv/config');
-var lib = require('@dynasty-games/lib');
+var client = require('socket-request-client');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -17,6 +17,7 @@ var Koa__default = /*#__PURE__*/_interopDefaultLegacy(Koa);
 var cors__default = /*#__PURE__*/_interopDefaultLegacy(cors);
 var Router__default = /*#__PURE__*/_interopDefaultLegacy(Router);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
+var client__default = /*#__PURE__*/_interopDefaultLegacy(client);
 
 globalThis.__cache__ = globalThis.__cache__ || {};
 
@@ -84,32 +85,9 @@ router$2.get('/currencies', async (ctx, next) => {
   if (!data) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
   data = data.slice(0, ctx.query.pages ? limit * Number(ctx.query.pages) : limit);
   if (ctx.query.marketcap) {
-    data = data.filter(currency => currency.market_cap > Number(ctx.query.marketcap));
+    data = data.filter(currency => currency.marketCap > Number(ctx.query.marketcap));
   }
-  ctx.body = data.map(({
-    name, id, symbol, image, current_price, total_supply, salary,
-    total_volume, market_cap_rank, circulating_supply,
-    price_change_percentage_24h, roi, market_cap,
-    market_cap_change_percentage_24h, max_supply
-  }) => {
-    return {
-      name,
-      symbol,
-      image,
-      roi,
-      id,
-      salary,
-      marketCap: market_cap,
-      marketCapChange24hPercentage: market_cap_change_percentage_24h,
-      priceChange24hPercentage: price_change_percentage_24h,
-      circulatingSupply: circulating_supply,
-      rank: market_cap_rank,
-      totalSupply: total_supply,
-      volume: total_volume,
-      price: current_price,
-      maxSupply: max_supply
-    }
-  });
+  ctx.body = data;
 });
 
 router$2.get('/marketdata', async (ctx, next) => {
@@ -1624,6 +1602,13 @@ var provider$1 = ethers.getDefaultProvider(network$1, {
   etherscan: '6XI8Q8NA96JFB71WA8VV9TM42K8H4DVIBN'
 });
 
+const _runQueue = (items, data, job) => Promise.all(items.map(item => job(item, data)));
+
+const runQueue = async (data, queue, job) => {
+  await _runQueue(queue.splice(0, queue.length > 12 ? 12 : queue.length), data, job);
+  if (queue.length > 0) return runQueue(data, queue, job)
+};
+
 const contract$1 = new ethers.Contract(DynastyContests, contestsABI, provider$1);
 
 const job = async ({category, style, id}, data) => {
@@ -1653,7 +1638,7 @@ const job = async ({category, style, id}, data) => {
     isLive
   };
 
-  if (state === 0) {
+  if (state === 0 && endTime > time) {
     if (isLive) {
       data.live.push(competition);
     } else {
@@ -1664,13 +1649,6 @@ const job = async ({category, style, id}, data) => {
     data.closed.push(competition);
   }
   return data
-};
-
-const _runQueue = (competitions, data, job) => Promise.all(competitions.map(competition => job(competition, data)));
-
-const runQueue = async (data, queue, job) => {
-  await _runQueue(queue.splice(0, queue.length > 12 ? 12 : queue.length), data, job);
-  if (queue.length > 0) return runQueue(data, queue, job)
 };
 
 const totalCompetitions = async ({category, style}, data) => {
@@ -1706,12 +1684,13 @@ var competitions$1 = async () => {
   await runQueue(data, queue, totalCompetitions);
 
   queue = [];
+
   for (let i = 0; i < data.length; i++) {
     const totalCompetitions = data[i].totalCompetitions;
     const category = data[i].category;
     const style = data[i].style;
 
-    for (let id = 0; id < totalCompetitions; id++) { 
+    for (let id = 0; id <= totalCompetitions; id++) { 
       queue.push({category, style, id: totalCompetitions - id});
     }    
   }
@@ -2446,23 +2425,202 @@ router.get('/faucet', async ctx => {
 router.get('/faucet/tot', timedOutMessage);
 
 var marketdata = async () => {
-  let data = await getMarketData('usd', '150', '2');
-  data = data.map(currency => {
-    currency.marketCap = currency.market_cap;
-    return currency
+  let data = await getMarketData('usd', '250', '2');
+  data = data.map(({
+    name, id, symbol, image, current_price, total_supply, salary,
+    total_volume, market_cap_rank, circulating_supply,
+    price_change_percentage_24h, roi, market_cap,
+    market_cap_change_percentage_24h, max_supply
+  }, i) => {
+    return {
+      name,
+      rank: i + 1,
+      symbol,
+      image,
+      roi,
+      id,
+      salary,
+      marketCap: market_cap,
+      marketCapChange24hPercentage: market_cap_change_percentage_24h,
+      priceChange24hPercentage: price_change_percentage_24h,
+      circulatingSupply: circulating_supply,
+      rank: market_cap_rank,
+      totalSupply: total_supply,
+      volume: total_volume,
+      price: current_price,
+      maxSupply: max_supply
+    }
   });
+  
   cache.add('_marketdata', data);
-};
-
-var calculateSalary = async () => {
-  let data = cache.get('_marketdata');
-  data = lib.calculateBaseSalary(data.slice(0, 300));
-  cache.add('marketdata', data);
 };
 
 var competitions = async () => {
   const data = await competitions$1();
   cache.add('competitions', data);
+};
+
+const matrixes = {
+  'crypto stars': ({priceDifference, volumeDifference, marketCapDifference}) => {
+    priceDifference = Number(priceDifference);
+    volumeDifference = Number(volumeDifference);
+    marketCapDifference = Number(marketCapDifference);
+
+    let fantasyPoints = 0;
+    if (priceDifference < 0) {
+      fantasyPoints -= (priceDifference / 2);
+    } else {
+      fantasyPoints += priceDifference;
+    }
+
+    if (volumeDifference < 0) {
+      fantasyPoints -= (volumeDifference / 2);
+    } else {
+      fantasyPoints += volumeDifference;
+    }
+
+    if (marketCapDifference < 0) {
+      fantasyPoints -= (marketCapDifference / 50);
+    } else {
+      fantasyPoints += (marketCapDifference * 25);
+    }
+    return Math.round(fantasyPoints * 100) / 100
+  }
+};
+
+const calculateFantasyPoints = (value, matrix = 'crypto stars') => {
+  return matrixes[matrix.toLowerCase()](value)
+};
+
+const calculateDifference = (a, b) => {
+  a = Number(a);
+  b = Number(b);
+  if (isNaN(a) || isNaN(b)) throw new Error(isNaN(a) ? `a: ${a} isNaN` :  `b: ${b} isNaN`)
+
+  if (a < b) {
+    if (b === 0) return 0
+    return ((b - a) / b) * 100
+  } else {
+    if (a === 0) return 0
+    return -(((a - b) / a) * 100)
+  }
+};
+
+const twenfyFourHours = (24 * 60) * 60000;
+const twelveHours = (12 * 60) * 60000;
+const oneHour = 60 * 60000;
+
+const currencyJob = async (timestamp, currency) => {
+
+  const stampsOneHoursAgo = currency.timestamps.filter(stamp => {
+    return timestamp - stamp > oneHour
+  });
+
+  if (stampsOneHoursAgo.length === 0) return currency;
+
+  const stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
+    return timestamp - stamp > twelveHours
+  });
+
+  const stampsTwentyFourHoursAgo = currency.timestamps.filter(stamp => {
+    return timestamp - stamp > twenfyFourHours
+  });
+
+  let points = 0;
+
+  if (stampsTwentyFourHoursAgo.length > 0) {
+    const stamp = stampsTwentyFourHoursAgo[stampsTwentyFourHoursAgo.length - 1];
+    let data = await storage.get(`currencies/${currency.id}/${stamp}`);
+    data = JSON.parse(data.toString());
+    if (data.marketCapChange24hPercentage !== undefined) {
+      points = await calculateFantasyPoints({
+        priceDifference: Number(data.marketCapChange24hPercentage),
+        volumeDifference: Number(data.volumeChange24hPercentage),
+        marketCapDifference: Number(data.rankChange24h)
+      });
+    }      
+  }
+  
+
+  if (stampsTwentyFourHoursAgo.length > 0) {
+    const stamp = stampsTwentyFourHoursAgo[stampsTwentyFourHoursAgo.length - 1];
+    let data = await storage.get(`currencies/${currency.id}/${stamp}`);
+    data = JSON.parse(data.toString());
+    currency.priceChange24h = Number(data.price) - Number(currency.price);      
+    currency.volumeChange24hPercentage = calculateDifference(data.volume, currency.volume);
+    currency.rankChange24hPercentage = calculateDifference(data.rank, currency.rank);      
+    currency.pointsChange24hPercentage = calculateDifference(data.points, currency.points);
+
+    currency.rankChange24h = Number(data.rank) - Number(currency.rank);
+    currency.pointsChange24h = Number(data.points) - Number(points);
+  }
+
+  if (stampsTwelveHoursAgo.length > 0) {
+    const stamp = stampsTwelveHoursAgo[stampsTwelveHoursAgo.length - 1];
+    let data = await storage.get(`currencies/${currency.id}/${stamp}`);
+    data = JSON.parse(data.toString());
+
+    currency.priceChange12h = Number(data.price) - Number(currency.price);
+    currency.priceChange12hPercentage = calculateDifference(data.price, currency.price);
+    currency.volumeChange12hPercentage = calculateDifference(data.volume, currency.volume);
+    currency.rankChange12hPercentage = calculateDifference(data.rank, currency.rank);
+    currency.marketCapChange12hPercentage = calculateDifference(data.marketCap, currency.marketCap);
+    currency.pointsChange12hPercentage = calculateDifference(data.points, currency.points);
+
+    currency.rankChange12h = Number(data.rank) - Number(currency.rank);
+    currency.pointsChange12h = Number(data.points) - Number(points);
+  }
+
+  if (stampsOneHoursAgo.length > 0) {
+    const stamp = stampsOneHoursAgo[stampsOneHoursAgo.length - 1];
+    let data = await storage.get(`currencies/${currency.id}/${stamp}`);
+    data = JSON.parse(data.toString());
+
+    currency.priceChange1h = Number(data.price) - Number(currency.price);
+    currency.priceChange1hPercentage = calculateDifference(data.price, currency.price);
+    currency.volumeChange1hPercentage = calculateDifference(data.volume, currency.volume);
+    currency.rankChange1hPercentage = calculateDifference(data.rank, currency.rank);
+    currency.marketCapChange1hPercentage = calculateDifference(data.marketCap, currency.marketCap);
+    currency.pointsChange1hPercentage = calculateDifference(data.points, currency.points);
+
+    currency.rankChange1h = Number(data.rank) - Number(currency.rank);
+    currency.pointsChange1h = Number(data.points) - Number(points);
+  }
+  delete currency.timestamps;
+  delete currency.salary;
+
+  await storage.put(`currencies/${currency.id}/${timestamp}`, Buffer.from(JSON.stringify(currency)));
+  return currency
+};
+
+const timestampJob = async currency => {
+  const timestamps = await storage.readDir(`currencies/${currency.id}`);
+  currency.timestamps = timestamps.map(stamp => stamp.split('.data')[0]);
+  return currency
+};
+
+var history = async () => {
+  let currencies = cache.get('_marketdata');
+  const timestamp = new Date().getTime();
+  const set = {
+    added: [],
+    has: []
+  };
+
+  await Promise.all(currencies.map(async (currency, i) => {
+    const has = await storage.hasDir(`currencies/${currency.id}`);
+    if (has) set.has.push(currency);
+    else set.added.push(currency);
+  }));
+
+  const stamps = await Promise.all(set.has.map(currency => timestampJob(currency)));
+
+  currencies = await Promise.all(stamps.map(currency => currencyJob(timestamp, currency)));
+
+  await Promise.all(set.added.map(currency => storage.put(`currencies/${currency.id}/${timestamp}`, Buffer.from(JSON.stringify(currency)))));
+  
+  cache.add('marketdata', [...currencies, ...set.added]);
+  
 };
 
 // import firebase from './../firebase'
@@ -2474,7 +2632,7 @@ class JobRunner {
     this.timeout = 5 * 60000;
     this.jobs = [
       marketdata,
-      calculateSalary,
+      history,
       competitions
     ];
 
@@ -2498,14 +2656,84 @@ class JobRunner {
   }
 }
 
-new JobRunner();
-const server = new Koa__default["default"]();
+class DynastyStorageClient {  
+  #port
+  #client
 
-server
-  .use(cors__default["default"]({ origin: '*' }))
-  .use(router$2.routes())
-  .use(router.routes())
-  .use(router$1.routes())
-  .use(router$2.allowedMethods());
+  constructor(port = 6000, algorithm = 'sha256') {
+    this.#port = port;
+    this.algorithm = algorithm;
+    this.algorithmBuffer = Buffer.from(algorithm);
+    this.algorithmPrefixLength = this.algorithmBuffer.length;
+    return this.#init()
+  }
 
-server.listen(8668);
+  async #init() {
+    this.#client = await client__default["default"](`ws://localhost:${this.#port}`, 'dynasty-data-storage-v1.0.0', {retry: true});
+    return this
+  }
+
+  #request(url, key, value) {
+    return this.#client.request({
+      url,
+      params: {
+        key,
+        value
+      }
+    })
+  }
+
+  async put(key, value) {
+    return this.#request('put', key, value.toString('hex'))    
+  }
+
+  async get(key) {
+    const data = await this.#request('get', key);
+    return Buffer.from(data, 'hex')
+  }
+
+  async delete(key) {
+    return this.#request('delete', key)
+  }
+
+  async has(key) {
+    const has = await this.#request('has', key);
+    return has === 'true' ? true : false
+  }
+
+  async hasDir(key) {
+    const has = await this.#request('hasDir', key);
+    return has === 'true' ? true : false
+  }
+
+  async readDir(key) {
+    const files = await this.#request('readDir', key);
+    return files
+  }
+
+  async query(key = {}) {
+    const data = await this.#request('query', key);
+    return data
+  }
+
+  async queryKeys(key = {}) {
+    const data = await this.#request('queryKeys', key);
+    return data
+  }
+}
+
+(async () => {
+  globalThis.storage = await new DynastyStorageClient();
+
+  new JobRunner();
+  const server = new Koa__default["default"]();
+  
+  server
+    .use(cors__default["default"]({ origin: '*' }))
+    .use(router$2.routes())
+    .use(router.routes())
+    .use(router$1.routes())
+    .use(router$2.allowedMethods());
+  
+  server.listen(8668);
+})();

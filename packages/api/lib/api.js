@@ -5,14 +5,20 @@ import marketdata from './routes/marketdata.js'
 import competitions from './routes/competitions.js'
 import faucet from './routes/faucet.js'
 import Runner from './jobs/runner.js'
-const runner = new Runner()
-const server = new Koa();
+import DynastyStorageClient from '../../storage/src/storage-client.js';
 
-server
-  .use(cors({ origin: '*' }))
-  .use(marketdata.routes())
-  .use(faucet.routes())
-  .use(competitions.routes())
-  .use(marketdata.allowedMethods());
+(async () => {
+  globalThis.storage = await new DynastyStorageClient()
 
-server.listen(8668);
+  const runner = new Runner()
+  const server = new Koa();
+  
+  server
+    .use(cors({ origin: '*' }))
+    .use(marketdata.routes())
+    .use(faucet.routes())
+    .use(competitions.routes())
+    .use(marketdata.allowedMethods());
+  
+  server.listen(8668);
+})();

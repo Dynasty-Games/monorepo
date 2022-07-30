@@ -16,32 +16,9 @@ router.get('/currencies', async (ctx, next) => {
   if (!data) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages)
   data = data.slice(0, ctx.query.pages ? limit * Number(ctx.query.pages) : limit)
   if (ctx.query.marketcap) {
-    data = data.filter(currency => currency.market_cap > Number(ctx.query.marketcap))
+    data = data.filter(currency => currency.marketCap > Number(ctx.query.marketcap))
   }
-  ctx.body = data.map(({
-    name, id, symbol, image, current_price, total_supply, salary,
-    total_volume, market_cap_rank, circulating_supply,
-    price_change_percentage_24h, roi, market_cap,
-    market_cap_change_percentage_24h, max_supply
-  }) => {
-    return {
-      name,
-      symbol,
-      image,
-      roi,
-      id,
-      salary,
-      marketCap: market_cap,
-      marketCapChange24hPercentage: market_cap_change_percentage_24h,
-      priceChange24hPercentage: price_change_percentage_24h,
-      circulatingSupply: circulating_supply,
-      rank: market_cap_rank,
-      totalSupply: total_supply,
-      volume: total_volume,
-      price: current_price,
-      maxSupply: max_supply
-    }
-  })
+  ctx.body = data
 })
 
 router.get('/marketdata', async (ctx, next) => {

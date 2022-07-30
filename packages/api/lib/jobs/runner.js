@@ -1,6 +1,6 @@
 import marketdata from './marketdata'
-import calculateSalary from './calculate-salary'
 import competitions from './competitions'
+import history from './history'
 // import firebase from './../firebase'
 // import 'dotenv/config'
 
@@ -10,7 +10,7 @@ export default class JobRunner {
     this.timeout = 5 * 60000
     this.jobs = [
       marketdata,
-      calculateSalary,
+      history,
       competitions
     ]
 

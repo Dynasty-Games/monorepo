@@ -2,9 +2,9 @@ import {DynastyContests} from './../../../addresses/goerli.json'
 import contestsABI from './../../../abis/DynastyContests.json'
 import { Contract, utils } from 'ethers'
 import provider from './../provider'
+import runQueue from '../queue'
 
 const contract = new Contract(DynastyContests, contestsABI, provider)
-const queue = []
 
 const job = async ({category, style, id}, data) => {
   const state = await contract.competitionState(category, style, id)
@@ -33,7 +33,7 @@ const job = async ({category, style, id}, data) => {
     isLive
   }
 
-  if (state === 0) {
+  if (state === 0 && endTime > time) {
     if (isLive) {
       data.live.push(competition)
     } else {
@@ -44,13 +44,6 @@ const job = async ({category, style, id}, data) => {
     data.closed.push(competition)
   }
   return data
-}
-
-const _runQueue = (competitions, data, job) => Promise.all(competitions.map(competition => job(competition, data)))
-
-const runQueue = async (data, queue, job) => {
-  await _runQueue(queue.splice(0, queue.length > 12 ? 12 : queue.length), data, job)
-  if (queue.length > 0) return runQueue(data, queue, job)
 }
 
 const totalCompetitions = async ({category, style}, data) => {
@@ -86,13 +79,13 @@ export default async () => {
   await runQueue(data, queue, totalCompetitions)
 
   queue = []
-  
+
   for (let i = 0; i < data.length; i++) {
     const totalCompetitions = data[i].totalCompetitions
     const category = data[i].category
     const style = data[i].style
 
-    for (let id = 0; id < totalCompetitions; id++) { 
+    for (let id = 0; id <= totalCompetitions; id++) { 
       queue.push({category, style, id: totalCompetitions - id})
     }    
   }
