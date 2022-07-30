@@ -1,5 +1,5 @@
 import './../elements/competition-info-item'
-import { closedCompetitions } from './../api'
+import { closedCompetitions, openCompetitions } from './../api'
 import './../elements/contest-type'
 import {LitElement, html, css} from 'lit';
 import {map} from 'lit/directives/map.js'
@@ -18,7 +18,7 @@ export default customElements.define('contests-view', class ContestsView extends
 
   async #loadUserItems() {
     const contract = contracts.dynastyContest.connect(connector)
-    let competitions = await closedCompetitions()
+    let competitions = [...await closedCompetitions(), ...await openCompetitions()]
     const category = 0
     const style = 0
     let competitionMembers = await Promise.allSettled(
