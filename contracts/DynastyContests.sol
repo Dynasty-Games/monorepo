@@ -121,7 +121,7 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
         _treasury.deposit(msg.sender, competition_.price * 10**8);
       
         uint256 amount = competition_.price - (competition_.price / 100 * _treasury.fee());
-        competition_.prizePool += amount;
+        _competitions[category_][style_][competitionId].prizePool = competition_.prizePool + amount;
       }
     
       if (portfolio.submits == 0) {
