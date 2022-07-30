@@ -1,8 +1,6 @@
 import Router from '@koa/router'
 import cache from './../cache'
 import competitions from './../fetchers/competitions'
-import categories from './../fetchers/categories'
-import { query } from 'express';
 
 const router = new Router();
 

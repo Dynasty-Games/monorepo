@@ -5,9 +5,6 @@ var cors = require('@koa/cors');
 var Router = require('@koa/router');
 var fetch = require('node-fetch');
 var ethers = require('ethers');
-require('@dynasty-games/addresses/goerli.json');
-require('@dynasty-games/abis/DynastyContest-ABI.json');
-require('express');
 require('dotenv/config');
 var client = require('socket-request-client');
 
@@ -2539,8 +2536,7 @@ const currencyJob = async (timestamp, currency) => {
         marketCapDifference: Number(data.rankChange24h)
       });
     }      
-  }
-  
+  }  
 
   if (stampsTwentyFourHoursAgo.length > 0) {
     const stamp = stampsTwentyFourHoursAgo[stampsTwentyFourHoursAgo.length - 1];
