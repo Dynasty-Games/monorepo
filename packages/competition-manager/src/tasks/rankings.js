@@ -4,7 +4,6 @@ import { getRankings } from "../utils"
 export default async () => {
     let competitions = await liveCompetitions()
     competitions = await Promise.all(competitions.map(competition => getCompetitionPortfolios(competition)))
-    
     competitions = competitions.filter(competition => competition.portfolios.length > 0)
 
     console.log({competitions});

@@ -1,7 +1,8 @@
 import { LitElement, html } from 'lit'
 import './balance'
+import './credit'
 import './dropdown'
-import { balance } from './../api'
+import { balance, gameCredits } from './../api'
 
 export default customElements.define('account-menu-element', class AccountMenuElement extends LitElement {
   static properties = {
@@ -32,7 +33,9 @@ export default customElements.define('account-menu-element', class AccountMenuEl
   }
 
   async #setAccount(value) {
-    const balanceElement = this.shadowRoot.querySelector('balance-element')
+    const balanceElement = this.shadowRoot.querySelector('balance-element.usdc')
+    const totalBalanceElement = this.shadowRoot.querySelector('balance-element.total')
+    const creditElement = this.shadowRoot.querySelector('credit-element')
     if (value !== 'undefined' && value !== undefined) {
       const connectAction = this.shadowRoot.querySelector(`[data-action="connect"]`)
 
@@ -47,11 +50,15 @@ export default customElements.define('account-menu-element', class AccountMenuEl
       let svgCode = multiavatar(value)
       connectAction.innerHTML = svgCode
       balanceElement.amount = await balance(this.account)
+      creditElement.amount = await gameCredits(this.account)
+      totalBalanceElement.amount = Number(balanceElement.amount) + Number(creditElement.amount)
 
       if (this.timeout) clearTimeout(this.timeout)
 
       this.timeout = setTimeout(async () => {
         balanceElement.amount = await balance(this.account)
+        creditElement.amount = await gameCredits(this.account)
+        totalBalanceElement.amount = Number(balanceElement.amount) + Number(creditElement.amount)
       }, 10000);
 
     } else {
@@ -143,17 +150,19 @@ export default customElements.define('account-menu-element', class AccountMenuEl
       :host([open]) button[data-action="menu"] {
         padding-top: 10px;
       }
-      balance-element {
+      balance-element, credit-element {
         padding: 0 12px;
       }
     </style>
 
-    <balance-element></balance-element>
+    <balance-element class="total"></balance-element>
     <button data-action="connect">connect</button>
 
     <dropdown-element right>
       <flex-column>
         <span class="spacer"></span>
+        <credit-element></credit-element>
+        <balance-element class="usdc"></balance-element>
       </flex-column>
       <flex-row slot="bottom">
         <flex-one></flex-one>

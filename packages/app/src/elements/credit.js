@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit'
 
-export default customElements.define('balance-element', class BalanceElement extends LitElement {
+export default customElements.define('credit-element', class creditElement extends LitElement {
   static properties = {
     amount: {
       type: Number
@@ -29,7 +29,7 @@ export default customElements.define('balance-element', class BalanceElement ext
   }
 
   get amount() {
-    return Number(this._amount)
+    return this._amount
   }
 
   set icon(value) {
