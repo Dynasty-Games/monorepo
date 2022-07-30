@@ -8,6 +8,7 @@ import erc20 from './../data/abis/erc20'
 import { calendar } from './../time'
 import './../dynasty-elements/countdown.js'
 import { LitElement, html } from 'lit'
+import { calculateBaseSalary } from './../../../lib/src/lib'
 
 export default customElements.define('competition-view', class CompetitionView extends LitElement {
   static properties = {
@@ -138,7 +139,7 @@ export default customElements.define('competition-view', class CompetitionView e
       style,
       id,
       params,
-      items,
+      items: calculateBaseSalary(items.slice(0, 300)),
       rankById,
       maxSalary: 50000,
       portfolio: []

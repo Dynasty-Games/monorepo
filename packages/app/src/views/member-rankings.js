@@ -6,6 +6,7 @@ import './../dynasty-elements/countdown.js'
 import { LitElement, html } from 'lit'
 
 import {map} from 'lit/directives/map.js'
+import { calculateBaseSalary } from '../../../lib/src/lib'
 
 export default customElements.define('member-rankings-view', class MemberRankingsView extends LitElement {
   static properties = {
@@ -57,7 +58,8 @@ export default customElements.define('member-rankings-view', class MemberRanking
 
     let items = portfolio.items
 
-    let currencies = await getCurrencies()
+    let currencies = await getCurrencies()    
+    currencies = await calculateBaseSalary(currencies.slice(0, 300))
     const currenciesById = {}
     for (const currency of currencies) {
       currenciesById[currency.id] = currency
