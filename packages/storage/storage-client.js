@@ -226,7 +226,7 @@ const socketRequestClient = (url, protocols = 'echo-protocol', options = { retry
   });
 };
 
-class DynastyStorageServer {  
+class DynastyStorageClient {  
   #port
   #client
 
@@ -267,9 +267,29 @@ class DynastyStorageServer {
   }
 
   async has(key) {
-    const has = this.#request('has', key);
+    const has = await this.#request('has', key);
     return has === 'true' ? true : false
+  }
+
+  async hasDir(key) {
+    const has = await this.#request('hasDir', key);
+    return has === 'true' ? true : false
+  }
+
+  async readDir(key) {
+    const files = await this.#request('readDir', key);
+    return files
+  }
+
+  async query(key = {}) {
+    const data = await this.#request('query', key);
+    return data
+  }
+
+  async queryKeys(key = {}) {
+    const data = await this.#request('queryKeys', key);
+    return data
   }
 }
 
-module.exports = DynastyStorageServer;
+module.exports = DynastyStorageClient;

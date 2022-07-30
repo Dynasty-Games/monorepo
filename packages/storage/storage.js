@@ -23,6 +23,8 @@ var datastoreCore = require('datastore-core');
 var parallel = require('it-parallel-batch');
 var fwa = require('fast-write-atomic');
 var crypto = require('crypto');
+var promises = require('fs/promises');
+var globby = require('globby');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -41,6 +43,7 @@ var glob__default = /*#__PURE__*/_interopDefaultLegacy(glob);
 var mkdirp__default = /*#__PURE__*/_interopDefaultLegacy(mkdirp);
 var parallel__default = /*#__PURE__*/_interopDefaultLegacy(parallel);
 var fwa__default = /*#__PURE__*/_interopDefaultLegacy(fwa);
+var globby__default = /*#__PURE__*/_interopDefaultLegacy(globby);
 
 const sortAll = (iterable, sorter) => {
   return async function* () {
@@ -552,7 +555,7 @@ class DynastyStorage {
     }
 
     createKey(key) {
-      return new interfaceDatastore.Key(this.createHash(key))
+      return new interfaceDatastore.Key(key)
     }
 
     async put(key, value) {
@@ -568,7 +571,39 @@ class DynastyStorage {
     }
 
     async has(key) {
-      return stores.delete(this.createKey(key))
+      return store.has(this.createKey(key))
+    }
+    
+    async hasDir(path$1) {      
+      try {
+        await promises.access(path.join(os.homedir(), '.dynasty/data', path$1), fs.constants.R_OK | fs.constants.W_OK);
+        return true
+      } catch (e) {
+        return false        
+      }
+    }
+
+    async readDir(path$1) {
+      const root = path.join(os.homedir(), '.dynasty/data', path$1);
+      path$1 = root.split(path.win32.sep);
+      path$1 = path$1.join(path.posix.sep);
+      const files = await globby__default["default"](path$1);
+
+      return files.map(file => file.split(path$1 + path.posix.sep)[1])
+    }
+
+    async query(key = {}) {
+      const data = [];
+      console.log(store.queryKeys(key));
+      for await (const _key of store.queryKeys({})) {
+        data.push(_key);
+      }
+      console.log({data});
+      return data
+    }
+
+    async queryKeys(key = {}) {
+      return store.queryKeys(this.createKey(key))
     }
 }
 

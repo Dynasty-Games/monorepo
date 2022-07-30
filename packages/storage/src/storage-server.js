@@ -20,7 +20,11 @@ export default class DynastyStorageServer {
       get: this.#get.bind(this),
       put: this.#put.bind(this),
       delete: this.#delete.bind(this),
-      has: this.#has.bind(this)
+      has: this.#has.bind(this),
+      hasDir: this.#hasDir.bind(this),
+      readDir: this.#readDir.bind(this),
+      query: this.#query.bind(this),
+      queryKeys: this.#queryKeys.bind(this)
     });
 
     return this
@@ -63,7 +67,51 @@ export default class DynastyStorageServer {
   async #has({key}, response) {
     try {
       const has = await this.#stores.has(key)
-      response.send(has || String(false))
+      response.send(String(has))
+    } catch (e) {
+      console.error(e);
+      response.send(e.message || e.cause, e.code || 500)
+    }
+    return
+  }
+
+  async #hasDir({key}, response) {
+    try {
+      const has = await this.#stores.hasDir(key)
+      response.send(String(has))
+    } catch (e) {
+      console.error(e);
+      response.send(e.message || e.cause, e.code || 500)
+    }
+    return
+  }
+
+  async #readDir({key}, response) {
+    try {
+      const data = await this.#stores.readDir(key)
+      response.send(data)
+    } catch (e) {
+      console.error(e);
+      response.send(e.message || e.cause, e.code || 500)
+    }
+    return
+  }
+
+  async #query({key}, response) {
+    try {
+      const data = await this.#stores.query(key)
+      response.send(data.toString('hex'))
+    } catch (e) {
+      console.error(e);
+      response.send(e.message || e.cause, e.code || 500)
+    }
+    return
+  }
+
+  async #queryKeys({key}, response) {
+    try {
+      const data = await this.#stores.query(key)
+      response.send(data.toString('hex'))
     } catch (e) {
       console.error(e);
       response.send(e.message || e.cause, e.code || 500)
