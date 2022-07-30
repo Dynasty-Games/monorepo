@@ -76,7 +76,7 @@ export default customElements.define('competition-bar', class CompetitionBar ext
   }
 
   :host([submit-disabled]) .submit {
-    pointer-event: none;
+    pointer-events: none !important;
     color: var(--disabled-color);
   }
 </style>

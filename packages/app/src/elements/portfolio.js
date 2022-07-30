@@ -116,9 +116,13 @@ export default customElements.define('portfolio-element', class PortfolioElement
     el.setAttribute('image', item.image)
     el.setAttribute('id', item.id)
     el.setAttribute('salary', item.salary)
+    
+    const salary = this.#competitionBar.shadowRoot.querySelector('dynasty-salary').value
 
     this.positionsFilled += 1
     if (els.length === 1) this.submitDisabled = false
+    
+    if (els.length > 8 || salary - item.salary < 0) this.submitDisabled = true
   }
 
   #save() {
@@ -133,10 +137,10 @@ export default customElements.define('portfolio-element', class PortfolioElement
     let els = Array.from(this.shadowRoot.querySelectorAll(`[index]`))
     els.forEach(el => el.setAttribute('placeholder', 'true'));
 
-    firebase.set(
-      firebase.child(globalThis.userRef, currentCompetition.address),
-      null
-    )
+    // firebase.set(
+    //   firebase.child(globalThis.userRef, currentCompetition.address),
+    //   null
+    // )
     this.submitDisabled = true
   }
 
