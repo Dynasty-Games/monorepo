@@ -16,7 +16,7 @@ const provider = getDefaultProvider(network, {
 const usdc = new Contract(addresses.FakeUSDC, erc20, provider)
 const dynastyContest = new Contract(addresses.DynastyContests, ContestABI, provider)
 
-const apiURL = 'dynasty-api.leofcoin.org'
+const apiURL = 'api.dynastygames.games'
 
 globalThis.contracts = {
   usdc,

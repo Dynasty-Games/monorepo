@@ -1,6 +1,6 @@
 import _fetch from 'node-fetch'
 
-export const apiURL = 'https://dynasty-api.leofcoin.org/'
+export const apiURL = 'https://api.dynastygames.games/'
 
 const fetch = async (method, query) => {
   const response = await _fetch(`${apiURL}${method}${query ? `?${query}` : ''}`)
