@@ -1,8 +1,10 @@
 import createCompetitionBatch from './create-competition-batch'
-import closeCompetition from './close-competition'
+import closeCompetition from './close-competition-batch'
 import cron from 'node-cron'
-import { isOpen, getRankings, getCompetitionParams, getCompetitionsToClose, hasStarted, hasEnded, getCompetitionPortfolios, getOpenCompetitions, getStartedCompetitions } from './../utils'
-
+import { isOpen, getCompetitionParams, getCompetitionsToClose, hasStarted, hasEnded, getCompetitionPortfolios, getOpenCompetitions, getStartedCompetitions, getPortfolios, getMembers } from './../utils'
+import { calculate } from '../../../app/src/apis/contests'
+import getRankings from './rankings.js'
+import closeCompetitionBatch from './close-competition-batch'
 /**
  * runs everyday at 15:00
  * creates all competitions from same day 17:00 to day after 15:00
@@ -44,10 +46,29 @@ export const close = () => {
   console.log(`close: starting scheduler`);
   const job = async () => {
     const competitions = await getCompetitionsToClose()
-
-    for (const competition of competitions) {
-      await closeCompetition(competition)
+    const batch = {
+      categories: [],
+      styles: [],
+      ids: [],
+      amounts: [],
+      addresses: [],
+      tokenId: 0
     }
+    for (const competition of competitions) {
+      batch.categories.push(competition.category)
+      batch.styles.push(competition.style)
+      batch.ids.push(competition.id)
+      const members = await getMembers(competition.category, competition.style, competition.id)      
+      const portfolios = await getPortfolios(competition.category, competition.style, competition.id, members)
+      let i = 0
+      for (const member of members) {
+        batch.addresses.push(member)
+        batch.amounts.push(portfolios[i].submits * competition.price)
+      }
+      // const winnings = await calculateWinnings(competition)
+    }
+    
+    await closeCompetitionBatch(batch)
     console.log(`closed ${competitions.length} @${new Date().toLocaleString()}`);
   }
   const runner = cron.schedule('5 1,3,5,7,9,11,13,15,17,19,21,23 * * *', job)
@@ -56,54 +77,14 @@ export const close = () => {
 
 
 /**
- * runs every 5 minutes
+ * runs every minute
  */
-export const rankings = () => {
+export const rankings = () => {  
   console.log(`rankings: starting scheduler`);
   const job = async () => {
-    let competitions = await getStartedCompetitions()
-    competitions = await Promise.all(competitions.map(competition => getCompetitionPortfolios(competition)))
-    competitions = competitions.filter(competition => competition.portfolios.length > 0)
-    const portfolios = competitions.map(competition => competition.portfolios)
-
-    const memberPoints = await getRankings(portfolios)
-    const rankings = []
-    for (const _memberPoints of memberPoints) {
-      let ranks = []
-      for (const memberPoints of _memberPoints) {
-        ranks.push({
-          items: memberPoints.items,
-          member: memberPoints.member.toLowerCase(),
-          points: memberPoints.points
-        })
-      }
-      rankings.push(ranks)
-    }
-
-    let i = 0
-
-    for (const ranking of rankings) {
-      if (ranking.length > 0) {
-        const competitionAddress = competitions[i].contract.address
-         for (const {member} of ranking) {
-           try {
-             const ref = firebase.ref(firebase.database, `competitions/${competitionAddress.toLowerCase()}/${member.toLowerCase()}`)
-             await firebase.set(ref, ranking)
-           } catch (e) {
-             console.error(e);
-           }
-         }
-      }
-      i++
-    }
-
-    const memberCount = portfolios.reduce((p, c) => {
-      return p + c.length
-    }, 0)
-
-    console.log(`rankings updated for ${competitions.length} competitions & ${memberCount} members @${new Date().toLocaleString()}`);
+    await getRankings()
+    // console.log(`rankings updated for ${competitions.length} competitions & ${memberCount} members @${new Date().toLocaleString()}`);
   }
-
   const runner = cron.schedule('*/1 * * * *', job)
   return { runner, job }
 }

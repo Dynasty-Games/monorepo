@@ -1,6 +1,9 @@
 import fetch from 'node-fetch'
 import { calculateFantasyPoints } from '@dynasty-games/lib'
-import {writeFileSync} from 'fs'
+import { dynastyContest as contract } from './contracts'
+import { closedCompetitions } from '../../utils/src/utils'
+
+export const apiURL = `https://api.dynastygames.games`
 
 export const isOdd = number => {
   return Math.abs(number % 2) === 1
@@ -81,33 +84,22 @@ export const getOpenCompetitions = async () => {
   return competitions.filter(competition => competition.isOpen)
 }
 
-
-export const getCompetitionsToClose = async () => {
-  let competitions = await competitionAddresses()
-  competitions = competitions.map(address => {
-    return {
-      contract: getCompetitionContract(address)
-    }
-  })
-  competitions = await Promise.all(competitions.map(competition => isOpen(competition)))
-  competitions = competitions.filter(competition => competition.isOpen)
-  competitions = await Promise.all(competitions.map(competition => getCompetitionParams(competition)))
-  competitions = await Promise.all(competitions.map(competition => hasEnded(competition)))
-  return competitions.filter(competition => competition.hasEnded)
-}
-
 export const getCompetitionPortfolios = async competition => {
   competition.portfolios = []
-  try {
-    const members = await competition.contract.getMembers()
+  const { category, style, id } = competition
 
-    for (const member of members) {
-      const portfolio = await competition.contract.membersPortfolios(member)
-      competition.portfolios.push({
-        member,
-        items: portfolio.items
-      })
+  try {
+    let members = await contract.members(category, style, id)
+    if (members.length > 0) {
+      for (const member of members) {
+        const portfolio = await contract.memberPortfolio(category, style, id, member)
+        competition.portfolios.push({
+          member,
+          items: portfolio.items
+        })
+      }
     }
+    
   } catch (e) {
     console.error(e);
   }
@@ -137,7 +129,7 @@ const currencyJob = async (currency, year) => {
 
 export const getPortfolioPoints = async (portfolios, year) =>  {
   try {
-    let response = await fetch(`https://dynasty-api.leofcoin.org/currencies?limit=250&pages=3`)
+    let response = await fetch(`${apiURL}/currencies?limit=250&pages=3`)
     response = await response.json()
     const currencies = await Promise.all(response.map(currency => currencyJob(currency, year)))
     const currenciesById = {}
@@ -174,4 +166,44 @@ export const getRankings = async portfolios =>  {
   portfolios = portfolios.map(portfolios => portfolios.map(({member, points, items}) => { return { member, points, items} }))
   portfolios = portfolios.map(portfolios => portfolios.sort((a, b) => b.points - a.points))
   return portfolios
+}
+
+export const totalCompetitions = async ({category, style}, data) => {
+  const totalCompetitions = await contract.totalCompetitions(category, style)
+  data.push({
+    totalCompetitions: totalCompetitions.toNumber(),
+    category,
+    style
+  })
+  return data
+}
+
+export const competitions = async () => {
+  const categoriesLength = await contract.categoriesLength()
+  const stylesLength = await contract.stylesLength()
+
+  let queue = []
+  
+  for (let category = 0; category < categoriesLength; category++) {
+    for (let style = 0; style < stylesLength; style++) {
+      queue.push({category, style})
+    }
+  }
+
+  let data = []
+
+  await runQueue(data, queue, totalCompetitions)
+}
+
+export const getCompetitionsToClose = async () => {
+  const competitions = await closedCompetitions()
+  return competitions.filter(competition => competition.state === 0)
+}
+
+export const getMembers = async (category, style, id) => {
+  return await contract.members(category, style, id)
+}
+
+export const getPortfolios = async (category, style, id, members) => {
+  return Promise.all(members.map(member => contract.memberPortfolio(category, style, id, member)))
 }
