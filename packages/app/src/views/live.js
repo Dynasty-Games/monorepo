@@ -42,10 +42,6 @@ export default customElements.define('live-view', class LiveView extends LitElem
     competitionMembers = await Promise.all(competitionMembers.filter(({status, value}) => status === 'fulfilled' && value.members.indexOf(connector.accounts[0]) !== -1))
     competitionMembers = competitionMembers.map(({value}) => value)
     
-    // && value === connector.accounts[0]
-    console.log(competitionMembers)
-    console.log(competitions);
-    
     competitionMembers = competitionMembers.reduce((set, current) => {
       const params = competitions[current.i]
       const name = competitions[current.i].name
@@ -163,7 +159,7 @@ export default customElements.define('live-view', class LiveView extends LitElem
     <flex-row class="header">
       <flex-row class="inner-header">
         <custom-svg-icon icon="chevron-left" @click=${this.back}></custom-svg-icon>
-        <h2>contests</h2>
+        <h2>live contests</h2>
         <flex-one></flex-one>
       </flex-row>
     </flex-row>
