@@ -48,7 +48,6 @@ export const liveCompetitions = async () => {
 
 export const openCompetitions = async () => {
   let response = await fetch(`https://${apiURL}/open-competitions`)
-  const date = new Date()
   response = await response.json()
   return response
 }

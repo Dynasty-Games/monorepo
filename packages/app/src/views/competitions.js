@@ -35,7 +35,6 @@ export default customElements.define('competitions-view', class CompetitionsView
   async #parseContest(contest) {
     this._contest = contest
     let items = await openCompetitions()
-    console.log(items);
     const byName = items.reduce((set, current) => {
       set[current.name] = set[current.name] || { name: current.name, items: [] }
       set[current.name].items.push(current)

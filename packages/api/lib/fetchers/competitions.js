@@ -11,15 +11,18 @@ const job = async ({category, style, id}, data) => {
   const params = await contract.competition(category, style, id)
   const participants = await contract.totalMembers(category, style, id)
   const time = new Date().getTime()
-  const isLive = time > Number(params.liveTime.toString()) * 1000 && time < Number(params.endTime.toString()) * 1000
+  const liveTime = Number(params.liveTime.toString()) * 1000
+  const endTime = Number(params.endTime.toString()) * 1000
+
+  const isLive = time > liveTime && time < endTime
   if (params.endTime.toString() === '0') return
   
   const competition = {
     style,
     category,
     id: params.id.toNumber(),
-    closeTime: Number(params.endTime.toString()) * 1000,
-    liveTime: Number(params.liveTime.toString()) * 1000,
+    endTime,
+    liveTime,
     price: utils.formatUnits(params.price, 0),
     portfolioSize: params.portfolioSize.toNumber(),
     participants: participants.toNumber(),
@@ -43,29 +46,63 @@ const job = async ({category, style, id}, data) => {
   return data
 }
 
-const _runQueue = (competitions, data) => Promise.all(competitions.map(competition => job(competition, data)))
+const _runQueue = (competitions, data, job) => Promise.all(competitions.map(competition => job(competition, data)))
 
-const runQueue = async data => {
-  await _runQueue(queue.splice(0, queue.length > 12 ? 12 : queue.length), data)
-  if (queue.length > 0) return runQueue(data)
+const runQueue = async (data, queue, job) => {
+  await _runQueue(queue.splice(0, queue.length > 12 ? 12 : queue.length), data, job)
+  if (queue.length > 0) return runQueue(data, queue, job)
 }
 
-export default async () => {
-  const category = 0
-  const style = 0
-
+const totalCompetitions = async ({category, style}, data) => {
   const totalCompetitions = await contract.totalCompetitions(category, style)
+  data.push({
+    totalCompetitions: totalCompetitions.toNumber(),
+    category,
+    style
+  })
+  return data
+}
 
+/**
+ * Fetches all competitions
+ * 
+ * Competitions are fetched at once in a queue (max 12 each run)
+ */
+export default async () => {
+  // todo: don't fetch last years competitions
+  const categoriesLength = await contract.categoriesLength()
+  const stylesLength = await contract.stylesLength()
 
-  let data = {
+  let queue = []
+  
+  for (let category = 0; category < categoriesLength; category++) {
+    for (let style = 0; style < stylesLength; style++) {
+      queue.push({category, style})
+    }
+  }
+
+  let data = []
+
+  await runQueue(data, queue, totalCompetitions)
+
+  queue = []
+  
+  for (let i = 0; i < data.length; i++) {
+    const totalCompetitions = data[i].totalCompetitions
+    const category = data[i].category
+    const style = data[i].style
+
+    for (let id = 0; id < totalCompetitions; id++) { 
+      queue.push({category, style, id: totalCompetitions - id})
+    }    
+  }
+
+  data = {
     open: [],
     live: [],
     closed: []
   }
 
-  for (let i = 0; i <= totalCompetitions; i++) { 
-    queue.push({category, style, id: totalCompetitions - i})
-  }
-  await runQueue(data)
+  await runQueue(data, queue, job)
   return data
 }
