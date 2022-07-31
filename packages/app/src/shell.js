@@ -274,7 +274,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
     <flex-column class="main">
       <flex-row class="header" ?headerhidden="${this.selected === 'competition'}">
         <flex-row class="top-header">
-          <h1>DYNASTY GAMES</h1>
+          <h1 class="appname" ?hidden="${!this.isDesktop}">DYNASTY GAMES</h1>
         </flex-row>
         <flex-one></flex-one>
         <account-menu-element></account-menu-element>

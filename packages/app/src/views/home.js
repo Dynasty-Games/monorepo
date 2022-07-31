@@ -30,6 +30,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
         overflow-y: auto;
         justify-content: center;
         pointer-events: auto;
+        padding: 0 0 186px 0;
       }
 
       .container {
