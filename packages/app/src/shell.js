@@ -69,6 +69,10 @@ export default customElements.define('app-shell', class AppShell extends LitElem
     return this.shadowRoot.querySelector('custom-pages')
   }
 
+  get #navbar() {
+    return this.shadowRoot.querySelector('nav-bar')
+  }
+
   async _setupFirebase() {
     let importee = await import(/* webpackChunkName: "firebase" */ './firebase.js')
     const {app, database, ref, set, get, push, child} = importee.default()
@@ -141,8 +145,9 @@ export default customElements.define('app-shell', class AppShell extends LitElem
       this.selected = view
       if (!customElements.get(`${view}-view`)) await import(`./${view}.js`)
       this.shadowRoot.querySelector('custom-pages').select(view)
-      this.shadowRoot.querySelector('nav-bar').select(view)
-
+      this.#navbar.select(view)
+      if (view === 'live') this.#navbar.shadowRoot.querySelector('custom-selector').scroll(this.#navbar.getBoundingClientRect().width, 0)
+      
     }
 
     if (query) {
@@ -269,11 +274,13 @@ export default customElements.define('app-shell', class AppShell extends LitElem
     <flex-column class="main">
       <flex-row class="header" ?headerhidden="${this.selected === 'competition'}">
         <flex-row class="top-header">
-          <img class="logo" src="/assets/logo.png" loading="lazy"></img>
+          <h1>DYNASTY GAMES</h1>
         </flex-row>
         <flex-one></flex-one>
         <account-menu-element></account-menu-element>
       </flex-row>
+      
+      <nav-bar ?hidden="${this.selected === 'competition'}"></nav-bar>
       <custom-pages attr-for-selected="data-route">
         <home-view data-route="home"></home-view>
         <competitions-view data-route="competitions"></competitions-view>
@@ -286,8 +293,8 @@ export default customElements.define('app-shell', class AppShell extends LitElem
         <member-rankings-view data-route="member-rankings"></member-rankings-view>
         <news-view data-route="news"></news-view>
       </custom-pages>
-      <nav-bar ?hidden="${this.selected === 'competition'}"></nav-bar>
     </flex-column>
     `
+    // <img class="logo" src="/assets/logo.png" loading="lazy"></img>
   }
 })

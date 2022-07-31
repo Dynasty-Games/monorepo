@@ -1,6 +1,6 @@
 export default {
   'main-background-color': '#0a0a0af2',
-  'main-background': 'linear-gradient(180deg, #35145c 0% 0%, #0a0a0a 30% 60%, #012f53 100%)',
+  'main-background': 'linear-gradient(180deg, #36037b 0% 0%, #0a0a0a 30% 60%, #012f53 100%)',
   'main-color': '#eee',
   'accent-color': '#18b3cc',
   'accent-color-dimmed': 'rgb(215, 16, 150 / 20%)',

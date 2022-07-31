@@ -1,4 +1,5 @@
 import { LitElement, html } from 'lit'
+import { scrollbar } from '../shared/styles'
 
 export default customElements.define('nav-bar', class NavBar extends LitElement {
   constructor() {
@@ -12,23 +13,25 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
   render() {
     return html`
     <style>
-      * {
-        pointer-events: none;
-      }
+      ${scrollbar}
 
       :host {
-        height: 64px;
-        border-top: 1px solid #434651;
+        height: 88px;
         z-index: 1000;
         justify-content: center;
         display: flex;
+        padding-top: 24px;
       }
 
       custom-selector {
         height: 100%;
-        max-width: 414px;
+        max-width: 540px;
+        width: 100%;        
+        padding: 0 12px;
         display: flex;
         flex-direction: row;
+        overflow-x: auto;
+        pointer-events: auto;
       }
 
       a {
@@ -40,22 +43,20 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
         height: 48px;
         text-transform: uppercase;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
         font-size: 14px;
+        border-radius: 24px;
       }
 
       .custom-selected {
         border: none;
-        color: var(--accent-color);
+        background: #3663ed;
       }
 
       custom-svg-icon {
         --svg-icon-color: var(--main-color);
-      }
-
-      .custom-selected custom-svg-icon {
-        --svg-icon-color: var(--accent-color);
+        padding-right: 6px;
       }
 
     </style>
@@ -65,15 +66,21 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
         home
       </a>
 
+      <flex-one></flex-one>
+
       <a href="#!/contests" data-route="contests">
         <custom-svg-icon icon="icons::track-changes"></custom-svg-icon>
         contests
       </a>
 
+      <flex-one></flex-one>
+
       <a href="#!/news" data-route="news">
         <custom-svg-icon icon="icons::news"></custom-svg-icon>
         news
       </a>
+
+      <flex-one></flex-one>
 
       <a href="#!/live" data-route="live">
         <custom-svg-icon icon="icons::track-changes"></custom-svg-icon>
