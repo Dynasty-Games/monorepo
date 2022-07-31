@@ -1659,6 +1659,14 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
       string[] items;
       uint256 submits;
     }
+    
+    /**
+     * @dev extraData used to config for example the marketcap needed, max items etc
+     */
+    struct Style {
+      string name;
+      bytes extraData;
+    }
 
     mapping (uint256 => uint256) internal _totalSupply;
     mapping (uint256 => string) internal _uris;
@@ -1676,13 +1684,14 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
     string[] internal _tokens;
     uint256 internal _categoriesLength;
     uint256 internal _stylesLength;
-    mapping (uint256 => string) internal _styles;
+    mapping (uint256 => Style) internal _styles;
     mapping (uint256 => string) internal _categories;
 
     event TokenAdded(uint256 indexed id, string name);
     event StyleChange(uint256 indexed id, string name);
     event CategoryChange(uint256 indexed id, string name);
     event TreasuryChange(address erc20Token);
+    event SubmitPortfolio(uint256 category_, uint256 style_, uint256 competitionId_, address member_);
 
     constructor(string memory uri_) ERC1155(uri_) {
       _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -1710,6 +1719,11 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
       return _members[category_][style_][competitionId].length;
     }
 
+    function isMember(uint256 category_, uint256 style_, uint256 competitionId, address member_) public view returns (bool) {
+      if (_portfolios[category_][style_][competitionId][member_].submits != 0) return true;
+      return false;
+    }
+
     function members(uint256 category_, uint256 style_, uint256 competitionId) public view returns (address[] memory) {
       require(hasRole(MANAGER_ROLE, msg.sender) || _portfolios[category_][style_][competitionId][msg.sender].submits != 0, 'not allowed');
       return _members[category_][style_][competitionId];
@@ -1725,14 +1739,14 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
     * @dev tokenId is included so we can switch credit token if needed
     * 0 = DynastyCredit
     */
-    function submitPortfolio(uint256 category_, uint256 style_, uint256 competitionId, string[] memory items) public {
-      Competition memory competition_ = _competitions[category_][style_][competitionId];
+    function submitPortfolio(uint256 category_, uint256 style_, uint256 competitionId_, string[] memory items) public {
+      Competition memory competition_ = _competitions[category_][style_][competitionId_];
 
       require(competition_.startTime < block.timestamp, 'competition not started');
       require(competition_.liveTime > block.timestamp, 'competition already live or ended');
 
       require(items.length == competition_.portfolioSize, 'Invalid portfolioSize');
-      Portfolio memory portfolio = _portfolios[category_][style_][competitionId][msg.sender];
+      Portfolio memory portfolio = _portfolios[category_][style_][competitionId_][msg.sender];
       
 
       if (portfolio.submits != 0 && portfolio.submits <= competition_.freeSubmits) {
@@ -1741,23 +1755,25 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
         _treasury.deposit(msg.sender, competition_.price * 10**8);
       
         uint256 amount = competition_.price - (competition_.price / 100 * _treasury.fee());
-        competition_.prizePool += amount;
+        _competitions[category_][style_][competitionId_].prizePool = competition_.prizePool + amount;
       }
     
       if (portfolio.submits == 0) {
-        _members[category_][style_][competitionId].push(msg.sender);
+        _members[category_][style_][competitionId_].push(msg.sender);
       }
 
       portfolio.submits += 1;
       portfolio.items = items;
-      _portfolios[category_][style_][competitionId][msg.sender] = portfolio;
+      _portfolios[category_][style_][competitionId_][msg.sender] = portfolio;
+
+      emit SubmitPortfolio(category_, style_, competitionId_, msg.sender);
     }
     
     function category(uint256 id) public  view returns (string memory) {
       return _categories[id];
     }
 
-    function style(uint256 id) public view returns (string memory) {
+    function style(uint256 id) public view returns (Style memory) {
       return _styles[id];
     }
 
@@ -1788,7 +1804,7 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
     // }    
 
     function _createCompetition(uint256 category_, uint256 style_, string memory name, uint256 price, uint256 prizePool, uint256 portfolioSize, uint256 submits, uint256 startTime, uint256 liveTime, uint256 endTime) internal {      
-      require(bytes(_styles[style_]).length > 0, 'Style does not exist');
+      require(bytes(_styles[style_].name).length > 0, 'Style does not exist');
       require(bytes(_categories[category_]).length > 0, 'Category does not exist');
 
       require(startTime > block.timestamp, 'invalid startTime');
@@ -1873,41 +1889,43 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
       return _tokens;
     }
 
-    function _addToken(uint256 id, string memory name) internal {
+    function _addToken(uint256 id, string memory name_) internal {
       require(_tokens.length == id, 'TokenId to high or to low');
       
-      _tokens.push(name);
-      emit TokenAdded(id, name);
+      _tokens.push(name_);
+      emit TokenAdded(id, name_);
     }
 
-    function addToken(uint256 id, string memory name) public onlyRole(MANAGER_ROLE) {
-      _addToken(id, name);
+    function addToken(uint256 id, string memory name_) public onlyRole(MANAGER_ROLE) {
+      _addToken(id, name_);
     }
 
-    function addStyle(uint256 style_, string memory name) public onlyRole(MANAGER_ROLE) {
-      require(bytes(_styles[style_]).length == 0, 'style already taken');
-      _styles[style_] = name;
+    function addStyle(uint256 style_, string memory name_, bytes memory extraData_) public onlyRole(MANAGER_ROLE) {
+      require(bytes(_styles[style_].name).length == 0, 'style already taken');      
+      _styles[style_].name = name_;
+      _styles[style_].extraData = extraData_;
       _stylesLength += 1;
-      emit StyleChange(style_, name);
+      emit StyleChange(style_, name_);
     }
 
-    function addCategory(uint256 category_, string memory name) public onlyRole(MANAGER_ROLE) {
+    function addCategory(uint256 category_, string memory name_) public onlyRole(MANAGER_ROLE) {
       require(bytes(_categories[category_]).length == 0, 'category already taken');
-      _categories[category_] = name;
+      _categories[category_] = name_;
       _categoriesLength += 1;
-      emit CategoryChange(category_, name);
+      emit CategoryChange(category_, name_);
     }
 
-    function replacestyle(uint256 style_, string memory name) public onlyRole(MANAGER_ROLE) {
-      require(bytes(_styles[style_]).length > 0, 'style does not exist');      
-      _styles[style_] = name;
-      emit StyleChange(style_, name);
+    function replacestyle(uint256 style_, string memory name_, bytes memory extraData_) public onlyRole(MANAGER_ROLE) {
+      require(bytes(_styles[style_].name).length > 0, 'style does not exist');      
+      _styles[style_].name = name_;
+      _styles[style_].extraData = extraData_;
+      emit StyleChange(style_, name_);
     }
 
-    function replaceCategory(uint256 category_, string memory name) public onlyRole(MANAGER_ROLE) {
+    function replaceCategory(uint256 category_, string memory name_) public onlyRole(MANAGER_ROLE) {
       require(bytes(_categories[category_]).length > 0, 'category does not exist');      
-      _categories[category_] = name;
-      emit CategoryChange(category_, name);
+      _categories[category_] = name_;
+      emit CategoryChange(category_, name_);
     }
 
     function setTreasury(address treasury) public onlyRole(MANAGER_ROLE) {

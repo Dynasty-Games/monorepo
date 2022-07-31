@@ -18,7 +18,8 @@ const manager = '0xECa6984580C50e8E4Af847E3beD878520B4a59b0';
   const fakeUSDC = await deploy('contracts/FakeUSDC.sol', undefined, undefined, network, secret)
   const treasury = await deploy('contracts/DynastyTreasury.sol', undefined, undefined, network, secret)
   const contests = await deploy('contracts/DynastyContests.sol', [''], undefined, network, secret)
-  await setup(contests.signer)
+
+  // await setup(contests.signer)
   
   const RLPReader = await deploy('contracts/RLPReader.sol', [], [], network, secret)
   const MerklePatriciaProof = await deploy('contracts/MerklePatriciaProof.sol', [], [], network, secret)

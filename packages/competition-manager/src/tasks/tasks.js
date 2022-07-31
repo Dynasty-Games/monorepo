@@ -17,7 +17,6 @@ export const create = () => {
     nextDay.setDate(date.getDate() + 1);
 
     const competitions = [
-      Math.round(new Date(`${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} 23:00:00`).getTime() / 1000),
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 01:00:00`).getTime() / 1000),
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 03:00:00`).getTime() / 1000),
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 05:00:00`).getTime() / 1000),
@@ -28,14 +27,15 @@ export const create = () => {
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 15:00:00`).getTime() / 1000),
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 17:00:00`).getTime() / 1000),
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 19:00:00`).getTime() / 1000),      
-      Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 21:00:00`).getTime() / 1000)
+      Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 21:00:00`).getTime() / 1000),
+      Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 23:00:00`).getTime() / 1000)
    ]
 
     await createCompetitionBatch(competitions)
     console.log(`started ${competitions.length} @${date.toLocaleString()}`);
   }
 
-  const runner = cron.schedule('00 15 * * *', job)
+  const runner = cron.schedule('00 1 * * *', job)
   return { runner, job }
 }
 

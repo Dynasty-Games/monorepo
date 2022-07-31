@@ -12,7 +12,7 @@ import {config} from './contracts';
   // await login()
   const tasks = [create(), close(), rankings()]
   //await tasks[1].job() // try closing on each start
-tasks[1].job()
+// tasks[1].job()
   for (const task of tasks) {
     task.runner.start()
   }

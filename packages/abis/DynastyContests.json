@@ -165,6 +165,37 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "category_",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "style_",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "competitionId_",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "member_",
+        "type": "address"
+      }
+    ],
+    "name": "SubmitPortfolio",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "uint256",
         "name": "id",
@@ -360,7 +391,7 @@
       },
       {
         "internalType": "string",
-        "name": "name",
+        "name": "name_",
         "type": "string"
       }
     ],
@@ -378,8 +409,13 @@
       },
       {
         "internalType": "string",
-        "name": "name",
+        "name": "name_",
         "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "extraData_",
+        "type": "bytes"
       }
     ],
     "name": "addStyle",
@@ -396,7 +432,7 @@
       },
       {
         "internalType": "string",
-        "name": "name",
+        "name": "name_",
         "type": "string"
       }
     ],
@@ -900,6 +936,40 @@
       },
       {
         "internalType": "address",
+        "name": "member_",
+        "type": "address"
+      }
+    ],
+    "name": "isMember",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "category_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "style_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "competitionId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
         "name": "member",
         "type": "address"
       }
@@ -1059,7 +1129,7 @@
       },
       {
         "internalType": "string",
-        "name": "name",
+        "name": "name_",
         "type": "string"
       }
     ],
@@ -1077,8 +1147,13 @@
       },
       {
         "internalType": "string",
-        "name": "name",
+        "name": "name_",
         "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "extraData_",
+        "type": "bytes"
       }
     ],
     "name": "replacestyle",
@@ -1249,9 +1324,21 @@
     "name": "style",
     "outputs": [
       {
-        "internalType": "string",
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes",
+            "name": "extraData",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct DynastyContests.Style",
         "name": "",
-        "type": "string"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -1284,7 +1371,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "competitionId",
+        "name": "competitionId_",
         "type": "uint256"
       },
       {
