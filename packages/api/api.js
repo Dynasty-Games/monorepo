@@ -111,7 +111,7 @@ router$2.get('/currency-icon', async (ctx, next) => {
 
 var FakeUSDC$1 = "0xab5417222849D9bF8F55059502E86bDDdb496fB5";
 var DynastyTreasury = "0xE7C5B5Cd9DF18281C043084A4dF872d942C2af33";
-var DynastyContests = "0xABb9114368cdf817CE5F1de7239CA392b8A8D086";
+var DynastyContests = "0x3081D6789c390B4053725919F7be9ac0EFCceACF";
 var RLPReader = "0x193481aDcd1223c80105c5431A9028b49B7D99a4";
 var MerklePatriciaProof = "0xc7D9c2A86e23dB3eAd63A731c0a39890Ba64207E";
 var Merkle = "0x05DB74e048b48E98e04cA0cc6eA2ABe3d7De2744";
@@ -289,6 +289,37 @@ var contestsABI = [
 			}
 		],
 		name: "StyleChange",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "competitionId_",
+				type: "uint256"
+			},
+			{
+				indexed: false,
+				internalType: "address",
+				name: "member_",
+				type: "address"
+			}
+		],
+		name: "SubmitPortfolio",
 		type: "event"
 	},
 	{
@@ -494,7 +525,7 @@ var contestsABI = [
 			},
 			{
 				internalType: "string",
-				name: "name",
+				name: "name_",
 				type: "string"
 			}
 		],
@@ -513,8 +544,13 @@ var contestsABI = [
 			},
 			{
 				internalType: "string",
-				name: "name",
+				name: "name_",
 				type: "string"
+			},
+			{
+				internalType: "bytes",
+				name: "extraData_",
+				type: "bytes"
 			}
 		],
 		name: "addStyle",
@@ -532,7 +568,7 @@ var contestsABI = [
 			},
 			{
 				internalType: "string",
-				name: "name",
+				name: "name_",
 				type: "string"
 			}
 		],
@@ -1041,6 +1077,40 @@ var contestsABI = [
 			},
 			{
 				internalType: "address",
+				name: "member_",
+				type: "address"
+			}
+		],
+		name: "isMember",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "competitionId",
+				type: "uint256"
+			},
+			{
+				internalType: "address",
 				name: "member",
 				type: "address"
 			}
@@ -1206,7 +1276,7 @@ var contestsABI = [
 			},
 			{
 				internalType: "string",
-				name: "name",
+				name: "name_",
 				type: "string"
 			}
 		],
@@ -1225,8 +1295,13 @@ var contestsABI = [
 			},
 			{
 				internalType: "string",
-				name: "name",
+				name: "name_",
 				type: "string"
+			},
+			{
+				internalType: "bytes",
+				name: "extraData_",
+				type: "bytes"
 			}
 		],
 		name: "replacestyle",
@@ -1404,9 +1479,21 @@ var contestsABI = [
 		name: "style",
 		outputs: [
 			{
-				internalType: "string",
+				components: [
+					{
+						internalType: "string",
+						name: "name",
+						type: "string"
+					},
+					{
+						internalType: "bytes",
+						name: "extraData",
+						type: "bytes"
+					}
+				],
+				internalType: "struct DynastyContests.Style",
 				name: "",
-				type: "string"
+				type: "tuple"
 			}
 		],
 		stateMutability: "view",
@@ -1440,7 +1527,7 @@ var contestsABI = [
 			},
 			{
 				internalType: "uint256",
-				name: "competitionId",
+				name: "competitionId_",
 				type: "uint256"
 			},
 			{
@@ -2509,19 +2596,25 @@ const oneHour = 60 * 60000;
 
 const currencyJob = async (timestamp, currency) => {
 
-  const stampsOneHoursAgo = currency.timestamps.filter(stamp => {
+  let stampsOneHoursAgo = currency.timestamps.filter(stamp => {
     return timestamp - stamp > oneHour
   });
 
-  if (stampsOneHoursAgo[stampsOneHoursAgo.length - 1] + oneHour < timestamp) return currency;
+  stampsOneHoursAgo = stampsOneHoursAgo.sort((a, b) => a - b);
 
-  const stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
+  if (stampsOneHoursAgo[stampsOneHoursAgo.length - 1] + oneHour < timestamp || stampsOneHoursAgo.length === 0) return currency;
+
+  let stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
     return timestamp - stamp > twelveHours
   });
 
-  const stampsTwentyFourHoursAgo = currency.timestamps.filter(stamp => {
+  stampsTwelveHoursAgo = stampsTwelveHoursAgo.sort((a, b) => a - b);
+
+  let stampsTwentyFourHoursAgo = currency.timestamps.filter(stamp => {
     return timestamp - stamp > twenfyFourHours
   });
+
+  stampsTwentyFourHoursAgo = stampsTwentyFourHoursAgo.sort((a, b) => a - b);
 
   let points = 0;
 

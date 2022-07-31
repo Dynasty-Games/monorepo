@@ -7,19 +7,25 @@ const oneHour = 60 * 60000
 
 const currencyJob = async (timestamp, currency) => {
 
-  const stampsOneHoursAgo = currency.timestamps.filter(stamp => {
+  let stampsOneHoursAgo = currency.timestamps.filter(stamp => {
     return timestamp - stamp > oneHour
   })
 
+  stampsOneHoursAgo = stampsOneHoursAgo.sort((a, b) => a - b)
+
   if (stampsOneHoursAgo[stampsOneHoursAgo.length - 1] + oneHour < timestamp || stampsOneHoursAgo.length === 0) return currency;
 
-  const stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
+  let stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
     return timestamp - stamp > twelveHours
   })
 
-  const stampsTwentyFourHoursAgo = currency.timestamps.filter(stamp => {
+  stampsTwelveHoursAgo = stampsTwelveHoursAgo.sort((a, b) => a - b)
+
+  let stampsTwentyFourHoursAgo = currency.timestamps.filter(stamp => {
     return timestamp - stamp > twenfyFourHours
   })
+
+  stampsTwentyFourHoursAgo = stampsTwentyFourHoursAgo.sort((a, b) => a - b)
 
   let points = 0
 
