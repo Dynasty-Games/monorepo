@@ -1,6 +1,7 @@
 export const scrollbar = `
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(255,255,255,0.3);

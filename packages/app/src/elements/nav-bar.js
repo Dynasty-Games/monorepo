@@ -30,7 +30,7 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
         padding: 0 12px;
         display: flex;
         flex-direction: row;
-        overflow-x: auto;
+        
         pointer-events: auto;
       }
 
@@ -58,6 +58,13 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
         --svg-icon-color: var(--main-color);
         padding-right: 6px;
       }
+
+      @media (max-width: 540px) {
+        custom-selector {
+          overflow-x: scroll;
+        }
+      }
+      
 
     </style>
     <custom-selector attr-for-selected="data-route">
