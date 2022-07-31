@@ -163,7 +163,6 @@ export default customElements.define('competition-view', class CompetitionView e
       :host {
         display: flex;
         flex-direction: column;
-        background: #000;
       }
       .container {
         width: 100%;
@@ -211,7 +210,6 @@ export default customElements.define('competition-view', class CompetitionView e
 
       .info-header.two {
         height: 32px;
-        background: #2e3838;
       }
 
       .portfolio-container {

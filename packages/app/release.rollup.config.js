@@ -46,7 +46,7 @@ export default [{
     })
   ]
 }, {
-  input: ['src/themes/dark.js'],
+  input: ['src/themes/dark.js', 'src/themes/default.js'],
   output: {
     dir: 'www/themes',
     format: 'es',

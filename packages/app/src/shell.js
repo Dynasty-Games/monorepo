@@ -31,7 +31,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
   }
   constructor() {
     super()
-    this.#loadTheme('dark')
+    this.#loadTheme('default')
     onpopstate = this.onpopstate.bind(this)
   }
 
@@ -210,13 +210,12 @@ export default customElements.define('app-shell', class AppShell extends LitElem
         align-items: center;
         padding: 12px 24px;
         box-sizing: border-box;
-        background: var(--main-background-color);
       }
 
       .main {
         width: 100%;
         height: 100%;
-        background: var(--main-background-color);
+        background: var(--main-background);
       }
 
       custom-pages {

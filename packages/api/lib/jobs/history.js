@@ -11,7 +11,7 @@ const currencyJob = async (timestamp, currency) => {
     return timestamp - stamp > oneHour
   })
 
-  if (stampsOneHoursAgo[stampsOneHoursAgo.length - 1] + oneHour < timestamp) return currency;
+  if (stampsOneHoursAgo[stampsOneHoursAgo.length - 1] + oneHour < timestamp || stampsOneHoursAgo.length === 0) return currency;
 
   const stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
     return timestamp - stamp > twelveHours

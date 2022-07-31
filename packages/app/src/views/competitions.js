@@ -66,7 +66,6 @@ export default customElements.define('competitions-view', class CompetitionsView
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: #000;
       }
 
       .container {

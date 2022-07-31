@@ -42,7 +42,6 @@ export default customElements.define('rankings-view', class RankingsView extends
       this[q]
     })
     const params = await getCompetition(this.category, this.competitionStyle, this.competition)
-    console.log(params);
     this.competitionName = params.name
     this.startTime = params.startTime
     this.price = _ethers.utils.formatUnits(params.price, 0)
@@ -74,7 +73,6 @@ export default customElements.define('rankings-view', class RankingsView extends
       :host {
         display: flex;
         flex-direction: column;
-        background: #000;
       }
       .container {
         width: 100%;

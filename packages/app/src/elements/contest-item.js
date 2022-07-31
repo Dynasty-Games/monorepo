@@ -28,7 +28,7 @@ export default customElements.define('contest-item', class ContestItem extends L
         box-sizing: border-box;
         align-items: center;
         cursor: pointer;
-        background: var(--dialog-background-color);
+        background: var(--contest-item-background-color);
         border-radius: 12px;
         pointer-events: auto;
         width: 100px;
@@ -44,7 +44,7 @@ export default customElements.define('contest-item', class ContestItem extends L
 
       custom-svg-icon {
         --svg-icon-size: 54px;
-        --svg-icon-color: var(--main-color);
+        --svg-icon-color: var(--accent-color);
       }
     </style>
     <custom-svg-icon icon="${this.icon}"></custom-svg-icon>
