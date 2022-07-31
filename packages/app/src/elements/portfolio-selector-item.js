@@ -68,13 +68,9 @@ export default customElements.define('portfolio-selector-item', class PortfolioS
         pointer-events: auto;
         cursor: pointer;
 
-        height: 74px;
-        padding: 12px 24px;
-
-
-        background: #272e2eb3;
-
-        padding: 10px 24px;
+        height: 72px;
+        padding: 24px 24px;
+        
         box-sizing: border-box;
         align-items: center;
         border: 1px solid #355050;

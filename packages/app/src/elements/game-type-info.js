@@ -1,7 +1,7 @@
 import {LitElement, html} from 'lit';
 import {map} from 'lit/directives/map.js'
 import {competition as getCompetition} from './../api.js'
-
+import { scrollbar } from '../shared/styles.js';
 export default customElements.define('game-type-info', class GameTypeInfo extends LitElement {
   static properties = {
     name: {
@@ -45,12 +45,17 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
       * {
         user-select: none;
       }
+      ${scrollbar}
+      
       :host {
         display: flex;
         height: 100%;
         flex-direction: column;
         color: var(--main-color);
         font-family: 'Noto Sans', sans-serif;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0px 0px 20px 0px #ffffff8a;
       }
 
       competition-info-item {
@@ -67,13 +72,10 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
         padding: 10px 24px;
         box-sizing: border-box;
         align-items: center;
-        <!-- border-bottom: 1px solid #355050;
-        background: #2e3838b0; -->
       }
 
       h3 {
         margin: 0;
-        padding-bottom: 6px;
         text-transform: capitalize;
       }
 
@@ -81,7 +83,6 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
         font-size: 16px;
       }
       .container {
-        background: #272e2eb3;
         padding: 10px 24px 0 24px;
         box-sizing: border-box;
         pointer-events: auto;

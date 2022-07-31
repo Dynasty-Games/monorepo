@@ -74,8 +74,6 @@ export default customElements.define('portfolio-item', class PortfolioItem exten
         pointer-events: auto;
         cursor: pointer;
 
-        background: #272e2eb3;
-
         padding: 10px 24px;
         box-sizing: border-box;
         align-items: center;

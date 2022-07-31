@@ -215,7 +215,6 @@ export default customElements.define('portfolio-element', class PortfolioElement
       :host {
         display: flex;
         flex-direction: column;
-        background: #000;
         height: 100%;
         overflow-y: auto;
         box-sizing: border-box;
@@ -243,6 +242,8 @@ export default customElements.define('portfolio-element', class PortfolioElement
         padding: 12px 24px;
         align-items: center;
       }
+
+      
 
       @media(min-width: 680px) {
         .container, :host {

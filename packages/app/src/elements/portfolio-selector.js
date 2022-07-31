@@ -103,7 +103,6 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
         flex-direction: column;
         max-width: 416px;
         width: 100%;
-        background: #000;
         box-sizing: border-box;
         height: 100%;
         align-items: center;

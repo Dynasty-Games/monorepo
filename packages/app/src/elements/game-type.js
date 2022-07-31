@@ -80,6 +80,7 @@ export default customElements.define('game-type', class GameType extends LitElem
         flex-direction: column;
         color: var(--main-color);
         font-family: 'Noto Sans', sans-serif;
+        overflow: hidden;
       }
 
       competition-info-item {
@@ -97,12 +98,12 @@ export default customElements.define('game-type', class GameType extends LitElem
         box-sizing: border-box;
         align-items: center;
         border-bottom: 1px solid #355050;
-        background: #2e3838b0;
+        border-radius: 24px;
+        border: 1px solid #18b3cc4a;
       }
 
       h3 {
         margin: 0;
-        padding-bottom: 6px;
         text-transform: capitalize;
       }
 
@@ -115,7 +116,6 @@ export default customElements.define('game-type', class GameType extends LitElem
         pointer-events: auto;
         cursor: pointer;
         overflow-y: auto;
-        <!-- background: #272e2eb3; -->
       }
 
       custom-svg-icon {
