@@ -192,7 +192,6 @@ export default customElements.define('competition-view', class CompetitionView e
         padding: 0 12px;
         height: 54px;
         box-sizing: border-box;
-        // background: #383838f2;
         align-items: center;
         justify-content: center;
       }

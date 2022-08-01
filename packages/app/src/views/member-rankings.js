@@ -123,7 +123,6 @@ export default customElements.define('member-rankings-view', class MemberRanking
         padding: 0 12px;
         height: 54px;
         box-sizing: border-box;
-        // background: #383838f2;
         align-items: center;
         justify-content: center;
       }

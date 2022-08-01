@@ -43,8 +43,8 @@ export default customElements.define('contests-view', class ContestsView extends
     competitionMembers = competitionMembers.map(({value}) => value)
     
     // && value === connector.accounts[0]
-    console.log(competitionMembers)
-    console.log(competitions);
+    console.log({competitionMembers})
+    console.log({competitions});
     
     competitionMembers = competitionMembers.reduce((set, current) => {
       const params = competitions[current.i]
@@ -135,7 +135,6 @@ export default customElements.define('contests-view', class ContestsView extends
       .header {
         padding: 12px;
         width: 100%;
-        background: #2e3838;
         box-sizing: border-box;
         align-items: center;
         justify-content: center;

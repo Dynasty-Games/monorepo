@@ -102,7 +102,6 @@ export default customElements.define('rankings-view', class RankingsView extends
         padding: 0 12px;
         height: 54px;
         box-sizing: border-box;
-        // background: #383838f2;
         align-items: center;
         justify-content: center;
       }
@@ -120,7 +119,6 @@ export default customElements.define('rankings-view', class RankingsView extends
 
       .info-header.two {
         height: 32px;
-        background: #2e3838;
       }
 
       button {

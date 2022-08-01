@@ -55,6 +55,7 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
       }
 
       custom-svg-icon {
+        pointer-events: none;
         --svg-icon-color: var(--main-color);
         padding-right: 6px;
       }

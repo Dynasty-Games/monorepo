@@ -87,7 +87,6 @@ export default customElements.define('contest-type', class ContestType extends L
       .toggle {
         pointer-events: auto;
         cursor: pointer;
-        background: #2e3838b0;
         padding: 10px 24px;
         box-sizing: border-box;
         align-items: center;
@@ -104,7 +103,6 @@ export default customElements.define('contest-type', class ContestType extends L
         font-size: 16px;
       }
       .container {
-        background: #272e2eb3;
         padding: 10px 24px 0 24px;
         box-sizing: border-box;
         pointer-events: auto;
