@@ -1753,8 +1753,9 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
         // todo implement metatx
       } else {        
         _treasury.deposit(msg.sender, competition_.price * 10**8);
-      
-        uint256 amount = competition_.price - (competition_.price / 100 * _treasury.fee());
+
+        uint256 fee = _treasury.fee();
+        uint256 amount = competition_.price - (competition_.price / 100 * fee);
         _competitions[category_][style_][competitionId_].prizePool = competition_.prizePool + amount;
       }
     
@@ -1864,7 +1865,7 @@ contract DynastyContests is ERC1155, Pausable, AccessControl {
 
       uint256 _amounts;
       for (uint256 i = 0; i < amounts_.length; i++) {
-        _amounts + amounts_[i];
+        _amounts += amounts_[i];
         _mint(members_[i], tokenId_, amounts_[i], '');
       }
       require(_amounts == competition_.prizePool, 'invalid reward distribution');
