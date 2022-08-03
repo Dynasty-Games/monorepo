@@ -5,6 +5,8 @@ import { isOpen, getCompetitionParams, getCompetitionsToClose, hasStarted, hasEn
 import { calculate } from '../../../app/src/apis/contests'
 import getRankings from './rankings.js'
 import closeCompetitionBatch from './close-competition-batch'
+import { BigNumber, utils } from 'ethers'
+import { isOdd } from './../utils'
 /**
  * runs everyday at 15:00
  * creates all competitions from same day 17:00 to day after 15:00
@@ -61,9 +63,24 @@ export const close = () => {
       const members = await getMembers(competition.category, competition.style, competition.id)      
       const portfolios = await getPortfolios(competition.category, competition.style, competition.id, members)
       let i = 0
+
+      const matches = members.reduce((set, p) => {
+        if (!set[portfolios[i].submits]) set[portfolios[i].submits] = 0
+        if (isOdd(set[portfolios[i].submits])) {
+          set[portfolios[i].submits - 1] += 1  
+        } else {
+          set[portfolios[i].submits] += 1
+        }
+        i++
+        return set
+      }, {})
+
+      i = 0
       for (const member of members) {
         batch.addresses.push(member)
-        batch.amounts.push(portfolios[i].submits * competition.price)
+        console.log(competition.prizePool / members.length );
+        batch.amounts.push(utils.parseUnits(String(competition.prizePool / members.length, '8')))
+        i++
       }
       // const winnings = await calculateWinnings(competition)
     }
