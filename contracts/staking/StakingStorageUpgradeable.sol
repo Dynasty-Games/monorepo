@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 import "node_modules/@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
+import "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./../interfaces/IMintable.sol";
 
-contract StakingStorage {
+contract StakingStorageUpgradeable is Initializable {
+  constructor() {
+    _disableInitializers();
+  }
   using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
   EnumerableSetUpgradeable.AddressSet internal _holders;
 

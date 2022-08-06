@@ -7,7 +7,7 @@ import "node_modules/@openzeppelin/contracts-upgradeable/access/AccessControlUpg
 import "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import './../interfaces/IMintable.sol';
 
-contract DynastyFantasyManager is Initializable, ERC20Upgradeable, PausableUpgradeable, AccessControlUpgradeable, IMintable {
+contract DynastyFantasyCredit is Initializable, ERC20Upgradeable, PausableUpgradeable, AccessControlUpgradeable, IMintable {
   bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
@@ -17,16 +17,12 @@ contract DynastyFantasyManager is Initializable, ERC20Upgradeable, PausableUpgra
   }
 
   function initialize() initializer public {
-    __ERC20_init("DynastyFantasyManager", "DFM");
+    __ERC20_init("DynastyFantasyCredit", "DFC");
     __Pausable_init();
     __AccessControl_init();
 
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(PAUSER_ROLE, _msgSender());
-  }
-
-  function decimals() public view virtual override returns (uint8) {
-    return 18;
   }
 
   function mint(address to_, uint256 amount_) public override onlyRole(MINTER_ROLE) {
@@ -41,6 +37,10 @@ contract DynastyFantasyManager is Initializable, ERC20Upgradeable, PausableUpgra
   function burnFrom(address from_, uint256 amount_) public override {
     require(hasRole(MINTER_ROLE, _msgSender()) || from_ == _msgSender(), 'not allowed');
     _burn(from_, amount_);
+  }
+
+  function decimals() public view virtual override returns (uint8) {
+    return 8;
   }
 
   function _beforeTokenTransfer(address from, address to, uint256 amount)

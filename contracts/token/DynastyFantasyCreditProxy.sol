@@ -2,8 +2,7 @@
 pragma solidity ^0.8.11;
 
 import "node_modules/@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import './StakingStorage.sol';
 
-contract DynastyStakingProxy is TransparentUpgradeableProxy, StakingStorage {
+contract DynastyFantasyCreditProxy is TransparentUpgradeableProxy {
   constructor(address logic, address admin, bytes memory data) TransparentUpgradeableProxy(logic, admin, data) public {}
 }
