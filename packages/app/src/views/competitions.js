@@ -43,7 +43,6 @@ export default customElements.define('competitions-view', class CompetitionsView
   async #parseContest() {
     let items = await openCompetitions()
     this.items = items.filter(item => item.category == this._category && item.style == this._gameStyle).sort((a, b) => a.startTime - b.startTime)
-    console.log(this.items);
     this.requestUpdate();
   }
 
@@ -90,6 +89,8 @@ export default customElements.define('competitions-view', class CompetitionsView
       .container {
         width: 100%;
         max-width: 760px;
+        overflow-y: auto;
+        pointer-events: auto;
       }
 
       competition-info-item {
