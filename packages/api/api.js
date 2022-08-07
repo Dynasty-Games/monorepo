@@ -1284,7 +1284,7 @@ const job = async ({category, style, id}, data) => {
     price: ethers.utils.formatUnits(params.price, 8),
     portfolioSize: params.portfolioSize.toNumber(),
     participants: participants.toNumber(),
-    extraData: JSON.parse(params.extraData.toString()),
+    extraData: params.extraData.toString().startsWidth('{') ? JSON.parse(params.extraData.toString()) : {},
     name: params.name,
     startTime: Number(params.startTime.toNumber() * 1000).toString(),
     prizePool: ethers.utils.formatUnits(params.prizePool, 8),
