@@ -1,10 +1,10 @@
 
 const { Contract, utils } = require('ethers')
 const ABI = require('./../packages/abis/DynastyContests.json')
-const { DynastyContests } = require('./../packages/addresses/goerli.json')
+const { DynastyContestsProxy } = require('./../packages/addresses/goerli.json')
 
 module.exports = async (signer) => {
-  const contract = new Contract(DynastyContests, ABI, signer)
+  const contract = new Contract(DynastyContestsProxy, ABI, signer)
 
   const categories = [0,0,0,0,0,0,0,0,0,0,0,0] // all crypto
   const styles = [0,0,0,0,0,0,0,0,0,0,0,0] // all classic

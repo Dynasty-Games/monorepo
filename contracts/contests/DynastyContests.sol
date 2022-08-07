@@ -1,68 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "node_modules/@openzeppelin/contracts/access/AccessControl.sol";
-import './interfaces/ITreasury.sol';
-import './interfaces/IMintable.sol';
+import "node_modules/@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import './DynastyContestsStorageUpgradeable.sol';
 
-contract DynastyContests is AccessControl {
+contract DynastyContests is Initializable, AccessControlUpgradeable, DynastyContestsStorageUpgradeable {
   bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
   bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
   
-  enum States {
-    OPEN,
-    CLOSED
-  }
-  
-  /**
-    * @dev extraData used to config for example the marketcap needed, max items etc
-    */
-  struct Competition {
-    string name;
-    uint256 id;
-    uint256 price;
-    uint256 prizePool;
-    uint256 portfolioSize;
-    uint256 freeSubmits;
-    uint256 startTime;
-    uint256 liveTime;
-    uint256 endTime;
-    bytes extraData;
-    States state;
-  }
-
-  struct Portfolio {
-    string[] items;
-    uint256 submits;
-  }
-
-  struct Style {
-    string name;
-    uint256 fee;
-  }
-
-  mapping (uint256 => mapping(uint256 => mapping (uint256 => Competition))) internal _competitions;
-  mapping (uint256 => mapping(uint256 => mapping (uint256 => mapping (address => Portfolio)))) internal _portfolios;
-  mapping (uint256 => mapping(uint256 => uint256)) internal _totalCompetitions;
-  mapping (uint256 => mapping(uint256 => mapping (uint256 => address[]))) internal _members;
-
-  ITreasury internal _treasury;
-  IMintable internal _token;
-
-  uint256 internal _categoriesLength;
-  uint256 internal _stylesLength;
-  mapping (uint256 => Style) internal _styles;
-  mapping (uint256 => string) internal _categories;
-
-  event StyleChange(uint256 indexed id, string name);
-  event CategoryChange(uint256 indexed id, string name);
-  event TreasuryChange(address erc20Token);
-  event SubmitPortfolio(uint256 category_, uint256 style_, uint256 competitionId_, address member_);
-
+  /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
-    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    _grantRole(MANAGER_ROLE, msg.sender);
+    _disableInitializers();
+  }
+
+  function initialize() initializer public {
+    __AccessControl_init();
+    __DynastyContestsStorage_init();
+
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(PAUSER_ROLE, _msgSender());
+    _grantRole(MANAGER_ROLE, _msgSender());
   }
 
   function competition(uint256 category_, uint256 style_, uint256 competitionId) public view returns (Competition memory) {
@@ -88,12 +46,12 @@ contract DynastyContests is AccessControl {
   }
 
   function members(uint256 category_, uint256 style_, uint256 competitionId) public view returns (address[] memory) {
-    require(hasRole(MANAGER_ROLE, msg.sender) || _portfolios[category_][style_][competitionId][msg.sender].submits != 0, 'not allowed');
+    require(hasRole(MANAGER_ROLE, _msgSender()) || _portfolios[category_][style_][competitionId][_msgSender()].submits != 0, 'not allowed');
     return _members[category_][style_][competitionId];
   }
 
   function memberPortfolio(uint256 category_, uint256 style_, uint256 competitionId, address member) public view returns (Portfolio memory) {
-    require(hasRole(MANAGER_ROLE, msg.sender) || _portfolios[category_][style_][competitionId][msg.sender].submits != 0, 'not allowed');
+    require(hasRole(MANAGER_ROLE, _msgSender()) || _portfolios[category_][style_][competitionId][_msgSender()].submits != 0, 'not allowed');
     return _portfolios[category_][style_][competitionId][member];
   }
 
@@ -102,39 +60,51 @@ contract DynastyContests is AccessControl {
   * @dev tokenId is included so we can switch credit token if needed
   * 0 = DynastyCredit
   */
-  function submitPortfolio(uint256 category_, uint256 style_, uint256 competitionId_, string[] memory items) public {
+  function submitPortfolio(uint256 category_, uint256 style_, uint256 competitionId_, string[] memory items, uint256 withCredits_) public {    
     Competition memory competition_ = _competitions[category_][style_][competitionId_];
-
+    require(withCredits_ == 1 || withCredits_ == 0, 'with credits can only be 0 or 1');
     require(competition_.startTime < block.timestamp, 'competition not started');
     require(competition_.liveTime > block.timestamp, 'competition already live or ended');
 
     require(items.length == competition_.portfolioSize, 'Invalid portfolioSize');
-    Portfolio memory portfolio = _portfolios[category_][style_][competitionId_][msg.sender];
+    Portfolio memory portfolio = _portfolios[category_][style_][competitionId_][_msgSender()];
     
-
     if (portfolio.submits != 0 && portfolio.submits <= competition_.freeSubmits) {
       // todo implement metatx
     } else {
-      _treasury.deposit(msg.sender, competition_.price);
-
-      uint256 fee = _styles[style_].fee;
-      uint256 amount = competition_.price - ((competition_.price / 100) * fee);
-
-      unchecked {
-        _competitions[category_][style_][competitionId_].prizePool += amount;  
+      uint256 _price = competition_.price;
+      if (withCredits_ == 1) {
+        uint256 _balance = _token.balanceOf(_msgSender());
+        if (_balance > _price) {
+          _token.burnFrom(_msgSender(), _price);
+          _price = 0;
+        } else {
+          _price = _price - _balance;
+          _token.burnFrom(_msgSender(), _balance);
+        }
       }
       
+      if (_price > 0) {
+        _treasury.deposit(_msgSender(), _price);
+
+        uint256 fee = _styles[style_].fee;
+        uint256 amount = _price - ((_price / 100) * fee);
+
+        unchecked {
+          _competitions[category_][style_][competitionId_].prizePool += amount;  
+        }
+      }      
     }
   
     if (portfolio.submits == 0) {
-      _members[category_][style_][competitionId_].push(msg.sender);
+      _members[category_][style_][competitionId_].push(_msgSender());
     }
 
     portfolio.submits += 1;
     portfolio.items = items;
-    _portfolios[category_][style_][competitionId_][msg.sender] = portfolio;
+    _portfolios[category_][style_][competitionId_][_msgSender()] = portfolio;
 
-    emit SubmitPortfolio(category_, style_, competitionId_, msg.sender);
+    emit SubmitPortfolio(category_, style_, competitionId_, _msgSender());
   }
   
   function category(uint256 id) public  view returns (string memory) {

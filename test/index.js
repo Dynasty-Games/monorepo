@@ -38,32 +38,32 @@ test('contracts', async tape => {
   tape.plan(6)
 
   let ok
-  console.log('setting up contracts')
-  ok = await setup(signer)
-  tape.ok(ok, 'setup contracts')
-  // // return
-  console.log('creating competitions')
-  ok = await create(signer)
-  tape.ok(ok, 'create competitions')
+  // console.log('setting up contracts')
+  // ok = await setup(signer)
+  // tape.ok(ok, 'setup contracts')
+  // // // return
+  // console.log('creating competitions')
+  // ok = await create(signer)
+  // tape.ok(ok, 'create competitions')
   
-  console.log('mint FakeUSDC')
-  let tx = await fakeUSDC.mint(signer.address, utils.parseUnits('100', 8))
-  await tx.wait()
+  // console.log('mint FakeUSDC')
+  // let tx = await fakeUSDC.mint(signer.address, utils.parseUnits('100', 8))
+  // await tx.wait()
 
-  console.log('set allowance')
-  tx = await fakeUSDC.approve(DynastyTreasury, utils.parseUnits('10', 8))
-  await tx.wait()
+  // console.log('set allowance')
+  // tx = await fakeUSDC.approve(DynastyTreasury, utils.parseUnits('10', 8))
+  // await tx.wait()
 
-  setTimeout(async () => {
-    console.log('entering competition')
-    ok = await enter(signer)
-    tape.ok(ok, 'enter competition')
+  // setTimeout(async () => {
+    // console.log('entering competition')
+    // ok = await enter(signer)
+    // tape.ok(ok, 'enter competition')
 
-    console.log('editing competition')
-    ok = await enter(signer)
-    tape.ok(ok, 'edit competition')
+    // console.log('editing competition')
+    // ok = await enter(signer)
+    // tape.ok(ok, 'edit competition')
 
-    setTimeout(async () => {
+    // setTimeout(async () => {
       console.log('closing competition')
       ok = await close(signer)
       tape.ok(ok, 'close competition')
@@ -71,6 +71,6 @@ test('contracts', async tape => {
       console.log('show competition info')
       ok = await info(signer)
       tape.ok(ok, 'competition info')
-    , 240000})
-  }, 240000)
+    // , 240000})
+  // }, 240000)
 })

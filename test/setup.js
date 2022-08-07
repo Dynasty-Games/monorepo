@@ -5,10 +5,10 @@ const treasuryABI = require('../packages/abis/DynastyTreasury.json')
 const FakeUSDCABI = require('../packages/abis/FakeUSDC.json')
 const DynastyFantasyManagerABI = require('../packages/abis/DynastyFantasyManager.json')
 const DynastyFantasyCreditABI = require('../packages/abis/DynastyFantasyCredit.json')
-const { DynastyContests, DynastyTreasury, FakeUSDC, DynastyStaking, DynastyFantasyManagerProxy, DynastyFantasyCreditProxy } = require('../packages/addresses/goerli.json')
+const { DynastyContestsProxy, DynastyTreasury, FakeUSDC, DynastyStaking, DynastyFantasyManagerProxy, DynastyFantasyCreditProxy } = require('../packages/addresses/goerli.json')
 
 module.exports = async (signer) => {
-  const contract = new Contract(DynastyContests, ABI, signer)  
+  const contract = new Contract(DynastyContestsProxy, ABI, signer)  
   const treasuryContract = new Contract(DynastyTreasury, treasuryABI, signer)
   const fakeUSDCContract = new Contract(FakeUSDC, FakeUSDCABI, signer)
   const dynastyFantasyManager = new Contract(DynastyFantasyManagerProxy, DynastyFantasyManagerABI, signer)
@@ -21,7 +21,7 @@ module.exports = async (signer) => {
     await tx.wait()
     tx = await dynastyFantasyManager.grantRole(role, DynastyStaking) // minter role
     await tx.wait()
-    tx = await dynastyCredit.grantRole(role, DynastyContests) // minter role
+    tx = await dynastyCredit.grantRole(role, DynastyContestsProxy) // minter role
     await tx.wait()
     tx = await contract.setToken(DynastyFantasyCreditProxy)
     await tx.wait()

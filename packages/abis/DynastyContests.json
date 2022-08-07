@@ -27,6 +27,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "bytes32",
         "name": "role",
@@ -433,12 +446,12 @@
             "type": "bytes"
           },
           {
-            "internalType": "enum DynastyContests.States",
+            "internalType": "enum DynastyContestsStorageUpgradeable.States",
             "name": "state",
             "type": "uint8"
           }
         ],
-        "internalType": "struct DynastyContests.Competition",
+        "internalType": "struct DynastyContestsStorageUpgradeable.Competition",
         "name": "",
         "type": "tuple"
       }
@@ -467,7 +480,7 @@
     "name": "competitionState",
     "outputs": [
       {
-        "internalType": "enum DynastyContests.States",
+        "internalType": "enum DynastyContestsStorageUpgradeable.States",
         "name": "",
         "type": "uint8"
       }
@@ -543,12 +556,12 @@
             "type": "bytes"
           },
           {
-            "internalType": "enum DynastyContests.States",
+            "internalType": "enum DynastyContestsStorageUpgradeable.States",
             "name": "state",
             "type": "uint8"
           }
         ],
-        "internalType": "struct DynastyContests.Competition[]",
+        "internalType": "struct DynastyContestsStorageUpgradeable.Competition[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -681,6 +694,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -781,7 +801,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct DynastyContests.Portfolio",
+        "internalType": "struct DynastyContestsStorageUpgradeable.Portfolio",
         "name": "",
         "type": "tuple"
       }
@@ -903,7 +923,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct DynastyContests.Style",
+        "internalType": "struct DynastyContestsStorageUpgradeable.Style",
         "name": "",
         "type": "tuple"
       }
@@ -945,6 +965,11 @@
         "internalType": "string[]",
         "name": "items",
         "type": "string[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withCredits_",
+        "type": "uint256"
       }
     ],
     "name": "submitPortfolio",

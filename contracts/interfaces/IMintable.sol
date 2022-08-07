@@ -9,4 +9,6 @@ interface IMintable {
   function burn(uint256 amount_) external;
 
   function burnFrom(address from_, uint256 amount_) external;
+
+  function balanceOf(address account) external view returns (uint256);
 }
