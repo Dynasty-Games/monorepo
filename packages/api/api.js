@@ -1324,7 +1324,7 @@ var competitions$1 = async () => {
         const _style = await contract$1.style(style);
         categories[name].push({
           name: _style[0],
-          fee: _style[1],
+          fee: _style[1].toNumber(),
           id: style
         });
         if (styles.indexOf(_style[0]) === -1) styles.push(_style[0]);  
