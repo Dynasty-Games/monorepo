@@ -569,66 +569,49 @@
         "type": "uint256[]"
       },
       {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "price",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "prizePool",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "portfolioSize",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "freeSubmits",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "startTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "liveTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "endTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "extraData",
-            "type": "bytes"
-          },
-          {
-            "internalType": "enum DynastyContests.States",
-            "name": "state",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct DynastyContests.Competition[]",
-        "name": "competitions_",
-        "type": "tuple[]"
+        "internalType": "string[]",
+        "name": "names_",
+        "type": "string[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "prices_",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "pricePools_",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "portfolioSizes_",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "submits",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "startTimes_",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "liveTimes_",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "endTimes_",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "extraData_",
+        "type": "bytes[]"
       }
     ],
     "name": "createCompetitionBatch",

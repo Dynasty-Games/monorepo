@@ -117,7 +117,7 @@ contract DynastyContests is AccessControl {
     } else {
       _treasury.deposit(msg.sender, competition_.price);
 
-      uint256 fee = _styles[competitionId_].fee;
+      uint256 fee = _styles[style_].fee;
       uint256 amount = competition_.price - ((competition_.price / 100) * fee);
 
       unchecked {
@@ -167,16 +167,38 @@ contract DynastyContests is AccessControl {
     return array;
   }
 
-  function _createCompetition(uint256 category_, uint256 style_, Competition memory competition_) internal {
+  function _createCompetition(
+    uint256 category_,
+    uint256 style_,
+    string memory name,
+    uint256 price,
+    uint256 prizePool,
+    uint256 portfolioSize,
+    uint256 submits,
+    uint256 startTime,
+    uint256 liveTime,
+    uint256 endTime,
+    bytes memory extraData
+  ) internal {
     require(bytes(_styles[style_].name).length > 0, 'Style does not exist');
     require(bytes(_categories[category_]).length > 0, 'Category does not exist');
-    require(competition_.startTime > block.timestamp, 'invalid startTime');
-    require(competition_.liveTime > competition_.startTime, 'invalid liveTime');
-    require(competition_.endTime > competition_.liveTime, 'invalid endTime');
+    require(startTime > block.timestamp, 'invalid startTime');
+    require(liveTime > startTime, 'invalid liveTime');
+    require(endTime > liveTime, 'invalid endTime');
 
     uint256 competitionsId = _totalCompetitions[category_][style_];
 
-    competition_.id = competitionsId;      
+    Competition memory competition_;
+    competition_.name = name;
+    competition_.id = competitionsId;
+    competition_.price = price;
+    competition_.prizePool = prizePool;
+    competition_.portfolioSize = portfolioSize;
+    competition_.freeSubmits = submits;
+    competition_.startTime = startTime;
+    competition_.liveTime = liveTime;
+    competition_.endTime = endTime;
+    competition_.extraData = extraData;
     competition_.state = States.OPEN;
     
     _totalCompetitions[category_][style_] += 1;
@@ -187,13 +209,30 @@ contract DynastyContests is AccessControl {
   function createCompetitionBatch(
     uint256[] memory categories_,
     uint256[] memory styles_,
-    Competition[] memory competitions_
+    string[] memory names_,
+    uint256[] memory prices_,
+    uint256[] memory pricePools_,
+    uint256[] memory portfolioSizes_,
+    uint256[] memory submits,
+    uint256[] memory startTimes_,
+    uint256[] memory liveTimes_,
+    uint256[] memory endTimes_,
+    bytes[] memory extraData_
   ) public onlyRole(MANAGER_ROLE) {
-    for (uint256 i = 0; i < competitions_.length; i++) {
+    for (uint256 i = 0; i < categories_.length; i++) {
+      
       _createCompetition(
         categories_[i],
         styles_[i],
-        competitions_[i]
+        names_[i],
+        prices_[i],
+        pricePools_[i],
+        portfolioSizes_[i],
+        submits[i],
+        startTimes_[i],
+        liveTimes_[i],
+        endTimes_[i],
+        extraData_[i]
       );
     }
   }
