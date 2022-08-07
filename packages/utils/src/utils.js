@@ -1,10 +1,14 @@
-import { query } from 'express'
-import _fetch from 'node-fetch'
+
 
 export const apiURL = 'https://api.dynastygames.games/'
-
+let _fetch
 const fetch = async (method, query) => {
-  const response = await _fetch(`${apiURL}${method}${query ? `?${query}` : ''}`)
+  if (!globalThis.fetch) {
+    _fetch = await import('node-fetch')
+    _fetch = _fetch.default
+  }
+  const url = `${apiURL}${method}${query ? `?${query}` : ''}`
+  const response = globalThis.fetch ? await globalThis.fetch(url) : await _fetch(url) 
   return response.json()
 }
 

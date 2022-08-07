@@ -76,8 +76,12 @@ export default async () => {
       const hasStyle = await contract.totalCompetitions(category, style)
       if (hasStyle) {
         const _style = await contract.style(style)
-        categories[name].push({name: _style, id: style})
-        if (styles.indexOf(_style.name) === -1) styles.push(_style.name)  
+        categories[name].push({
+          name: _style[0],
+          fee: _style[1],
+          id: style
+        })
+        if (styles.indexOf(_style[0]) === -1) styles.push(_style[0])  
         queue.push({category, style})
       }
       
