@@ -45,7 +45,7 @@ export const create = () => {
       }
     })))
     
-    await createCompetitionBatch(competitions, 'Low Cap', Buffer.from(JSON.stringify({
+    await createCompetitionBatch(competitions, 'Rekt To Riches', Buffer.from(JSON.stringify({
       salary: {
         max: 9000,
         min: 1000
