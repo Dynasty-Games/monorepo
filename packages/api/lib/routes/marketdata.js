@@ -21,6 +21,14 @@ router.get('/currencies', async (ctx, next) => {
   if (ctx.query.minMarketcap) {
     data = data.filter(currency => currency.marketCap >= Number(ctx.query.minMarketcap))
   }
+
+  if (ctx.query.minVolume) {
+    data = data.filter(currency => currency.volume >= Number(ctx.query.minVolume))
+  }
+  
+  if (ctx.query.maxVolume) {
+    data = data.filter(currency => currency.volume <= Number(ctx.query.maxVolume))
+  }
   ctx.body = data
 })
 
