@@ -134,12 +134,20 @@ export default customElements.define('competition-view', class CompetitionView e
     let params = await competition(category, style, id)
     console.log(params);
 
+    if (params.extraData?.query?.items) {
+      items = items.slice(0, params.extraData?.query?.items)
+    }
+
+    console.log(params.extraData);
+    const max = params.extraData?.salary?.max || 9000
+    const min = params.extraData?.salary?.min || 1000
+
     globalThis.currentCompetition = {
       category,
       style,
       id,
       params,
-      items: calculateBaseSalary(items.slice(0, 300)),
+      items: calculateBaseSalary(items, min, max),
       rankById,
       maxSalary: 50000,
       portfolio: []

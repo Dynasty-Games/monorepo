@@ -35,7 +35,7 @@ export const create = () => {
 
     await createCompetitionBatch(competitions, 'Lambo Maker', Buffer.from(JSON.stringify({
       salary: {
-        max: 18000,
+        max: 9000,
         min: 1000
       },
       maxSalary: 50000,
@@ -47,7 +47,7 @@ export const create = () => {
     
     await createCompetitionBatch(competitions, 'Rekt To Riches', Buffer.from(JSON.stringify({
       salary: {
-        max: 9000,
+        max: 18000,
         min: 1000
       },
       maxSalary: 50000,
