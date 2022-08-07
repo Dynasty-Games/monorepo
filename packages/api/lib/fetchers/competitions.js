@@ -65,11 +65,16 @@ export default async () => {
   // todo: don't fetch last years competitions
   const categoriesLength = await contract.categoriesLength()
   const stylesLength = await contract.stylesLength()
-
+  const categories = []
+  const styles = []
   let queue = []
   
   for (let category = 0; category < categoriesLength; category++) {
+    const name = await contract.category(i)
+    categories.push(name)
     for (let style = 0; style < stylesLength; style++) {
+      const _style = await contract.style(i)
+      if (styles.indexOf(_style.name) === -1) styles.push(_style.name)
       queue.push({category, style})
     }
   }
@@ -97,5 +102,7 @@ export default async () => {
   }
 
   await runQueue(data, queue, job)
+  data.categories = categories
+  data.styles = styles
   return data
 }

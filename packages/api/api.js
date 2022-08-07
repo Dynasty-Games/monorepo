@@ -70,12 +70,12 @@ var getMarketData = async (vsCurrency = 'usd', limit = '250', pages = '1', order
   return items
 };
 
-const router$2 = new Router__default["default"]();
+const router$3 = new Router__default["default"]();
 
 const baseApiURL = 'https://api.coingecko.com/api/v3/';
 // TODO: currencies sould just return all info except the marketdata
 
-router$2.get('/currencies', async (ctx, next) => {
+router$3.get('/currencies', async (ctx, next) => {
   const limit = ctx.query.limit ? Number(ctx.query.limit) : 100;
   let data = cache.get('marketdata');
   if (data && Number(ctx.query.pages) > 2) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
@@ -87,14 +87,14 @@ router$2.get('/currencies', async (ctx, next) => {
   ctx.body = data;
 });
 
-router$2.get('/marketdata', async (ctx, next) => {
+router$3.get('/marketdata', async (ctx, next) => {
   const limit = ctx.query.limit ? Number(ctx.query.limit) : 100;
   let data = cache.get('marketdata');
   if (!data || data?.length === 0 ) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
   ctx.body = data.splice(0, limit);
 });
 
-router$2.get('/currency-info', async (ctx, next) => {
+router$3.get('/currency-info', async (ctx, next) => {
   let data = cache.get(`currency_${ctx.query.id}`);
   if (!data || new Date().getTime() > timestamps.get(`currency_${ctx.query.id}`) + (5 * 60000)) {
     const url = `${baseApiURL}coins/${ctx.query.id}?tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false`;
@@ -105,7 +105,7 @@ router$2.get('/currency-info', async (ctx, next) => {
   ctx.body = data;
 });
 
-router$2.get('/currency-icon', async (ctx, next) => {
+router$3.get('/currency-icon', async (ctx, next) => {
   ctx.body = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/${ctx.query.symbol.toLowerCase()}.svg`;
 });
 
@@ -1311,11 +1311,16 @@ var competitions$1 = async () => {
   // todo: don't fetch last years competitions
   const categoriesLength = await contract$1.categoriesLength();
   const stylesLength = await contract$1.stylesLength();
-
+  const categories = [];
+  const styles = [];
   let queue = [];
   
   for (let category = 0; category < categoriesLength; category++) {
+    const name = await contract$1.category(i);
+    categories.push(name);
     for (let style = 0; style < stylesLength; style++) {
+      const _style = await contract$1.style(i);
+      if (styles.indexOf(_style.name) === -1) styles.push(_style.name);
       queue.push({category, style});
     }
   }
@@ -1343,10 +1348,12 @@ var competitions$1 = async () => {
   };
 
   await runQueue(data, queue, job);
+  data.categories = categories;
+  data.styles = styles;
   return data
 };
 
-const router$1 = new Router__default["default"]();
+const router$2 = new Router__default["default"]();
 
 const filter = ctx => {
   
@@ -1395,7 +1402,7 @@ const filter = ctx => {
 /**
  * fetch('/contest?id=lambomaker')
  */
-router$1.get('/competitions', async ctx => {
+router$2.get('/competitions', async ctx => {
   let data = cache.get('competitions');
   if (data) ctx.body = [...data.live, ...data.open, ...data.closed];
   else {
@@ -1406,7 +1413,7 @@ router$1.get('/competitions', async ctx => {
   filter(ctx);
 });
 
-router$1.get('/open-competitions', async ctx => {
+router$2.get('/open-competitions', async ctx => {
   let data = cache.get('competitions');
   if (data) ctx.body = data.open;
   else {
@@ -1417,7 +1424,7 @@ router$1.get('/open-competitions', async ctx => {
   filter(ctx);
 });
 
-router$1.get('/closed-competitions', async ctx => {
+router$2.get('/closed-competitions', async ctx => {
   let data = cache.get('competitions');
   if (data) ctx.body = data.closed;
   else {
@@ -1428,7 +1435,7 @@ router$1.get('/closed-competitions', async ctx => {
   filter(ctx);
 });
 
-router$1.get('/live-competitions', async ctx => {
+router$2.get('/live-competitions', async ctx => {
   let data = cache.get('competitions');
   if (data) ctx.body = data.live;
   else {
@@ -2017,7 +2024,7 @@ var FakeUSDC = [
 
 // import cache from './../cache'
 // import WebSocket from 'websocket'
-const router = new Router__default["default"]();
+const router$1 = new Router__default["default"]();
 
 const timedOut = {};
 
@@ -2039,7 +2046,7 @@ const timedOutMessage = ctx => {
   ctx.body = `${ctx.request.query.address} on timeout till ${new Date(timedOut[ctx.request.query.address] + 43200 * 1000)}`;
 };
 
-router.get('/faucet', async ctx => {
+router$1.get('/faucet', async ctx => {
   try {
     if (timedOut[ctx.request.query.address] + 43200 < Math.round(new Date().getTime() / 1000)) return timedOutMessage(ctx)
     let tx = await contract.mint(ctx.request.query.address, ethers.utils.parseUnits('100', 8));
@@ -2063,10 +2070,10 @@ router.get('/faucet', async ctx => {
   }
 });
 
-router.get('/faucet/tot', timedOutMessage);
+router$1.get('/faucet/tot', timedOutMessage);
 
 var marketdata = async () => {
-  let data = await getMarketData('usd', '250', '2');
+  let data = await getMarketData('usd', '250', '4');
   data = data.map(({
     name, id, symbol, image, current_price, total_supply, salary,
     total_volume, market_cap_rank, circulating_supply,
@@ -2098,6 +2105,12 @@ var marketdata = async () => {
 
 var competitions = async () => {
   const data = await competitions$1();
+  const categories = [...data.categories];
+  const styles = [...data.styles];
+  cache.add('info', {categories, styles});
+  
+  delete data.styles;
+  delete data.categories;
   cache.add('competitions', data);
 };
 
@@ -2313,6 +2326,18 @@ class JobRunner {
   }
 }
 
+const router = new Router__default["default"]();
+
+router.get('/styles', async ctx => {
+  let data = cache.get('info');
+  if (data) ctx.body = data.styles;
+});
+
+router.get('/categories', async ctx => {
+  let data = cache.get('info');
+  if (data) ctx.body = data.categories;
+});
+
 class DynastyStorageClient {  
   #port
   #client
@@ -2387,10 +2412,11 @@ class DynastyStorageClient {
   
   server
     .use(cors__default["default"]({ origin: '*' }))
+    .use(router$3.routes())
+    .use(router$1.routes())
     .use(router$2.routes())
     .use(router.routes())
-    .use(router$1.routes())
-    .use(router$2.allowedMethods());
+    .use(router$3.allowedMethods());
   
   server.listen(8668);
 })();
