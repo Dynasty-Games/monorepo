@@ -1,3 +1,4 @@
+import { ethers } from 'ethers'
 import { dynastyContest } from '../contracts'
 
 export default async (startTimes, duration = 43200) => { // 12hours in seconds
@@ -7,11 +8,11 @@ export default async (startTimes, duration = 43200) => { // 12hours in seconds
   const categories = startTimes.map(() => 0)
   const styles = startTimes.map(() => 0)
   const names = startTimes.map(() => 'Lambo Maker')
-  const prices = startTimes.map(() => 4)
+  const prices = startTimes.map(() => ethers.utils.parseUnits('4', 8))
   const portfolioSizes = startTimes.map(() => 8)
   const prizePools = startTimes.map(() => 0)
   const portfolioSubmits = startTimes.map(() => 4)
-
+  const extraData = startTimes.map(() => Buffer.from(''))
     const tx = await dynastyContest.createCompetitionBatch(
       categories,
       styles,
@@ -22,7 +23,8 @@ export default async (startTimes, duration = 43200) => { // 12hours in seconds
       portfolioSubmits,
       startTimes,
       liveTimes,
-      endTimes
+      endTimes,
+      extraData
     )
 
     try {
