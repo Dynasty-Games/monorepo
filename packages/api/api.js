@@ -1269,7 +1269,7 @@ const job = async ({category, style, id}, data) => {
     id: params.id.toNumber(),
     endTime,
     liveTime,
-    price: ethers.utils.formatUnits(params.price, 0),
+    price: ethers.utils.formatUnits(params.price, 8),
     portfolioSize: params.portfolioSize.toNumber(),
     participants: participants.toNumber(),
     name: params.name,

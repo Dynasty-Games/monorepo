@@ -23,7 +23,7 @@ const job = async ({category, style, id}, data) => {
     id: params.id.toNumber(),
     endTime,
     liveTime,
-    price: utils.formatUnits(params.price, 0),
+    price: utils.formatUnits(params.price, 8),
     portfolioSize: params.portfolioSize.toNumber(),
     participants: participants.toNumber(),
     name: params.name,
