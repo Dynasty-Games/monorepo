@@ -33,7 +33,29 @@ export const create = () => {
       Math.round(new Date(`${nextDay.getMonth() + 1}/${nextDay.getDate()}/${nextDay.getFullYear()} 23:00:00`).getTime() / 1000)
    ]
 
-    await createCompetitionBatch(competitions)
+    await createCompetitionBatch(competitions, 'Lambo Maker', Buffer.from(JSON.stringify({
+      salary: {
+        max: 18000,
+        min: 1000
+      },
+      maxSalary: 50000,
+      query: {      
+        minMarketcap: 80000000, 
+        volume: 200000
+      }
+    })))
+    
+    await createCompetitionBatch(competitions, 'Low Cap', Buffer.from(JSON.stringify({
+      salary: {
+        max: 9000,
+        min: 1000
+      },
+      maxSalary: 50000,
+      query: {      
+        items: 300
+      }
+    })))
+
     console.log(`started ${competitions.length} @${date.toLocaleString()}`);
   }
 
