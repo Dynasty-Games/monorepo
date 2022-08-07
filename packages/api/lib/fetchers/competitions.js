@@ -13,7 +13,6 @@ const job = async ({category, style, id}, data) => {
   const time = new Date().getTime()
   const liveTime = Number(params.liveTime.toString()) * 1000
   const endTime = Number(params.endTime.toString()) * 1000
-
   const isLive = time > liveTime && time < endTime
   if (params.endTime.toString() === '0') return
   
@@ -26,7 +25,7 @@ const job = async ({category, style, id}, data) => {
     price: utils.formatUnits(params.price, 8),
     portfolioSize: params.portfolioSize.toNumber(),
     participants: participants.toNumber(),
-    extraData: params.extraData.toString().startsWith('{') ? JSON.parse(params.extraData.toString()) : {},
+    extraData: params.extraData !== '0x' ? JSON.parse(Buffer.from(params.extraData, 'hex').toString()) : {},
     name: params.name,
     startTime: Number(params.startTime.toNumber() * 1000).toString(),
     prizePool: utils.formatUnits(params.prizePool, 8),
