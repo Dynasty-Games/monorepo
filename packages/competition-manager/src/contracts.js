@@ -24,4 +24,4 @@ export const provider = getDefaultProvider(network, {
 
 export const wallet = new Wallet(config.goerli_PRIVATE_KEY, provider)
 
-export const dynastyContest = new Contract(addresses.DynastyContests, ContestABI, wallet)
+export const dynastyContest = new Contract(addresses.DynastyContestsProxy, ContestABI, wallet)
