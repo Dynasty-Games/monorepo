@@ -41,11 +41,11 @@ test('contracts', async tape => {
   console.log('setting up contracts')
   ok = await setup(signer)
   tape.ok(ok, 'setup contracts')
-return
+  // // return
   console.log('creating competitions')
   ok = await create(signer)
   tape.ok(ok, 'create competitions')
-
+  
   console.log('mint FakeUSDC')
   let tx = await fakeUSDC.mint(signer.address, utils.parseUnits('100', 8))
   await tx.wait()

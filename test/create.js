@@ -1,5 +1,5 @@
 
-const { Contract } = require('ethers')
+const { Contract, utils } = require('ethers')
 const ABI = require('./../packages/abis/DynastyContests.json')
 const { DynastyContests } = require('./../packages/addresses/goerli.json')
 
@@ -9,8 +9,8 @@ module.exports = async (signer) => {
   const categories = [0,0,0,0,0,0,0,0,0,0,0,0] // all crypto
   const styles = [0,0,0,0,0,0,0,0,0,0,0,0] // all classic
   const names = ['lambo maker','lambo maker','lambo maker','lambo maker','lambo maker','lambo maker','lambo maker','lambo maker','lambo maker','lambo maker','lambo maker','lambo maker']
-  const prices = [4,4,4,4,4,4,4,4,4,4,4,4]
-  const prizePools = [10,10,10,10,10,10,10,10,10,10,10,10]
+  const prices = [utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8),utils.parseUnits('4', 8)]
+  const prizePools = [0,0,0,0,0,0,0,0,0,0,0,0]
   const portfolioSizes = [8,8,8,8,8,8,8,8,8,8,8,8]
   const potfolioSubmits = [4,4,4,4,4,4,4,4,4,4,4,4]
   
@@ -38,9 +38,9 @@ module.exports = async (signer) => {
 
   const liveTimes = startTimes.map(time => time + 120) // 6 hours live 21600
   const endTimes = startTimes.map(time => time + 240) // 12 hours before closed 43200
-
+  const extraData = startTimes.map(() => (Buffer.from('')))
   try {
-    let tx = await contract.createCompetitionBatch(categories, styles, names, prices, prizePools, portfolioSizes, potfolioSubmits, startTimes, liveTimes, endTimes, { gasLimit: 21000000 })
+    let tx = await contract.createCompetitionBatch(categories, styles, names, prices, prizePools, portfolioSizes, potfolioSubmits, startTimes, liveTimes, endTimes, extraData, { gasLimit: 21000000 })
     await tx.wait()
     return tx
   } catch (e) {
