@@ -44,7 +44,7 @@ export default customElements.define('rankings-view', class RankingsView extends
     const params = await getCompetition(this.category, this.competitionStyle, this.competition)
     this.competitionName = params.name
     this.startTime = params.startTime
-    this.price = _ethers.utils.formatUnits(params.price, 0)
+    this.price = params.price
 
     const contract = await contracts.dynastyContest.connect(connector)
     let items = await contract.members(this.category, this.competitionStyle, this.competition)

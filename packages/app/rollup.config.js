@@ -2,6 +2,7 @@ import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { execSync } from 'child_process'
 import cleaner from 'rollup-plugin-cleaner';
+import replace from '@rollup/plugin-replace';
 import path from 'path'
 
 try {
@@ -15,17 +16,20 @@ try {
 
 
 export default [{
-  input: ['src/shell.js', 'src/views/home.js', 'src/views/news.js', 'src/views/competitions.js', 'src/views/competition.js', 'src/views/contests.js', 'src/views/history.js', 'src/views/connect.js', 'src/views/rankings.js', 'src/views/member-rankings.js', 'src/views/live.js'],
+  input: ['src/shell.js', 'src/views/home.js', 'src/views/news.js', 'src/views/competitions.js', 'src/views/styles.js', 'src/views/competition.js', 'src/views/contests.js', 'src/views/history.js', 'src/views/connect.js', 'src/views/rankings.js', 'src/views/member-rankings.js', 'src/views/live.js'],
   output: {
     dir: 'www',
     format: 'es',
   },
-  external: ['wallet-connect.js', 'src/wallet-connect.js', '@walletconnect/client', '@walletconnect', './wallet-connect.js', './../walletconnect/walletconnect.js'],
+  external: ['node-fetch', 'wallet-connect.js', 'src/wallet-connect.js', '@walletconnect/client', '@walletconnect', './wallet-connect.js', './../walletconnect/walletconnect.js'],
   plugins: [
     cleaner({
       targets: [
         './www/**/*.js'
       ]
+    }),
+    replace({
+      "import _fetch from 'node-fetch'": ''
     }),
     json(),
     nodeResolve({

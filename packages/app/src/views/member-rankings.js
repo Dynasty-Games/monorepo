@@ -47,7 +47,7 @@ export default customElements.define('member-rankings-view', class MemberRanking
     this.competitionName = params.name
     this.category = params.category
     this.startTime = params.startTime
-    this.price = _ethers.utils.formatUnits(params.price, 0)
+    this.price = params.price
 
     const member = location.hash.split('member=')[1]
     const contract = await contracts.dynastyContest.connect(connector)
@@ -94,11 +94,22 @@ export default customElements.define('member-rankings-view', class MemberRanking
       :host {
         display: flex;
         flex-direction: column;
+        height: 100%;
+        width: 100%;
       }
       .container {
-        width: 100%;
-        align-items: center;
         height: 100%;
+        overflow: hidden;
+        justify-content: center;
+        box-sizing: border-box;
+        padding-bottom: 24px;
+      }
+      .list {
+        position: relative;
+        max-width: 640px;
+        width: 100%;
+        overflow-y: auto;
+        pointer-events: auto;
       }
       .drawer {
         position: absolute;
@@ -164,7 +175,6 @@ export default customElements.define('member-rankings-view', class MemberRanking
       @media(max-width: 680px) {
         .container {
           box-sizing: border-box;
-          max-height: 100%;
         }
 
         .inner-header {
@@ -188,41 +198,43 @@ export default customElements.define('member-rankings-view', class MemberRanking
         align-items: center;
       }
       </style>
-      <flex-column class="container">
-        <flex-row class="header">
-          <flex-row class="inner-header">
-            <custom-svg-icon icon="chevron-left" @click="${this.back}"></custom-svg-icon>
-            <h4>Portfolio Rankings</h4>
-            <flex-one></flex-one>
+      <flex-row class="header">
+        <flex-row class="inner-header">
+          <custom-svg-icon icon="chevron-left" @click="${this.back}"></custom-svg-icon>
+          <h4>Portfolio</h4>
+          <flex-one></flex-one>
 
-          </flex-row>
         </flex-row>
-        <flex-row class="info-header">
-          <flex-row class="inner-header">
-            <h2>
-            ${this.competitionName}
-            </h2>
-            <flex-one></flex-one>
-          </flex-row>
+      </flex-row>
+      <flex-row class="info-header">
+        <flex-row class="inner-header">
+          <h2>
+          ${this.competitionName}
+          </h2>
+          <flex-one></flex-one>
         </flex-row>
+      </flex-row>
 
-        <flex-row class="info-header two">
-          <flex-row class="inner-header">
-            <span style="padding-right: 6px;">entry:</span>
-            <span>${this.price}</span>
-            <flex-one></flex-one>
-            <flex-row>              
-              <custom-svg-icon icon="mode-edit" @click="${this.#edit}" ?shown="${connector?.accounts ? connector.accounts[0] === location.hash.split('member=')[1] : false}"></custom-svg-icon>
-              <strong>edit</strong>
-            </flex-row>
-            
-            <dynasty-countdown value="${this.startTime}" hide-past></dynasty-countdown>
+      <flex-row class="info-header two">
+        <flex-row class="inner-header">
+          <span style="padding-right: 6px;">entry:</span>
+          <span>${this.price}</span>
+          <flex-one></flex-one>
+          <flex-row>              
+            <custom-svg-icon icon="mode-edit" @click="${this.#edit}" ?shown="${connector?.accounts ? connector.accounts[0] === location.hash.split('member=')[1] : false}"></custom-svg-icon>
+            <strong>edit</strong>
           </flex-row>
+          
+          <dynasty-countdown value="${this.startTime}" hide-past></dynasty-countdown>
         </flex-row>
-
-        ${map(this.items, (item,  i) => html`
-          <member-rankings-item id="${item.id}" name="${item.name}" image="${item.image}" salary="${item.salary}" points="${item.points}" position="${i + 1}"></member-rankings-item>
-          `)}
-      </flex-column>`
+      </flex-row>
+      <flex-row class="container">     
+        <flex-wrap-between class="list">
+          ${map(this.items, (item,  i) => html`
+            <member-rankings-item id="${item.id}" name="${item.name}" image="${item.image}" salary="${item.salary}" points="${item.points}" position="${i + 1}"></member-rankings-item>
+            `)}
+        </flex-wrap-between>
+      </flex-row>
+      `
     }
   })

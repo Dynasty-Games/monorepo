@@ -33,22 +33,19 @@ export default customElements.define('rankings-item', class RankingsItem extends
       :host {
         display: flex;
         flex-direction: row;
-        height: 86px;
-        padding: 12px 24px;
+        height: 64px;
         box-sizing: border-box;
         align-items: center;
         color: var(--main-color);
         pointer-events: auto !important;
         cursor: pointer;
 
-        background: #272e2eb3;
-
         padding: 10px 24px;
         box-sizing: border-box;
         align-items: center;
         width: 100%;
         border: 1px solid #355050;
-
+        border-radius: 24px;
       }
 
       custom-svg-icon {

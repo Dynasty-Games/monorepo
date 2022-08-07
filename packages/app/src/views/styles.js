@@ -1,19 +1,25 @@
-import './../elements/competition-info-item'
-import { openCompetitions } from './../api'
+import { categories } from './../../../utils/src/utils'
+import '../elements/style-item'
 import {LitElement, html, css} from 'lit';
 import {map} from 'lit/directives/map.js'
 
-export default customElements.define('competitions-view', class CompetitionsView extends LitElement {
+export default customElements.define('styles-view', class StylesView extends LitElement {
   static properties = {
     category: {
-      type: Number
-    },
-    gameStyle: {
-      type: Number
+      type: String
     }
   }
   constructor() {
     super()
+  }
+
+  async connectedCallback() {
+    super.connectedCallback()
+  }
+
+  #click(event) {
+    const target = event.composedPath()[0]
+    location.hash = `#!/competition?category=${target.getAttribute('category')}&style=${target.getAttribute('style')}&competition=${target.getAttribute('competition')}`
   }
 
   back() {
@@ -21,29 +27,19 @@ export default customElements.define('competitions-view', class CompetitionsView
     history.back()
   }
 
-  #click(event) {
-    const target = event.composedPath()[0]
-    if (!target.hasAttribute('disabled')) location.hash = `#!/competition?competition=${target.competition}&category=${target.category}&competitionStyle=${target.competitionStyle}`
-  }
-
   attributeChangedCallback(name, old, value) {
     if (old !== value) this[name] = value
   }
 
   set category(value) {
-    this._category = value;
-    if (this._gameStyle) this.#parseContest()
-  }
-
-  set gameStyle(value) {
-    this._gameStyle = value;
-    if (this._category) this.#parseContest()
+    this._category = value
+    this.#parseContest()
   }
 
   async #parseContest() {
-    let items = await openCompetitions()
-    this.items = items.filter(item => item.category == this._category && item.style == this._gameStyle).sort((a, b) => a.startTime - b.startTime)
-    console.log(this.items);
+    let items = await categories()
+    console.log({items});
+    this.items = items[this._category]
     this.requestUpdate();
   }
 
@@ -67,19 +63,6 @@ export default customElements.define('competitions-view', class CompetitionsView
         overflow-y: auto;
       }
 
-
-      .drawer {
-        position: absolute;
-        top: 84px;
-      }
-
-      [slot="content"] {
-        display: flex;
-        flex-flow: row wrap;
-        justify-content: space-evenly;
-        width: 100%;
-      }
-
       a {
         text-decoration: none;
         color: var(--main-color);
@@ -90,10 +73,6 @@ export default customElements.define('competitions-view', class CompetitionsView
       .container {
         width: 100%;
         max-width: 760px;
-      }
-
-      competition-info-item {
-        width: 100%;
       }
 
       h2, h4 {
@@ -115,7 +94,10 @@ export default customElements.define('competitions-view', class CompetitionsView
         align-items: center;
         height: 54px;
       }
-
+      style-item {
+        pointer-events: auto;
+        cursor: pointer;
+      }
       custom-svg-icon {
         --svg-icon-color: var(--main-color);
         pointer-events: auto;
@@ -131,14 +113,16 @@ export default customElements.define('competitions-view', class CompetitionsView
     <flex-row class="header">
       <flex-row class="inner-header">
         <custom-svg-icon icon="chevron-left" @click=${this.back}></custom-svg-icon>
-        <h2>Choose a competition</h2>
+        <h2>Select your game style</h2>
         <flex-one></flex-one>
       </flex-row>
     </flex-row>
 
     <flex-one></flex-one>
     <flex-column class="container">
-      ${map(this.items, item => html`<competition-info-item name="${item.name}" competitionStyle=${item.style} competition="${item.id}" description="${item.description}" category="${item.category}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" participants="${item.participants}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>`)}
+      ${map(this.items?.crypto, item => html`
+        <style-item name="${item.name}" fee="${item.fee}" @click=${() => location.hash = `#!/competitions?category=${this._category}&gameStyle=${item.id}`}></style-item>
+      `)}
     </flex-column>
     <flex-one></flex-one>
     `

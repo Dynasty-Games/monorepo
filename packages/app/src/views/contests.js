@@ -48,7 +48,7 @@ export default customElements.define('contests-view', class ContestsView extends
     
     competitionMembers = competitionMembers.reduce((set, current) => {
       const params = competitions[current.i]
-      const name = competitions[current.i].name
+      const name = competitions[current.i].name.toLowerCase()
       params.members = current.members
       set[name] = set[name] || { name, items: [] }
       set[name].items.push(params)

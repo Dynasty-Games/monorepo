@@ -28,7 +28,7 @@ try {
 writeFileSync('lastbuild', build)
 
 export default [{
-  input: ['src/shell.js', 'src/views/home.js', 'src/views/news.js', 'src/views/competitions.js', 'src/views/competition.js', 'src/views/contests.js', 'src/views/history.js', 'src/views/connect.js', 'src/views/rankings.js', 'src/views/member-rankings.js', 'src/views/live.js'],
+  input: ['src/shell.js', 'src/views/home.js', 'src/views/news.js', 'src/views/competitions.js', 'src/views/styles.js', 'src/views/competition.js', 'src/views/contests.js', 'src/views/history.js', 'src/views/connect.js', 'src/views/rankings.js', 'src/views/member-rankings.js', 'src/views/live.js'],
   output: {
     dir: 'www',
     format: 'es',

@@ -155,7 +155,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
       query = query.split('&')
       for (let item of query) {
         item = item.split('=')
-        this.shadowRoot.querySelector(`${view}-view`).setAttribute(item[0], decodeURIComponent(item[1]))
+        this.shadowRoot.querySelector(`${view}-view`)[item[0]] = decodeURIComponent(item[1])
       }
     }
     // history.pushState({view, query}, view)
@@ -283,7 +283,8 @@ export default customElements.define('app-shell', class AppShell extends LitElem
       <nav-bar ?hidden="${this.selected === 'competition'}"></nav-bar>
       <custom-pages attr-for-selected="data-route">
         <home-view data-route="home"></home-view>
-        <competitions-view data-route="competitions"></competitions-view>
+        <styles-view data-route="styles"></styles-view>
+        <competitions-view data-route="competitions"></competitions-view>        
         <competition-view data-route="competition" ?is-desktop="${this.isDesktop}"></competition-view>
         <history-view data-route="history"></history-view>
         <connect-view data-route="connect"></connect-view>

@@ -44,7 +44,7 @@ export default customElements.define('live-view', class LiveView extends LitElem
     
     competitionMembers = competitionMembers.reduce((set, current) => {
       const params = competitions[current.i]
-      const name = competitions[current.i].name
+      const name = competitions[current.i].name.toLowerCase()
       params.members = current.members
       set[name] = set[name] || { name, items: [] }
       set[name].items.push(params)

@@ -4,7 +4,7 @@ import {html, LitElement} from 'lit'
 import {map} from 'lit/directives/map.js'
 import './competition-bar'
 import { DynastyTreasury } from './../../../addresses/goerli.json'
-import { editPortfolio } from '../api'
+import { editPortfolio, gameCredits } from '../api'
 
 export default customElements.define('portfolio-element', class PortfolioElement extends LitElement {
   static properties = {
@@ -175,8 +175,8 @@ export default customElements.define('portfolio-element', class PortfolioElement
 
         let allowance = await USDC.allowance(connector.accounts[0], DynastyTreasury)
         
-        if (Number(_ethers.utils.formatUnits(allowance, 8)) < Number(params.price)) {
-          tx = await USDC.approve(DynastyTreasury, _ethers.utils.parseUnits('10', 8))
+        if (Number(_ethers.utils.formatUnits(allowance, 8)) < Number(_ethers.utils.formatUnits(params.price, 8))) {
+          tx = await USDC.approve(DynastyTreasury, params.price)
           if (tx.wait) await tx.wait()
         }
           
@@ -184,9 +184,10 @@ export default customElements.define('portfolio-element', class PortfolioElement
         
         // if (tx.wait) await tx.wait()
 
-        
+        let withCredit = await gameCredits()
+        withCredit = Number(withCredit) > 0 ? 1 : 0
         try {
-          tx = await contract.populateTransaction.submitPortfolio(currentCompetition.category, currentCompetition.style, currentCompetition.id, currentCompetition.portfolio)
+          tx = await contract.populateTransaction.submitPortfolio(currentCompetition.category, currentCompetition.style, currentCompetition.id, currentCompetition.portfolio, withCredit)
           tx = {
             from: connector.accounts[0],
             data: tx.data,

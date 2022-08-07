@@ -61,7 +61,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
     </style>
     <span class="container">
     ${map(this.items, item => html`
-      <contest-item name="${item.name}" icon="${item.icon}" data-id="${item.id}" ?disabled="${item.disabled}" @click="${() => location.hash = `#!/competitions?contest=${item.name}`}"></contest-item>
+      <contest-item name="${item.name}" icon="${item.icon}" data-id="${item.id}" ?disabled="${item.disabled}" @click="${() => location.hash = `#!/styles?category=${item.id}`}"></contest-item>
       `)}
       </span>
     `

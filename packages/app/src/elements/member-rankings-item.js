@@ -41,21 +41,18 @@ export default customElements.define('member-rankings-item', class MemberRanking
       }
       :host {
         display: flex;
-        flex-direction: row;
-        height: 86px;
-        padding: 12px 24px;
+        flex-direction: column;
+        height: 176px;
+        width: calc(98% / 3);
         box-sizing: border-box;
         align-items: center;
         color: var(--main-color);
         pointer-events: auto !important;
         cursor: pointer;
-
-        background: #272e2eb3;
-
-        padding: 10px 24px;
         box-sizing: border-box;
         align-items: center;
-        width: 100%;
+        justify-content: center;
+        border-radius: 24px;
         border: 1px solid #355050;
 
       }
@@ -70,15 +67,17 @@ export default customElements.define('member-rankings-item', class MemberRanking
       }
 
       .name {
-        padding-left: 10px;
+        padding: 10px 0 20px 0;
       }
 
-      .add {
-        pointer-events: auto;
-      }
-
-      flex-row.add {
+      flex-column {
         align-items: center;
+      }
+
+      flex-row {
+        align-items: center;
+        box-sizing: border-box;
+        padding-bottom: 6px;
       }
 
       span {
@@ -90,6 +89,15 @@ export default customElements.define('member-rankings-item', class MemberRanking
         pointer-events: auto;
       }
 
+      h4 {
+        margin: 0;
+      }
+
+      flex-row h4 {
+        padding-right: 4px;
+      }
+      
+
       @media(min-width: 680px) {
         :host {
           max-width: 680px;
@@ -97,14 +105,19 @@ export default customElements.define('member-rankings-item', class MemberRanking
 
       }
     </style>
-    <img  style="padding-right: 8px" src="${this.image}"></img>
-    ${this.name}
-    <flex-one></flex-one>
-    <h4 style="padding-right: 8px">points</h4>
-    <span>${this.points}</span>
-
-    <h4 style="padding: 0 8px 0 16px">salary</h4>
-    <span>${this.salary.toLocaleString('en-US', { style: 'currency', currency: 'USD' }).replace('.00', '')}</span>
+    
+    <flex-column>
+      <img src="${this.image}"></img>
+      <h4 class="name">${this.name}</h4>
+      <flex-row>
+        <h4>salary</h4>
+        <span>${this.salary.toLocaleString('en-US', { style: 'currency', currency: 'USD' }).replace('.00', '')}</span>
+      </flex-row>
+      <flex-row>
+        <h4>points</h4>
+        <span>${this.points}</span>
+      </flex-row>
+    </flex-column>
     `
   }
 })
