@@ -36,9 +36,10 @@ export default customElements.define('competitions-view', class CompetitionsView
     this._contest = contest
     let items = await openCompetitions()
     const byName = items.reduce((set, current) => {
-      set[current.name] = set[current.name] || { name: current.name, items: [] }
-      set[current.name].items.push(current)
-      set[current.name].items.sort((a, b) => Number(a.startTime) - Number(b.startTime))
+      const name = current.name.toLowerCase();
+      set[name] = set[name] || { name, items: [] }
+      set[name].items.push(current)
+      set[name].items.sort((a, b) => Number(a.startTime) - Number(b.startTime))
       return set
     }, {})
     items = []
