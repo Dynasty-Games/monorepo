@@ -1,10 +1,10 @@
-import {DynastyContests} from './../../../addresses/goerli.json'
+import {DynastyContestsProxy} from './../../../addresses/goerli.json'
 import contestsABI from './../../../abis/DynastyContests.json'
 import { Contract, utils } from 'ethers'
 import provider from './../provider'
 import runQueue from '../queue'
 
-const contract = new Contract(DynastyContests, contestsABI, provider)
+const contract = new Contract(DynastyContestsProxy, contestsABI, provider)
 
 const job = async ({category, style, id}, data) => {
   const state = await contract.competitionState(category, style, id)

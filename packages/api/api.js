@@ -111,12 +111,21 @@ router$2.get('/currency-icon', async (ctx, next) => {
 
 var FakeUSDC$1 = "0xab5417222849D9bF8F55059502E86bDDdb496fB5";
 var DynastyTreasury = "0xE7C5B5Cd9DF18281C043084A4dF872d942C2af33";
-var DynastyContests = "0x3081D6789c390B4053725919F7be9ac0EFCceACF";
+var DynastyContests = "0x1674c58a159f28F69d701AF29A99312553Cb7B85";
 var RLPReader = "0x193481aDcd1223c80105c5431A9028b49B7D99a4";
 var MerklePatriciaProof = "0xc7D9c2A86e23dB3eAd63A731c0a39890Ba64207E";
 var Merkle = "0x05DB74e048b48E98e04cA0cc6eA2ABe3d7De2744";
 var ExitPayloadReader = "0x43126E5EC8738658723d1Fa3cA1cA4C14Fa4d8C6";
 var FxStateRootTunnel = "0xf4C2893E33bA5f84CCc66B6775a4AaB1Ab06020b";
+var ProxyManager = "0x210aa4A654924eFfcFf1A06c6bb793626b31eEC7";
+var DynastyStaking = "0x95Eb6a6803c6DB419ab0314BF8199889D06BeDFA";
+var DynastyStakinProxy = "0xb4162062517B4eb8de6Bb0FC2C1411Ed426d2FE2";
+var DynastyFantasyManager = "0xB275CE9437454a67475eF0e0fce0850dcD7C3cDc";
+var DynastyStakingProxy = "0x5E2e1892Eb468d3c0dFBAEb18d4e15443f2F50ee";
+var DynastyFantasyManagerProxy = "0xb2Ac4E92c8f741b9eE9A70C589a55159746AB930";
+var DynastyFantasyCredit = "0x99B17EA9F4Ca3DEEE2576c3E1090db096C3AA930";
+var DynastyFantasyCreditProxy = "0x87507E1Af51DAfff97406F31138225D8A2eb4990";
+var DynastyContestsProxy = "0x1F5AdDc03bef6227e11c4449adcD3431BbD1386A";
 var addresses = {
 	FakeUSDC: FakeUSDC$1,
 	DynastyTreasury: DynastyTreasury,
@@ -125,45 +134,24 @@ var addresses = {
 	MerklePatriciaProof: MerklePatriciaProof,
 	Merkle: Merkle,
 	ExitPayloadReader: ExitPayloadReader,
-	FxStateRootTunnel: FxStateRootTunnel
+	FxStateRootTunnel: FxStateRootTunnel,
+	ProxyManager: ProxyManager,
+	DynastyStaking: DynastyStaking,
+	DynastyStakinProxy: DynastyStakinProxy,
+	DynastyFantasyManager: DynastyFantasyManager,
+	DynastyStakingProxy: DynastyStakingProxy,
+	DynastyFantasyManagerProxy: DynastyFantasyManagerProxy,
+	DynastyFantasyCredit: DynastyFantasyCredit,
+	DynastyFantasyCreditProxy: DynastyFantasyCreditProxy,
+	DynastyContestsProxy: DynastyContestsProxy
 };
 
 var contestsABI = [
 	{
 		inputs: [
-			{
-				internalType: "string",
-				name: "uri_",
-				type: "string"
-			}
 		],
 		stateMutability: "nonpayable",
 		type: "constructor"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "address",
-				name: "account",
-				type: "address"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "operator",
-				type: "address"
-			},
-			{
-				indexed: false,
-				internalType: "bool",
-				name: "approved",
-				type: "bool"
-			}
-		],
-		name: "ApprovalForAll",
-		type: "event"
 	},
 	{
 		anonymous: false,
@@ -189,12 +177,12 @@ var contestsABI = [
 		inputs: [
 			{
 				indexed: false,
-				internalType: "address",
-				name: "account",
-				type: "address"
+				internalType: "uint8",
+				name: "version",
+				type: "uint8"
 			}
 		],
-		name: "Paused",
+		name: "Initialized",
 		type: "event"
 	},
 	{
@@ -326,99 +314,6 @@ var contestsABI = [
 		anonymous: false,
 		inputs: [
 			{
-				indexed: true,
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
-			},
-			{
-				indexed: false,
-				internalType: "string",
-				name: "name",
-				type: "string"
-			}
-		],
-		name: "TokenAdded",
-		type: "event"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "address",
-				name: "operator",
-				type: "address"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "from",
-				type: "address"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "to",
-				type: "address"
-			},
-			{
-				indexed: false,
-				internalType: "uint256[]",
-				name: "ids",
-				type: "uint256[]"
-			},
-			{
-				indexed: false,
-				internalType: "uint256[]",
-				name: "values",
-				type: "uint256[]"
-			}
-		],
-		name: "TransferBatch",
-		type: "event"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "address",
-				name: "operator",
-				type: "address"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "from",
-				type: "address"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "to",
-				type: "address"
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "value",
-				type: "uint256"
-			}
-		],
-		name: "TransferSingle",
-		type: "event"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
 				indexed: false,
 				internalType: "address",
 				name: "erc20Token",
@@ -426,38 +321,6 @@ var contestsABI = [
 			}
 		],
 		name: "TreasuryChange",
-		type: "event"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: false,
-				internalType: "string",
-				name: "value",
-				type: "string"
-			},
-			{
-				indexed: true,
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
-			}
-		],
-		name: "URI",
-		type: "event"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: false,
-				internalType: "address",
-				name: "account",
-				type: "address"
-			}
-		],
-		name: "Unpaused",
 		type: "event"
 	},
 	{
@@ -548,82 +411,15 @@ var contestsABI = [
 				type: "string"
 			},
 			{
-				internalType: "bytes",
-				name: "extraData_",
-				type: "bytes"
+				internalType: "uint256",
+				name: "fee_",
+				type: "uint256"
 			}
 		],
 		name: "addStyle",
 		outputs: [
 		],
 		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
-			},
-			{
-				internalType: "string",
-				name: "name_",
-				type: "string"
-			}
-		],
-		name: "addToken",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "account",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
-			}
-		],
-		name: "balanceOf",
-		outputs: [
-			{
-				internalType: "uint256",
-				name: "",
-				type: "uint256"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address[]",
-				name: "accounts",
-				type: "address[]"
-			},
-			{
-				internalType: "uint256[]",
-				name: "ids",
-				type: "uint256[]"
-			}
-		],
-		name: "balanceOfBatch",
-		outputs: [
-			{
-				internalType: "uint256[]",
-				name: "",
-				type: "uint256[]"
-			}
-		],
-		stateMutability: "view",
 		type: "function"
 	},
 	{
@@ -662,37 +458,75 @@ var contestsABI = [
 	{
 		inputs: [
 			{
-				internalType: "uint256[]",
-				name: "categories_",
-				type: "uint256[]"
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "string",
+				name: "name_",
+				type: "string"
+			}
+		],
+		name: "changeCategory",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "string",
+				name: "name_",
+				type: "string"
+			},
+			{
+				internalType: "uint256",
+				name: "fee_",
+				type: "uint256"
+			}
+		],
+		name: "changeStyle",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "category_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "style_",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "competitionId_",
+				type: "uint256"
 			},
 			{
 				internalType: "uint256[]",
-				name: "styles_",
-				type: "uint256[]"
-			},
-			{
-				internalType: "uint256[]",
-				name: "competitionIds_",
-				type: "uint256[]"
-			},
-			{
-				internalType: "uint256[]",
-				name: "amounts",
+				name: "amounts_",
 				type: "uint256[]"
 			},
 			{
 				internalType: "address[]",
 				name: "members_",
 				type: "address[]"
-			},
-			{
-				internalType: "uint256",
-				name: "tokenId_",
-				type: "uint256"
 			}
 		],
-		name: "closeCompetitionBatch",
+		name: "closeCompetition",
 		outputs: [
 		],
 		stateMutability: "nonpayable",
@@ -766,12 +600,17 @@ var contestsABI = [
 						type: "uint256"
 					},
 					{
-						internalType: "enum DynastyContests.States",
+						internalType: "bytes",
+						name: "extraData",
+						type: "bytes"
+					},
+					{
+						internalType: "enum DynastyContestsStorageUpgradeable.States",
 						name: "state",
 						type: "uint8"
 					}
 				],
-				internalType: "struct DynastyContests.Competition",
+				internalType: "struct DynastyContestsStorageUpgradeable.Competition",
 				name: "",
 				type: "tuple"
 			}
@@ -800,7 +639,7 @@ var contestsABI = [
 		name: "competitionState",
 		outputs: [
 			{
-				internalType: "enum DynastyContests.States",
+				internalType: "enum DynastyContestsStorageUpgradeable.States",
 				name: "",
 				type: "uint8"
 			}
@@ -871,12 +710,17 @@ var contestsABI = [
 						type: "uint256"
 					},
 					{
-						internalType: "enum DynastyContests.States",
+						internalType: "bytes",
+						name: "extraData",
+						type: "bytes"
+					},
+					{
+						internalType: "enum DynastyContestsStorageUpgradeable.States",
 						name: "state",
 						type: "uint8"
 					}
 				],
-				internalType: "struct DynastyContests.Competition[]",
+				internalType: "struct DynastyContestsStorageUpgradeable.Competition[]",
 				name: "",
 				type: "tuple[]"
 			}
@@ -935,6 +779,11 @@ var contestsABI = [
 				internalType: "uint256[]",
 				name: "endTimes_",
 				type: "uint256[]"
+			},
+			{
+				internalType: "bytes[]",
+				name: "extraData_",
+				type: "bytes[]"
 			}
 		],
 		name: "createCompetitionBatch",
@@ -1007,26 +856,11 @@ var contestsABI = [
 	},
 	{
 		inputs: [
-			{
-				internalType: "address",
-				name: "account",
-				type: "address"
-			},
-			{
-				internalType: "address",
-				name: "operator",
-				type: "address"
-			}
 		],
-		name: "isApprovedForAll",
+		name: "initialize",
 		outputs: [
-			{
-				internalType: "bool",
-				name: "",
-				type: "bool"
-			}
 		],
-		stateMutability: "view",
+		stateMutability: "nonpayable",
 		type: "function"
 	},
 	{
@@ -1130,7 +964,7 @@ var contestsABI = [
 						type: "uint256"
 					}
 				],
-				internalType: "struct DynastyContests.Portfolio",
+				internalType: "struct DynastyContestsStorageUpgradeable.Portfolio",
 				name: "",
 				type: "tuple"
 			}
@@ -1170,87 +1004,6 @@ var contestsABI = [
 	{
 		inputs: [
 			{
-				internalType: "address",
-				name: "account",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
-			},
-			{
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256"
-			},
-			{
-				internalType: "bytes",
-				name: "data",
-				type: "bytes"
-			}
-		],
-		name: "mint",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "to",
-				type: "address"
-			},
-			{
-				internalType: "uint256[]",
-				name: "ids",
-				type: "uint256[]"
-			},
-			{
-				internalType: "uint256[]",
-				name: "amounts",
-				type: "uint256[]"
-			},
-			{
-				internalType: "bytes",
-				name: "data",
-				type: "bytes"
-			}
-		],
-		name: "mintBatch",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "pause",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "paused",
-		outputs: [
-			{
-				internalType: "bool",
-				name: "",
-				type: "bool"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
 				internalType: "bytes32",
 				name: "role",
 				type: "bytes32"
@@ -1262,49 +1015,6 @@ var contestsABI = [
 			}
 		],
 		name: "renounceRole",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "uint256",
-				name: "category_",
-				type: "uint256"
-			},
-			{
-				internalType: "string",
-				name: "name_",
-				type: "string"
-			}
-		],
-		name: "replaceCategory",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "uint256",
-				name: "style_",
-				type: "uint256"
-			},
-			{
-				internalType: "string",
-				name: "name_",
-				type: "string"
-			},
-			{
-				internalType: "bytes",
-				name: "extraData_",
-				type: "bytes"
-			}
-		],
-		name: "replacestyle",
 		outputs: [
 		],
 		stateMutability: "nonpayable",
@@ -1333,84 +1043,11 @@ var contestsABI = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "from",
+				name: "token_",
 				type: "address"
-			},
-			{
-				internalType: "address",
-				name: "to",
-				type: "address"
-			},
-			{
-				internalType: "uint256[]",
-				name: "ids",
-				type: "uint256[]"
-			},
-			{
-				internalType: "uint256[]",
-				name: "amounts",
-				type: "uint256[]"
-			},
-			{
-				internalType: "bytes",
-				name: "data",
-				type: "bytes"
 			}
 		],
-		name: "safeBatchTransferFrom",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "from",
-				type: "address"
-			},
-			{
-				internalType: "address",
-				name: "to",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
-			},
-			{
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256"
-			},
-			{
-				internalType: "bytes",
-				name: "data",
-				type: "bytes"
-			}
-		],
-		name: "safeTransferFrom",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "operator",
-				type: "address"
-			},
-			{
-				internalType: "bool",
-				name: "approved",
-				type: "bool"
-			}
-		],
-		name: "setApprovalForAll",
+		name: "setToken",
 		outputs: [
 		],
 		stateMutability: "nonpayable",
@@ -1436,44 +1073,6 @@ var contestsABI = [
 				internalType: "uint256",
 				name: "id",
 				type: "uint256"
-			},
-			{
-				internalType: "string",
-				name: "uri",
-				type: "string"
-			}
-		],
-		name: "setURI",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
-			}
-		],
-		name: "setURI",
-		outputs: [
-			{
-				internalType: "string",
-				name: "",
-				type: "string"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
 			}
 		],
 		name: "style",
@@ -1486,12 +1085,12 @@ var contestsABI = [
 						type: "string"
 					},
 					{
-						internalType: "bytes",
-						name: "extraData",
-						type: "bytes"
+						internalType: "uint256",
+						name: "fee",
+						type: "uint256"
 					}
 				],
-				internalType: "struct DynastyContests.Style",
+				internalType: "struct DynastyContestsStorageUpgradeable.Style",
 				name: "",
 				type: "tuple"
 			}
@@ -1534,6 +1133,11 @@ var contestsABI = [
 				internalType: "string[]",
 				name: "items",
 				type: "string[]"
+			},
+			{
+				internalType: "uint256",
+				name: "withCredits_",
+				type: "uint256"
 			}
 		],
 		name: "submitPortfolio",
@@ -1564,12 +1168,12 @@ var contestsABI = [
 	{
 		inputs: [
 		],
-		name: "tokens",
+		name: "token",
 		outputs: [
 			{
-				internalType: "string[]",
+				internalType: "address",
 				name: "",
-				type: "string[]"
+				type: "address"
 			}
 		],
 		stateMutability: "view",
@@ -1627,53 +1231,6 @@ var contestsABI = [
 		],
 		stateMutability: "view",
 		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "uint256",
-				name: "id",
-				type: "uint256"
-			}
-		],
-		name: "totalSupply",
-		outputs: [
-			{
-				internalType: "uint256",
-				name: "",
-				type: "uint256"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "unpause",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "uint256",
-				name: "",
-				type: "uint256"
-			}
-		],
-		name: "uri",
-		outputs: [
-			{
-				internalType: "string",
-				name: "",
-				type: "string"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
 	}
 ];
 
@@ -1693,7 +1250,7 @@ const runQueue = async (data, queue, job) => {
   if (queue.length > 0) return runQueue(data, queue, job)
 };
 
-const contract$1 = new ethers.Contract(DynastyContests, contestsABI, provider$1);
+const contract$1 = new ethers.Contract(DynastyContestsProxy, contestsABI, provider$1);
 
 const job = async ({category, style, id}, data) => {
   const state = await contract$1.competitionState(category, style, id);
