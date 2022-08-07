@@ -8,7 +8,7 @@ test('@dynasty/api', async tape => {
   response = await response.json()
   tape.ok(response.length === 100, 'can fetch currencies')
 
-  response = await fetch('http://127.0.0.1:8668/currencies?marketcap=70000000&limit=250&pages=3')
+  response = await fetch('http://127.0.0.1:8668/currencies?minMarketcap=70000000&limit=250&pages=3')
   response = await response.json()
   tape.ok(response.length > 0, 'can fetch currencies by marketCap (70M)')
   console.log(`currencies: ${response.length}`);
