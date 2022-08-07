@@ -1274,7 +1274,7 @@ const job = async ({category, style, id}, data) => {
     participants: participants.toNumber(),
     name: params.name,
     startTime: Number(params.startTime.toNumber() * 1000).toString(),
-    prizePool: ethers.utils.formatUnits(params.prizePool, 0),
+    prizePool: ethers.utils.formatUnits(params.prizePool, 8),
     state,
     isLive
   };
