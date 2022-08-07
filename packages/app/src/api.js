@@ -2,6 +2,7 @@ import { getDefaultProvider, Contract, utils, providers } from './../node_module
 import erc20 from './data/abis/erc20'
 import addresses from './../../addresses/goerli'
 import ContestABI from './../../abis/DynastyContests.json'
+import CreditABI from './../../abis/DynastyFantasyCredit.json'
 
 const network = providers.getNetwork('goerli')
 
@@ -15,10 +16,12 @@ const provider = getDefaultProvider(network, {
 // 0x07865c6e87b9f70255377e024ace6630c1eaa37f orig USDC GOERLI
 const usdc = new Contract(addresses.FakeUSDC, erc20, provider)
 const dynastyContest = new Contract(addresses.DynastyContests, ContestABI, provider)
+const credit = new Contract(addresses.DynastyFantasyCreditProxy, CreditABI, provider)
 
 const apiURL = 'api.dynastygames.games'
 
 globalThis.contracts = {
+  credit,
   usdc,
   dynastyContest
 }
@@ -77,8 +80,9 @@ export const balance = async account => {
 /**
  * user DGC balance
  */
-export const gameCredits = () => {
-  return contracts.dynastyContest.balanceOf(connector.accounts[0], 0)
+export const gameCredits = async () => {
+  const units = await contracts.credit.balanceOf(connector.accounts[0])
+  return utils.formatUnits(units, 8)
 }
 
 export const signMessage = (type, category, style, id, value) => {
