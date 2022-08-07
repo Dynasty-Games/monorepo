@@ -15,7 +15,7 @@ const provider = getDefaultProvider(network, {
 
 // 0x07865c6e87b9f70255377e024ace6630c1eaa37f orig USDC GOERLI
 const usdc = new Contract(addresses.FakeUSDC, erc20, provider)
-const dynastyContest = new Contract(addresses.DynastyContests, ContestABI, provider)
+const dynastyContest = new Contract(addresses.DynastyContestsProxy, ContestABI, provider)
 const credit = new Contract(addresses.DynastyFantasyCreditProxy, CreditABI, provider)
 
 const apiURL = 'api.dynastygames.games'
