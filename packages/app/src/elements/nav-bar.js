@@ -64,6 +64,11 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
         custom-selector {
           overflow-x: scroll;
         }
+
+        a {
+          padding: 6px 12px;
+          height: 34px;
+        }
       }
       
 
