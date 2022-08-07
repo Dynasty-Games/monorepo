@@ -70,10 +70,10 @@ export default async () => {
   let queue = []
   
   for (let category = 0; category < categoriesLength; category++) {
-    const name = await contract.category(i)
+    const name = await contract.category(category)
     categories.push(name)
     for (let style = 0; style < stylesLength; style++) {
-      const _style = await contract.style(i)
+      const _style = await contract.style(style)
       if (styles.indexOf(_style.name) === -1) styles.push(_style.name)
       queue.push({category, style})
     }
