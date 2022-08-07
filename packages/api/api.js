@@ -87,6 +87,15 @@ router$3.get('/currencies', async (ctx, next) => {
   if (ctx.query.minMarketcap) {
     data = data.filter(currency => currency.marketCap >= Number(ctx.query.minMarketcap));
   }
+
+  if (ctx.query.minVolume) {
+    data = data.filter(currency => currency.volume >= Number(ctx.query.minVolume));
+  }
+  
+  if (ctx.query.maxVolume) {
+    data = data.filter(currency => currency.volume <= Number(ctx.query.maxVolume));
+  }
+  
   ctx.body = data;
 });
 
@@ -1275,6 +1284,7 @@ const job = async ({category, style, id}, data) => {
     price: ethers.utils.formatUnits(params.price, 8),
     portfolioSize: params.portfolioSize.toNumber(),
     participants: participants.toNumber(),
+    extraData: JSON.parse(params.extraData.toString()),
     name: params.name,
     startTime: Number(params.startTime.toNumber() * 1000).toString(),
     prizePool: ethers.utils.formatUnits(params.prizePool, 8),

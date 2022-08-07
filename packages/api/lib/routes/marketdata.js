@@ -29,6 +29,7 @@ router.get('/currencies', async (ctx, next) => {
   if (ctx.query.maxVolume) {
     data = data.filter(currency => currency.volume <= Number(ctx.query.maxVolume))
   }
+  
   ctx.body = data
 })
 

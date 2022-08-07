@@ -12,7 +12,7 @@ export default async (startTimes, name, extraData, duration = 43200) => { // 12h
   const portfolioSizes = startTimes.map(() => 8)
   const prizePools = startTimes.map(() => 0)
   const portfolioSubmits = startTimes.map(() => 3)
-  const extraData = startTimes.map(() => extraData)
+  const extraDatas = startTimes.map(() => extraData)
 
   const tx = await dynastyContest.createCompetitionBatch(
     categories,
@@ -25,7 +25,7 @@ export default async (startTimes, name, extraData, duration = 43200) => { // 12h
     startTimes,
     liveTimes,
     endTimes,
-    extraData
+    extraDatas
   )
 
     try {
