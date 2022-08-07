@@ -50,7 +50,7 @@ const differenceOf = (a, b, c) => {
   return (a - b) / (a - c)
 }
 
-export const calculateBaseSalary = set => {
+export const calculateBaseSalary = (set, min = 1000, max = 9000) => {
   const _set = []
   for (let i = 0; i < set.length;  i++) {
     set[i].salary = 1 / Math.log(Number(set[i].marketCap))
@@ -59,7 +59,7 @@ export const calculateBaseSalary = set => {
 
   for (let i = 0; i < set.length;  i++) {
     set[i].salary = differenceOf(_set[0].salary, _set[i].salary, _set[set.length - 1].salary)
-    set[i].salary = set[i].salary * (9000 - 1000) + 1000
+    set[i].salary = set[i].salary * (max - min) + min
     set[i].salary = (Math.round(set[i].salary / 100) * 100)
   }
   return set
