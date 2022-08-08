@@ -10,7 +10,7 @@ const baseApiURL = 'https://api.coingecko.com/api/v3/'
 // TODO: currencies sould just return all info except the marketdata
 
 router.get('/currencies', async (ctx, next) => {
-  const limit = ctx.query.limit ? Number(ctx.query.limit) : 100
+  const limit = ctx.query.limit ? Number(ctx.query.limit) : 250
   let data = cache.get('marketdata')
   if (data && Number(ctx.query.pages) > 4) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages)
   if (!data) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages)
@@ -34,7 +34,7 @@ router.get('/currencies', async (ctx, next) => {
 })
 
 router.get('/marketdata', async (ctx, next) => {
-  const limit = ctx.query.limit ? Number(ctx.query.limit) : 100
+  const limit = ctx.query.limit ? Number(ctx.query.limit) : 250
   let data = cache.get('marketdata')
   if (!data || data?.length === 0 ) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages)
   ctx.body = data.splice(0, limit)

@@ -11,6 +11,7 @@ const fetch = async (method, query) => {
   const response = globalThis.fetch ? await globalThis.fetch(url) : await _fetch(url) 
   return response.json()
 }
+export const currencies = query => fetch('currencies', query)
 
 export const openCompetitions = query => fetch('open-competitions', query)
 

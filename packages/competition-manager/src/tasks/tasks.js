@@ -40,8 +40,7 @@ export const create = () => {
       },
       maxSalary: 50000,
       query: {      
-        minMarketcap: 80000000, 
-        volume: 200000
+        items: 300
       }
     })))
     
@@ -50,9 +49,10 @@ export const create = () => {
         max: 18000,
         min: 1000
       },
-      maxSalary: 50000,
+      maxSalary: 50000,      
       query: {      
-        items: 300
+        maxMarketcap: 80000000, 
+        volume: 200000
       }
     })))
 
@@ -63,7 +63,8 @@ export const create = () => {
       },
       maxSalary: 50000,
       query: {      
-        items: 300
+        maxMarketcap: 80000000, 
+        volume: 200000
       }
     })))
 

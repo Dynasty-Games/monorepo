@@ -1,7 +1,7 @@
 export const currencies = async () => {
-  let response = await fetch('https://dynasty-api.leofcoin.org/currencies?limit=250&pages=2')
+  let response = await fetch('https://dynasty-api.leofcoin.org/currencies?limit=250&pages=4')
   response = await response.json()
-  return response.slice(0, 300)
+  return response
 }
 
 export default {

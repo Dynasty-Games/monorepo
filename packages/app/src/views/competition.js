@@ -1,11 +1,9 @@
 
 import {scrollbar} from './../shared/styles'
-import {currencies} from './../apis/coinmarketcap'
+import {currencies} from './../../../utils/src/utils'
 import './../elements/portfolio'
 import './../elements/portfolio-selector'
 import { competition } from './../api.js'
-import erc20 from './../data/abis/erc20'
-import { calendar } from './../time'
 import './../dynasty-elements/countdown.js'
 import { LitElement, html } from 'lit'
 import { calculateBaseSalary } from './../../../lib/src/lib'
@@ -123,7 +121,25 @@ export default customElements.define('competition-view', class CompetitionView e
   async #setCompetition(category, style, id) {
     if (category === undefined || style === undefined || id === undefined) return
 
-    let items = await currencies()
+
+    let params = await competition(category, style, id)
+    console.log(params);
+
+    let query = 'limit=250&pages=4'
+
+    if (params.extraData?.query?.minMarketcap) {
+      query += query.length > 0 ? `&maxMarketcap=${params.extraData.query.minMarketcap}` : `maxMarketcap=${params.extraData.query.minMarketcap}`
+    }
+
+    if (params.extraData?.query?.maxMarketcap) {
+      query += query.length > 0 ? `&maxMarketcap=${params.extraData.query.maxMarketcap}` : `maxMarketcap=${params.extraData.query.minMarketcap}`
+    }
+
+    if (params.extraData?.query?.volume) {
+      query += query.length > 0 ? `&minVolume=${params.extraData.query.volume}` : `minVolume=${params.extraData.query.volume}`
+    }
+    console.log(query);
+    let items = await currencies(query)
     items = items.sort((a,b) => a.rank - b.rank)
     const rankById = []
 
@@ -131,14 +147,11 @@ export default customElements.define('competition-view', class CompetitionView e
       rankById.push(item.id)
     }
 
-    let params = await competition(category, style, id)
-    console.log(params);
 
     if (params.extraData?.query?.items) {
       items = items.slice(0, params.extraData?.query?.items)
     }
 
-    console.log(params.extraData);
     const max = params.extraData?.salary?.max || 9000
     const min = params.extraData?.salary?.min || 1000
 
