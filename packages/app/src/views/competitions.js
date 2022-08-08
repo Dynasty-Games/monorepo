@@ -1,4 +1,5 @@
 import './../elements/competition-info-item'
+import './../elements/game-type-info'
 import { openCompetitions } from './../api'
 import {LitElement, html, css} from 'lit';
 import {map} from 'lit/directives/map.js'
@@ -42,7 +43,18 @@ export default customElements.define('competitions-view', class CompetitionsView
 
   async #parseContest() {
     let items = await openCompetitions()
-    this.items = items.filter(item => item.category == this._category && item.style == this._gameStyle).sort((a, b) => a.startTime - b.startTime)
+    items = items
+      .filter(item => item.category == this._category && item.style == this._gameStyle)
+      .sort((a, b) => a.startTime - b.startTime)
+
+    items = items.reduce((set, current) => {
+      const name = current.name.toLowerCase()
+      set[name] = set[name] || { name, items: [] }
+      set[name].items.push(current)
+      return set
+    }, {})
+    this.items = [...Object.values(items)]
+    
     this.requestUpdate();
   }
 
@@ -63,7 +75,14 @@ export default customElements.define('competitions-view', class CompetitionsView
 
       .container {
         height: 100%;
-        overflow-y: auto;
+        overflow-y: auto;        
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        color: var(--main-color);
+        font-family: 'Noto Sans', sans-serif;
+        border-radius: 24px;
+        overflow: hidden;
       }
 
 
@@ -123,6 +142,9 @@ export default customElements.define('competitions-view', class CompetitionsView
         cursor: pointer;
         padding-right: 12px;
       }
+      [hidden] {
+        display: none;
+      }
       @media(min-width: 860px) {
         .container {
           height: 80%;
@@ -139,7 +161,14 @@ export default customElements.define('competitions-view', class CompetitionsView
 
     <flex-one></flex-one>
     <flex-column class="container">
-      ${map(this.items, item => html`<competition-info-item name="${item.name}" competitionStyle=${item.style} competition="${item.id}" description="${item.description}" category="${item.category}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" participants="${item.participants}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>`)}
+      ${map(this.items, item => html`
+        <game-type-info name="${item.name}">
+        ${map(item.items, (item, i) => html`
+          <competition-info-item name="${item.name}" competitionStyle=${item.style} competition="${item.id}" description="${item.description}" category="${item.category}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" participants="${item.participants}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>
+        `)}          
+        </game-type-info>
+      `)}
+        
     </flex-column>
     <flex-one></flex-one>
     `

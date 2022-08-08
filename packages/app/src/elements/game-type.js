@@ -1,13 +1,13 @@
 import {LitElement, html} from 'lit';
 import {map} from 'lit/directives/map.js'
 import './game-type-info'
+import './competition-info-item'
 export default customElements.define('game-type', class GameType extends LitElement {
   static properties = {
     items: {
-      type: Array,
-      reflect: false
+      type: Array
     },
-    type: {
+    name: {
       type: String,
       reflect: false
     },
@@ -16,6 +16,7 @@ export default customElements.define('game-type', class GameType extends LitElem
       reflect: false
     },
     shown: {
+      reflect: true,
       type: Boolean
     }
   }
@@ -26,21 +27,12 @@ export default customElements.define('game-type', class GameType extends LitElem
 
   set items(value) {
     this._items = value
-    console.log(value);
+    console.table(value);
     this.requestUpdate()
   }
 
   get items() {
     return this._items
-  }
-
-  set type(value) {
-    this._type = value
-    this.requestUpdate()
-  }
-
-  get type() {
-    return this._type
   }
 
   set description(value) {
@@ -90,6 +82,10 @@ export default customElements.define('game-type', class GameType extends LitElem
       [hidden] {
         display: none;
       }
+      .container {        
+        min-height: calc(var(--position) * 48px);
+        max-height: 480px;
+      }
 
       .toggle {
         pointer-events: auto;
@@ -128,7 +124,7 @@ export default customElements.define('game-type', class GameType extends LitElem
     </style>
     <flex-row class="toggle" @click="${this.#toggle}">
       <flex-column>
-        <h3>${this.type}</h3>
+        <h3>${this.n}</h3>
       </flex-column>
       <flex-one></flex-one>
       ${this.shown ? html`<custom-svg-icon icon="icons::arrow-drop-up"></custom-svg-icon>` : html`<custom-svg-icon icon="icons::arrow-drop-down"></custom-svg-icon>`}
@@ -137,7 +133,7 @@ export default customElements.define('game-type', class GameType extends LitElem
     <flex-column class="container" ?hidden=${!this.shown}>
       ${map(this.items, (item, i) => html`
         <game-type-info name="${item.name}">
-          ${map(item.items, item => html`<competition-info-item name="${item.name}" competitionStyle=${item.style} competition="${item.id}" description="${item.description}" category="${item.category}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" participants="${item.participants}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>`)}
+          ${map(item.items, (item, i) => html`<competition-info-item name="${item.name}" competitionStyle=${item.style} competition="${item.id}" description="${item.description}" category="${item.category}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" participants="${item.participants}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>`)}
         </game-type-info>
         `)}
 

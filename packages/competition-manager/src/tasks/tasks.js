@@ -56,6 +56,17 @@ export const create = () => {
       }
     })))
 
+    await createCompetitionBatch(competitions, 'Blind Ape', Buffer.from(JSON.stringify({
+      salary: {
+        max: 18000,
+        min: 1000
+      },
+      maxSalary: 50000,
+      query: {      
+        items: 300
+      }
+    })))
+
     console.log(`started ${competitions.length} @${date.toLocaleString()}`);
   }
 

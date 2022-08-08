@@ -12,6 +12,7 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
       reflect: false
     },
     shown: {
+      reflect: true,
       type: Boolean
     }
   }
@@ -20,23 +21,12 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
     super()
   }
 
-  #click(event) {
-    const target = event.composedPath()[0]
-    if (!target.hasAttribute('disabled')) location.hash = `#!/rankings?competition=${target.getAttribute('address')}`
-  }
-
   async #toggle() {
-    this.shown = !this.shown
-    if (this.shown) {
-      const els = Array.from(this.shadowRoot.querySelectorAll('competition-info-item'))
-      let data = els.map(el => getCompetition(el.address))
-      data = await Promise.all(data.map(contract => contract.membersCount()))
-      data = data.map(data => data.toString())
-      els.forEach((el, i) => {
-        el.memberCount = data[i]
-      });
-
+    if (!this.shown) {
+      const length = Array.from(this.querySelectorAll('competition-info-item')).length
+      this.style.setProperty('--items-length', `${length * 64}px`)
     }
+    this.shown = !this.shown
   }
 
   render() {
@@ -49,13 +39,15 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
       
       :host {
         display: flex;
-        height: 100%;
+        height: auto;
         flex-direction: column;
         color: var(--main-color);
         font-family: 'Noto Sans', sans-serif;
         border-radius: 24px;
         overflow: hidden;
-        box-shadow: 0px 0px 20px 0px #ffffff8a;
+        min-height: 48px;
+        margin-bottom: 12px;
+        border: 1px solid var(--main-color);
       }
 
       competition-info-item {
@@ -64,6 +56,11 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
 
       [hidden] {
         display: none;
+      }
+
+      :host([shown]) {        
+        min-height: var(--items-length);
+        max-height: 480px;
       }
 
       .toggle {
