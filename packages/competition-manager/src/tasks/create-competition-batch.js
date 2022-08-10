@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { dynastyContest } from '../contracts'
 
-export default async (startTimes, name, extraData, duration = 43200) => { // 12hours in seconds
+export default async (startTimes, name, extraData, duration = 86400) => { // 12hours in seconds
 
   const endTimes = startTimes.map(time => time + duration)
   const liveTimes = startTimes.map(time => time + (duration / 2))
