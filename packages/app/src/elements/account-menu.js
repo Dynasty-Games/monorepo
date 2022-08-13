@@ -67,6 +67,8 @@ export default customElements.define('account-menu-element', class AccountMenuEl
       menuAction.innerHTML = 'connect'
 
       balanceElement.amount = 0
+      creditElement.amount = 0
+      totalBalanceElement.amount = 0
       if (this.#dropdown.hasAttribute('open')) this.#toggleDropdown()
     }
 

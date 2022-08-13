@@ -79,6 +79,11 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
         home
       </a>
 
+      <a href="#!/games" data-route="games">
+        <custom-svg-icon icon="icons::games"></custom-svg-icon>
+        games
+      </a>
+
       <flex-one></flex-one>
 
       <a href="#!/contests" data-route="contests">

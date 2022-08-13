@@ -108,6 +108,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
 
       localStorage.setItem('dynasty.wallet-connected', true)
       this.shadowRoot.querySelector('account-menu-element').setAttribute('account', detail[0])
+      this.shadowRoot.querySelector('home-view').setAttribute('account', detail[0])
       this.shadowRoot.querySelector('account-menu-element').setAttribute('icon',
         `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/usdc.svg`
       )
@@ -117,6 +118,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
       globalThis.userRef = undefined
       localStorage.setItem('dynasty.wallet-connected', false)
       this.shadowRoot.querySelector('account-menu-element').setAttribute('account', undefined)
+      this.shadowRoot.querySelector('home-view').setAttribute('account', undefined)
       this.shadowRoot.querySelector('account-menu-element').setAttribute('icon',
         `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/usdc.svg`
       )
@@ -283,6 +285,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
       <nav-bar ?hidden="${this.selected === 'competition'}"></nav-bar>
       <custom-pages attr-for-selected="data-route">
         <home-view data-route="home"></home-view>
+        <games-view data-route="games"></games-view>
         <styles-view data-route="styles"></styles-view>
         <competitions-view data-route="competitions"></competitions-view>        
         <competition-view data-route="competition" ?is-desktop="${this.isDesktop}"></competition-view>
