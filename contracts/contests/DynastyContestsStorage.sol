@@ -22,6 +22,7 @@ contract DynastyContestsStorage {
     uint256 startTime;
     uint256 liveTime;
     uint256 endTime;
+    address[] members;
     bytes extraData;
     States state;
   }
@@ -39,7 +40,6 @@ contract DynastyContestsStorage {
   mapping (uint256 => mapping(uint256 => mapping (uint256 => Competition))) internal _competitions;
   mapping (uint256 => mapping(uint256 => mapping (uint256 => mapping (address => Portfolio)))) internal _portfolios;
   mapping (uint256 => mapping(uint256 => uint256)) internal _totalCompetitions;
-  mapping (uint256 => mapping(uint256 => mapping (uint256 => address[]))) internal _members;
 
   ITreasury internal _treasury;
   IMintable internal _token;

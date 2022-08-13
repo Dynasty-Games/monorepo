@@ -37,7 +37,7 @@ contract DynastyContests is Initializable, AccessControlUpgradeable, DynastyCont
   }
 
   function totalMembers(uint256 category_, uint256 style_, uint256 competitionId) public view returns (uint256) {
-    return _members[category_][style_][competitionId].length;
+    return _competitions[category_][style_][competitionId].members.length;
   }
 
   function isMember(uint256 category_, uint256 style_, uint256 competitionId, address member_) public view returns (bool) {
@@ -47,7 +47,7 @@ contract DynastyContests is Initializable, AccessControlUpgradeable, DynastyCont
 
   function members(uint256 category_, uint256 style_, uint256 competitionId) public view returns (address[] memory) {
     require(hasRole(MANAGER_ROLE, _msgSender()) || _portfolios[category_][style_][competitionId][_msgSender()].submits != 0, 'not allowed');
-    return _members[category_][style_][competitionId];
+    return _competitions[category_][style_][competitionId].members;
   }
 
   function memberPortfolio(uint256 category_, uint256 style_, uint256 competitionId, address member) public view returns (Portfolio memory) {
@@ -97,7 +97,7 @@ contract DynastyContests is Initializable, AccessControlUpgradeable, DynastyCont
     }
   
     if (portfolio.submits == 0) {
-      _members[category_][style_][competitionId_].push(_msgSender());
+      _competitions[category_][style_][competitionId_].members.push(_msgSender());
     }
 
     portfolio.submits += 1;

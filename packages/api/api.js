@@ -123,7 +123,7 @@ router$3.get('/currency-icon', async (ctx, next) => {
 
 var FakeUSDC$1 = "0xab5417222849D9bF8F55059502E86bDDdb496fB5";
 var DynastyTreasury = "0xE7C5B5Cd9DF18281C043084A4dF872d942C2af33";
-var DynastyContests = "0x1674c58a159f28F69d701AF29A99312553Cb7B85";
+var DynastyContests = "0xfee12c5063c46F3E9B6c992f1bc7D78E114695b1";
 var RLPReader = "0x193481aDcd1223c80105c5431A9028b49B7D99a4";
 var MerklePatriciaProof = "0xc7D9c2A86e23dB3eAd63A731c0a39890Ba64207E";
 var Merkle = "0x05DB74e048b48E98e04cA0cc6eA2ABe3d7De2744";
@@ -617,6 +617,11 @@ var contestsABI = [
 						type: "bytes"
 					},
 					{
+						internalType: "address[]",
+						name: "members",
+						type: "address[]"
+					},
+					{
 						internalType: "enum DynastyContestsStorageUpgradeable.States",
 						name: "state",
 						type: "uint8"
@@ -725,6 +730,11 @@ var contestsABI = [
 						internalType: "bytes",
 						name: "extraData",
 						type: "bytes"
+					},
+					{
+						internalType: "address[]",
+						name: "members",
+						type: "address[]"
 					},
 					{
 						internalType: "enum DynastyContestsStorageUpgradeable.States",
@@ -1258,17 +1268,22 @@ var provider$1 = ethers.getDefaultProvider(network$1, {
 const _runQueue = (items, data, job) => Promise.all(items.map(item => job(item, data)));
 
 const runQueue = async (data, queue, job) => {
-  await _runQueue(queue.splice(0, queue.length > 12 ? 12 : queue.length), data, job);
-  if (queue.length > 0) return runQueue(data, queue, job)
+  await _runQueue(queue.splice(0, queue.length > 10 ? 10 : queue.length), data, job);
+  if (queue.length > 0) return runQueue(data, queue, job)  
+};
+
+var runQueue$1 = async (data, queue, job) => {
+  console.time(job.name);
+  await runQueue(data, queue, job);
+  console.timeEnd(job.name);
+  return
 };
 
 const contract$1 = new ethers.Contract(DynastyContestsProxy, contestsABI, provider$1);
 
-const job = async ({category, style, id}, data) => {
+const competitionInfo = async ({category, style, id}, data) => {
   try {
-    const state = await contract$1.competitionState(category, style, id);
     const params = await contract$1.competition(category, style, id);
-    const participants = await contract$1.totalMembers(category, style, id);
     const time = new Date().getTime();
     const liveTime = Number(params.liveTime.toString()) * 1000;
     const endTime = Number(params.endTime.toString()) * 1000;
@@ -1283,16 +1298,16 @@ const job = async ({category, style, id}, data) => {
       liveTime,
       price: ethers.utils.formatUnits(params.price, 8),
       portfolioSize: params.portfolioSize.toNumber(),
-      participants: participants.toNumber(),
+      participants: params.members.length,
       extraData: params.extraData !== '0x' ? JSON.parse(Buffer.from(params.extraData.replace('0x', ''), 'hex').toString()) : {},
       name: params.name,
       startTime: Number(params.startTime.toNumber() * 1000).toString(),
       prizePool: ethers.utils.formatUnits(params.prizePool, 8),
-      state,
+      state: params.state,
       isLive
     };
 
-    if (state === 0 && endTime > time) {
+    if (params.state === 0 && endTime > time) {
       if (isLive) {
         data.live.push(competition);
       } else {
@@ -1303,33 +1318,29 @@ const job = async ({category, style, id}, data) => {
       data.closed.push(competition);
     }
   } catch (e) {
-    console.warn({e});
+    console.warn(style, category, id);
+    console.trace(e);
   }
   return data
 };
 
-const totalCompetitions = async ({category, style, name}, data) => {
-  const totalCompetitions = await contract$1.totalCompetitions(category, style);
+const totalCompetitions = async ({category, style, name, totalCompetitions}, data) => {  
+  if (!data.categories[name]) data.categories[name] = [];
+  const _style = await contract$1.style(style);
+  data.categories[name].push({
+    name: _style[0],
+    fee: _style[1].toNumber(),
+    id: style
+  });
   
-  try {
-    const hasStyle = await contract$1.totalCompetitions(category, style);
-    if (hasStyle) {
-      const _style = await contract$1.style(style);
-      data.categories[name].push({
-        name: _style[0],
-        fee: _style[1].toNumber(),
-        id: style
-      });
-      if (data.styles.indexOf(_style[0]) === -1) data.styles.push(_style[0]);
-      data.items.push({
-        totalCompetitions: totalCompetitions.toNumber(),
-        category,
-        style
-      });
-    }
-  } catch {
+  if (data.styles.indexOf(_style[0]) === -1) data.styles.push(_style[0]);
 
-  }
+  data.items.push({
+    totalCompetitions: totalCompetitions.toNumber(),
+    category,
+    style
+  });
+  
   return data
 };
 
@@ -1344,8 +1355,7 @@ var competitions$1 = async () => {
   // todo: don't fetch last years competitions
   const categoriesLength = await contract$1.categoriesLength();
   const stylesLength = await contract$1.stylesLength();
-  const categories = {};
-  const styles = [];
+  
   let queue = [];
 
   let data = {
@@ -1353,18 +1363,19 @@ var competitions$1 = async () => {
     styles: [],
     items: []
   };
-  await runQueue(data, queue, totalCompetitions);
-
   
   for (let category = 0; category < categoriesLength; category++) {
     const name = await contract$1.category(category);
-    categories[name] = [];
-    for (let style = 0; style < stylesLength; style++) {      
-      queue.push({category, style, name});
+    for (let style = 0; style < stylesLength; style++) {    
+      try {
+        const totalCompetitions = await contract$1.totalCompetitions(category, style);  
+        queue.push({category, style, name, totalCompetitions});
+      } catch {
+
+      }      
     }  
   }
-
-  await runQueue(data, queue, totalCompetitions);
+  await runQueue$1(data, queue, totalCompetitions);
 
   queue = [];
 
@@ -1374,9 +1385,12 @@ var competitions$1 = async () => {
     const style = data.items[i].style;
 
     for (let id = 0; id <= totalCompetitions; id++) {
-      queue.push({category, style, id: totalCompetitions - id});
+      queue.push({category, style, id});
     }
   }
+
+  const categories = data.categories;
+  const styles = data.styles;
 
   data = {
     open: [],
@@ -1384,7 +1398,7 @@ var competitions$1 = async () => {
     closed: []
   };
 
-  await runQueue(data, queue, job);
+  await runQueue$1(data, queue, competitionInfo);
   data.categories = [categories];
   data.styles = styles;
   return data

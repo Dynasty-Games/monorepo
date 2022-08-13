@@ -446,6 +446,11 @@
             "type": "bytes"
           },
           {
+            "internalType": "address[]",
+            "name": "members",
+            "type": "address[]"
+          },
+          {
             "internalType": "enum DynastyContestsStorageUpgradeable.States",
             "name": "state",
             "type": "uint8"
@@ -554,6 +559,11 @@
             "internalType": "bytes",
             "name": "extraData",
             "type": "bytes"
+          },
+          {
+            "internalType": "address[]",
+            "name": "members",
+            "type": "address[]"
           },
           {
             "internalType": "enum DynastyContestsStorageUpgradeable.States",

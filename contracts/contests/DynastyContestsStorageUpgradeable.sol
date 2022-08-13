@@ -24,6 +24,7 @@ contract DynastyContestsStorageUpgradeable is Initializable {
     uint256 liveTime;
     uint256 endTime;
     bytes extraData;
+    address[] members;
     States state;
   }
 
