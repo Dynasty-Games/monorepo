@@ -39,7 +39,7 @@ const currencyJob = async (timestamp, currency) => {
         volumeDifference: data.volumeChange24hPercentage || 0,
         marketCapDifference: data.rankChange24h || 0
       })
-    }      
+    }
   }
 
   currency.points = points
@@ -48,15 +48,14 @@ const currencyJob = async (timestamp, currency) => {
     const stamp = stampsTwentyFourHoursAgo[stampsTwentyFourHoursAgo.length - 1]
     let data = await storage.get(`currencies/${currency.id}/${stamp}`)
     data = JSON.parse(data.toString())
-    console.log(data);
-    
+
     currency.volumeChange24hPercentage = calculateDifference(data.volume, currency.volume)
-    currency.rankChange24hPercentage = calculateDifference(data.rank, currency.rank)    
+    currency.rankChange24hPercentage = calculateDifference(data.rank, currency.rank)
     currency.rankChange24h = Number(data.rank) - Number(currency.rank)
     currency.priceChange24h = Number(data.price) - Number(currency.price)
 
     if (data.points) {
-      currency.pointsChange24hPercentage = calculateDifference(data.points, currency.points)  
+      currency.pointsChange24hPercentage = calculateDifference(data.points, currency.points)
       currency.pointsChange24h = Number(data.points) - Number(points)
     }
   }
@@ -75,16 +74,16 @@ const currencyJob = async (timestamp, currency) => {
     currency.rankChange12h = Number(data.rank) - Number(currency.rank)
 
     if (data.points) {
-      currency.pointsChange12hPercentage = calculateDifference(data.points, points)      
+      currency.pointsChange12hPercentage = calculateDifference(data.points, points)
       currency.pointsChange12h = Number(data.points) - Number(points)
-    }    
+    }
   }
 
   if (stampsOneHoursAgo.length > 0) {
     const stamp = stampsOneHoursAgo[stampsOneHoursAgo.length - 1]
     let data = await storage.get(`currencies/${currency.id}/${stamp}`)
     data = JSON.parse(data.toString())
-    
+
     currency.priceChange1hPercentage = calculateDifference(data.price, currency.price)
     currency.volumeChange1hPercentage = calculateDifference(data.volume, currency.volume)
     currency.rankChange1hPercentage = calculateDifference(data.rank, currency.rank)
@@ -93,11 +92,11 @@ const currencyJob = async (timestamp, currency) => {
     currency.rankChange1h = Number(data.rank) - Number(currency.rank)
 
     if (data.points) {
-      currency.pointsChange1hPercentage = calculateDifference(data.points, points)  
+      currency.pointsChange1hPercentage = calculateDifference(data.points, points)
       currency.pointsChange1h = Number(data.points) - Number(points)
-    }    
+    }
   }
-  
+
   delete currency.timestamps
   delete currency.salary
 
@@ -130,6 +129,6 @@ export default async () => {
   currencies = await Promise.all(stamps.map(currency => currencyJob(timestamp, currency)))
 
   await Promise.all(set.added.map(currency => storage.put(`currencies/${currency.id}/${timestamp}`, Buffer.from(JSON.stringify(currency)))))
-  
-  cache.add('marketdata', [...currencies, ...set.added])  
+
+  cache.add('marketdata', [...currencies, ...set.added])
 }

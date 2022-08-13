@@ -76,7 +76,7 @@ const baseApiURL = 'https://api.coingecko.com/api/v3/';
 // TODO: currencies sould just return all info except the marketdata
 
 router$3.get('/currencies', async (ctx, next) => {
-  const limit = ctx.query.limit ? Number(ctx.query.limit) : 100;
+  const limit = ctx.query.limit ? Number(ctx.query.limit) : 250;
   let data = cache.get('marketdata');
   if (data && Number(ctx.query.pages) > 4) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
   if (!data) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
@@ -100,7 +100,7 @@ router$3.get('/currencies', async (ctx, next) => {
 });
 
 router$3.get('/marketdata', async (ctx, next) => {
-  const limit = ctx.query.limit ? Number(ctx.query.limit) : 100;
+  const limit = ctx.query.limit ? Number(ctx.query.limit) : 250;
   let data = cache.get('marketdata');
   if (!data || data?.length === 0 ) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
   ctx.body = data.splice(0, limit);
@@ -1265,58 +1265,79 @@ const runQueue = async (data, queue, job) => {
 const contract$1 = new ethers.Contract(DynastyContestsProxy, contestsABI, provider$1);
 
 const job = async ({category, style, id}, data) => {
-  const state = await contract$1.competitionState(category, style, id);
-  const params = await contract$1.competition(category, style, id);
-  const participants = await contract$1.totalMembers(category, style, id);
-  const time = new Date().getTime();
-  const liveTime = Number(params.liveTime.toString()) * 1000;
-  const endTime = Number(params.endTime.toString()) * 1000;
-  const isLive = time > liveTime && time < endTime;
-  if (params.endTime.toString() === '0') return
-  
-  const competition = {
-    style,
-    category,
-    id: params.id.toNumber(),
-    endTime,
-    liveTime,
-    price: ethers.utils.formatUnits(params.price, 8),
-    portfolioSize: params.portfolioSize.toNumber(),
-    participants: participants.toNumber(),
-    extraData: params.extraData !== '0x' ? JSON.parse(Buffer.from(params.extraData.replace('0x', ''), 'hex').toString()) : {},
-    name: params.name,
-    startTime: Number(params.startTime.toNumber() * 1000).toString(),
-    prizePool: ethers.utils.formatUnits(params.prizePool, 8),
-    state,
-    isLive
-  };
+  try {
+    const state = await contract$1.competitionState(category, style, id);
+    const params = await contract$1.competition(category, style, id);
+    const participants = await contract$1.totalMembers(category, style, id);
+    const time = new Date().getTime();
+    const liveTime = Number(params.liveTime.toString()) * 1000;
+    const endTime = Number(params.endTime.toString()) * 1000;
+    const isLive = time > liveTime && time < endTime;
+    if (params.endTime.toString() === '0') return
 
-  if (state === 0 && endTime > time) {
-    if (isLive) {
-      data.live.push(competition);
+    const competition = {
+      style,
+      category,
+      id: params.id.toNumber(),
+      endTime,
+      liveTime,
+      price: ethers.utils.formatUnits(params.price, 8),
+      portfolioSize: params.portfolioSize.toNumber(),
+      participants: participants.toNumber(),
+      extraData: params.extraData !== '0x' ? JSON.parse(Buffer.from(params.extraData.replace('0x', ''), 'hex').toString()) : {},
+      name: params.name,
+      startTime: Number(params.startTime.toNumber() * 1000).toString(),
+      prizePool: ethers.utils.formatUnits(params.prizePool, 8),
+      state,
+      isLive
+    };
+
+    if (state === 0 && endTime > time) {
+      if (isLive) {
+        data.live.push(competition);
+      } else {
+        data.open.push(competition);
+      }
+
     } else {
-      data.open.push(competition);
+      data.closed.push(competition);
     }
-    
-  } else {
-    data.closed.push(competition);
+  } catch (e) {
+    console.warn({e});
   }
   return data
 };
 
-const totalCompetitions = async ({category, style}, data) => {
+const totalCompetitions = async ({category, style, name}, data) => {
   const totalCompetitions = await contract$1.totalCompetitions(category, style);
-  data.push({
-    totalCompetitions: totalCompetitions.toNumber(),
-    category,
-    style
-  });
+  
+  try {
+    const hasStyle = await contract$1.totalCompetitions(category, style);
+    if (hasStyle) {
+      const _style = await contract$1.style(style);
+      data.categories[name].push({
+        name: _style[0],
+        fee: _style[1].toNumber(),
+        id: style
+      });
+      if (data.styles.indexOf(_style[0]) === -1) data.styles.push(_style[0]);
+      data.items.push({
+        totalCompetitions: totalCompetitions.toNumber(),
+        category,
+        style
+      });
+    }
+  } catch {
+
+  }
   return data
 };
 
+
+
 /**
  * Fetches all competitions
- * 
+ *
  * Competitions are fetched at once in a queue (max 12 each run)
  */
 var competitions$1 = async () => {
@@ -1326,40 +1347,35 @@ var competitions$1 = async () => {
   const categories = {};
   const styles = [];
   let queue = [];
+
+  let data = {
+    categories: {},
+    styles: [],
+    items: []
+  };
+  await runQueue(data, queue, totalCompetitions);
+
   
   for (let category = 0; category < categoriesLength; category++) {
     const name = await contract$1.category(category);
     categories[name] = [];
     for (let style = 0; style < stylesLength; style++) {      
-      const hasStyle = await contract$1.totalCompetitions(category, style);
-      if (hasStyle) {
-        const _style = await contract$1.style(style);
-        categories[name].push({
-          name: _style[0],
-          fee: _style[1].toNumber(),
-          id: style
-        });
-        if (styles.indexOf(_style[0]) === -1) styles.push(_style[0]);  
-        queue.push({category, style});
-      }
-      
-    }
+      queue.push({category, style, name});
+    }  
   }
-
-  let data = [];
 
   await runQueue(data, queue, totalCompetitions);
 
   queue = [];
 
-  for (let i = 0; i < data.length; i++) {
-    const totalCompetitions = data[i].totalCompetitions;
-    const category = data[i].category;
-    const style = data[i].style;
+  for (let i = 0; i < data.items.length; i++) {
+    const totalCompetitions = data.items[i].totalCompetitions;
+    const category = data.items[i].category;
+    const style = data.items[i].style;
 
-    for (let id = 0; id <= totalCompetitions; id++) { 
+    for (let id = 0; id <= totalCompetitions; id++) {
       queue.push({category, style, id: totalCompetitions - id});
-    }    
+    }
   }
 
   data = {
@@ -2219,7 +2235,7 @@ const currencyJob = async (timestamp, currency) => {
         volumeDifference: data.volumeChange24hPercentage || 0,
         marketCapDifference: data.rankChange24h || 0
       });
-    }      
+    }
   }
 
   currency.points = points;
@@ -2228,15 +2244,14 @@ const currencyJob = async (timestamp, currency) => {
     const stamp = stampsTwentyFourHoursAgo[stampsTwentyFourHoursAgo.length - 1];
     let data = await storage.get(`currencies/${currency.id}/${stamp}`);
     data = JSON.parse(data.toString());
-    console.log(data);
-    
+
     currency.volumeChange24hPercentage = calculateDifference(data.volume, currency.volume);
-    currency.rankChange24hPercentage = calculateDifference(data.rank, currency.rank);    
+    currency.rankChange24hPercentage = calculateDifference(data.rank, currency.rank);
     currency.rankChange24h = Number(data.rank) - Number(currency.rank);
     currency.priceChange24h = Number(data.price) - Number(currency.price);
 
     if (data.points) {
-      currency.pointsChange24hPercentage = calculateDifference(data.points, currency.points);  
+      currency.pointsChange24hPercentage = calculateDifference(data.points, currency.points);
       currency.pointsChange24h = Number(data.points) - Number(points);
     }
   }
@@ -2255,16 +2270,16 @@ const currencyJob = async (timestamp, currency) => {
     currency.rankChange12h = Number(data.rank) - Number(currency.rank);
 
     if (data.points) {
-      currency.pointsChange12hPercentage = calculateDifference(data.points, points);      
+      currency.pointsChange12hPercentage = calculateDifference(data.points, points);
       currency.pointsChange12h = Number(data.points) - Number(points);
-    }    
+    }
   }
 
   if (stampsOneHoursAgo.length > 0) {
     const stamp = stampsOneHoursAgo[stampsOneHoursAgo.length - 1];
     let data = await storage.get(`currencies/${currency.id}/${stamp}`);
     data = JSON.parse(data.toString());
-    
+
     currency.priceChange1hPercentage = calculateDifference(data.price, currency.price);
     currency.volumeChange1hPercentage = calculateDifference(data.volume, currency.volume);
     currency.rankChange1hPercentage = calculateDifference(data.rank, currency.rank);
@@ -2273,11 +2288,11 @@ const currencyJob = async (timestamp, currency) => {
     currency.rankChange1h = Number(data.rank) - Number(currency.rank);
 
     if (data.points) {
-      currency.pointsChange1hPercentage = calculateDifference(data.points, points);  
+      currency.pointsChange1hPercentage = calculateDifference(data.points, points);
       currency.pointsChange1h = Number(data.points) - Number(points);
-    }    
+    }
   }
-  
+
   delete currency.timestamps;
   delete currency.salary;
 
@@ -2310,8 +2325,8 @@ var history = async () => {
   currencies = await Promise.all(stamps.map(currency => currencyJob(timestamp, currency)));
 
   await Promise.all(set.added.map(currency => storage.put(`currencies/${currency.id}/${timestamp}`, Buffer.from(JSON.stringify(currency)))));
-  
-  cache.add('marketdata', [...currencies, ...set.added]);  
+
+  cache.add('marketdata', [...currencies, ...set.added]);
 };
 
 // import firebase from './../firebase'
