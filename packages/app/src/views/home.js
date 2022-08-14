@@ -15,14 +15,16 @@ export default customElements.define('home-view', class HomeView extends LitElem
     super()
   }
 
+  connectedCallback() {
+    super.connectedCallback()
+    if (globalThis.connector?.accounts) this.account = globalThis.connector.accounts[0]
+  }
+
   set account(value) {
     this._account = value;
-    
-
-    this.requestUpdate()
-    const totalBalanceElement = this.shadowRoot.querySelector('balance-element.total')
-    const balanceElement = this.shadowRoot.querySelector('balance-element.usdc')
-    const creditElement = this.shadowRoot.querySelector('credit-element')
+    const totalBalanceElement = this.querySelector('balance-element.total')
+    const balanceElement = this.querySelector('balance-element.usdc')
+    const creditElement = this.querySelector('credit-element')
     if (value) {
       (async () => {
         if (!globalThis.multiavatar) {
@@ -31,7 +33,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
         }
     
         let svgCode = multiavatar(value)
-        this.shadowRoot.querySelector('.avatar').innerHTML = svgCode
+        this.querySelector('.avatar').innerHTML = svgCode
 
         balanceElement.amount = await balance(value)
         creditElement.amount = await gameCredits(value)
@@ -41,7 +43,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
       balanceElement.amount = 0
       creditElement.amount = 0
       totalBalanceElement.amount = 0
-      this.shadowRoot.querySelector('.avatar').innerHTML = ''
+      this.querySelector('.avatar').innerHTML = ''
     }
     
   }
@@ -90,7 +92,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
         margin-left: 12px;
       }
 
-      .avatar {
+      ::slotted(.avatar) {
         height: 128px;
         width: 128px;
       }
@@ -102,8 +104,9 @@ export default customElements.define('home-view', class HomeView extends LitElem
     </style>
     <flex-column class="container">
       
-      <flex-row class="ref-container">      
-        <span class="avatar"></span>
+      <flex-row class="ref-container">
+        <slot name="avatar"></slot>
+        
         <flex-one></flex-one>
         <flex-column>
           <h3>${this._account ? `${this._account.slice(0, 10)}...${this._account.slice(-10)}` : ''}</h3>
@@ -120,13 +123,17 @@ export default customElements.define('home-view', class HomeView extends LitElem
           </flex-row>
         </flex-column>
       </flex-row>
+      <slot></slot>
       
-      <balance-element class="usdc"></balance-element>
-      <credit-element></credit-element>
-      <balance-element class="total"></balance-element>
-
-      
-      <h4>your referrals</h4>
+      <h3>staking</h3>
+      <flex-row>
+        <strong>stake</strong>
+        <input></input>
+        <button>
+          <custom-svg-icon icon="done"></custom-svg-icon>
+        </button>
+      </flex-row>
+      <h3>referrals</h3>
     </flex-column>
     `
   }
