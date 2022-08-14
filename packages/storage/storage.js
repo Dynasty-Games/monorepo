@@ -567,7 +567,7 @@ class DynastyStorage {
         console.timeEnd('clean memoryStore');
         console.log(`removed ${deletions} paths`);        
         this.#cleanup();
-      }, 1 * 60000);
+      }, 10 * 60000);
     }
 
     createHash(key) {
