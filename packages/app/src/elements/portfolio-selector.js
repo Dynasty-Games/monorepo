@@ -81,9 +81,7 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
       })
 
 
-      this.items = items.map(({name, symbol, image, id, rank, href}) => {
-        return {name, symbol, image, id, rank, href}
-      })
+      this.items = items
     }, 250);
   }
 
