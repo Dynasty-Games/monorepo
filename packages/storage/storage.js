@@ -538,8 +538,36 @@ class DynastyStorage {
     }
 
     async #init() {
-      await stores.open();
+      await stores.open();      
+      this.#cleanup();
       return this
+    }
+
+    #cleanup() {
+      setTimeout(() => {
+        console.time('clean memoryStore');
+        let keys = Object.keys(memoryStore.data);
+        keys = keys.reduce((set, path) => {
+          const parts = path.split(/([^\/]+)$/);
+          set[parts[0]] = set[parts[0]] || [];
+          set[parts[0]].push(Number(parts[1]));
+          return set
+        }, {});        
+        const time = new Date().getTime();
+        let deletions = 0;
+        
+        for (const i of Object.keys(keys)) {
+          keys[i] = keys[i].sort((a, b) => b - a);
+          keys[i] = keys[i].filter(stamp => stamp + (3600000 * 48) < time);
+          keys[i].forEach(stamp => {
+            deletions += 1;
+            delete memoryStore[`${i}/${stamp}`];
+          });
+        }
+        console.timeEnd('clean memoryStore');
+        console.log(`removed ${deletions} paths`);        
+        this.#cleanup();
+      }, 1 * 60000);
     }
 
     createHash(key) {
