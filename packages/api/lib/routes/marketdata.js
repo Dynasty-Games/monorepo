@@ -34,7 +34,7 @@ router.get('/currencies', async (ctx, next) => {
     data = data.filter(currency => currency.volume <= Number(ctx.query.maxVolume))
   }
   
-  ctx.body = data
+  ctx.body = JSON.stringify(data, null, '\t')
 })
 
 router.get('/marketdata', async (ctx, next) => {

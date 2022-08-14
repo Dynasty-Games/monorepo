@@ -100,7 +100,7 @@ router$3.get('/currencies', async (ctx, next) => {
     data = data.filter(currency => currency.volume <= Number(ctx.query.maxVolume));
   }
   
-  ctx.body = data;
+  ctx.body = JSON.stringify(data, null, '\t');
 });
 
 router$3.get('/marketdata', async (ctx, next) => {
@@ -1306,7 +1306,8 @@ const competitionInfo = async ({category, style, id}, data) => {
       extraData: params.extraData !== '0x' ? JSON.parse(Buffer.from(params.extraData.replace('0x', ''), 'hex').toString()) : {},
       name: params.name,
       startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      prizePool: ethers.utils.formatUnits(params.prizePool, 8),
+      prizePool: ethers.utils.formatUnits(params.prizePool, 8),      
+      members: params.members,
       state: params.state,
       isLive
     };
@@ -2189,9 +2190,9 @@ const matrixes = {
     }
 
     if (marketCapDifference < 0) {
-      fantasyPoints -= (marketCapDifference / 50);
+      fantasyPoints -= Math.round((marketCapDifference / 50));
     } else {
-      fantasyPoints += (marketCapDifference * 25);
+      fantasyPoints += Math.round(marketCapDifference * 25);
     }
     return Math.round(fantasyPoints * 100) / 100
   }
@@ -2215,9 +2216,25 @@ const calculateDifference = (a, b) => {
   }
 };
 
+const difference = (a, b) => {
+  a = Number(a);
+  b = Number(b);
+  if (isNaN(a) || isNaN(b)) throw new Error(isNaN(a) ? `a: ${a} isNaN` :  `b: ${b} isNaN`)
+
+  if (a < b) {
+    if (b === 0) return 0
+    return (b - a)
+  } else {
+    if (a === 0) return 0
+    return -(a - b)
+  }
+};
+
 const twenfyFourHours = (24 * 60) * 60000;
 const twelveHours = (12 * 60) * 60000;
 const oneHour = 60 * 60000;
+
+
 
 const currencyJob = async (timestamp, currency) => {
 
@@ -2265,12 +2282,12 @@ const currencyJob = async (timestamp, currency) => {
 
     currency.volumeChange24hPercentage = calculateDifference(data.volume, currency.volume);
     currency.rankChange24hPercentage = calculateDifference(data.rank, currency.rank);
-    currency.rankChange24h = Number(data.rank) - Number(currency.rank);
-    currency.priceChange24h = Number(data.price) - Number(currency.price);
+    currency.rankChange24h = difference(data.rank, currency.rank);
+    currency.priceChange24h = difference(data.price, currency.price);
 
     if (data.points) {
       currency.pointsChange24hPercentage = calculateDifference(data.points, currency.points);
-      currency.pointsChange24h = Number(data.points) - Number(points);
+      currency.pointsChange24h = difference(data.points, points);
     }
   }
 
@@ -2284,12 +2301,12 @@ const currencyJob = async (timestamp, currency) => {
     currency.rankChange12hPercentage = calculateDifference(data.rank, currency.rank);
     currency.marketCapChange12hPercentage = calculateDifference(data.marketCap, currency.marketCap);
 
-    currency.priceChange12h = Number(data.price) - Number(currency.price);
-    currency.rankChange12h = Number(data.rank) - Number(currency.rank);
+    currency.priceChange12h = difference(data.price, currency.price);
+    currency.rankChange12h = difference(data.rank, currency.rank);
 
     if (data.points) {
       currency.pointsChange12hPercentage = calculateDifference(data.points, points);
-      currency.pointsChange12h = Number(data.points) - Number(points);
+      currency.pointsChange12h = difference(data.points, points);
     }
   }
 
@@ -2302,12 +2319,12 @@ const currencyJob = async (timestamp, currency) => {
     currency.volumeChange1hPercentage = calculateDifference(data.volume, currency.volume);
     currency.rankChange1hPercentage = calculateDifference(data.rank, currency.rank);
     currency.marketCapChange1hPercentage = calculateDifference(data.marketCap, currency.marketCap);
-    currency.priceChange1h = Number(data.price) - Number(currency.price);
-    currency.rankChange1h = Number(data.rank) - Number(currency.rank);
+    currency.priceChange1h = difference(data.price, currency.price);
+    currency.rankChange1h = difference(data.rank, currency.rank);
 
     if (data.points) {
       currency.pointsChange1hPercentage = calculateDifference(data.points, points);
-      currency.pointsChange1h = Number(data.points) - Number(points);
+      currency.pointsChange1h = difference(data.points, points);
     }
   }
 

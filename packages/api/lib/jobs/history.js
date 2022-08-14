@@ -1,9 +1,11 @@
 import cache from './../cache.js'
-import { calculateFantasyPoints, calculateDifference } from './../../../lib/src/lib'
+import { calculateFantasyPoints, calculateDifference, difference } from './../../../lib/src/lib'
 
 const twenfyFourHours = (24 * 60) * 60000
 const twelveHours = (12 * 60) * 60000
 const oneHour = 60 * 60000
+
+
 
 const currencyJob = async (timestamp, currency) => {
 
@@ -51,12 +53,12 @@ const currencyJob = async (timestamp, currency) => {
 
     currency.volumeChange24hPercentage = calculateDifference(data.volume, currency.volume)
     currency.rankChange24hPercentage = calculateDifference(data.rank, currency.rank)
-    currency.rankChange24h = Number(data.rank) - Number(currency.rank)
-    currency.priceChange24h = Number(data.price) - Number(currency.price)
+    currency.rankChange24h = difference(data.rank, currency.rank)
+    currency.priceChange24h = difference(data.price, currency.price)
 
     if (data.points) {
       currency.pointsChange24hPercentage = calculateDifference(data.points, currency.points)
-      currency.pointsChange24h = Number(data.points) - Number(points)
+      currency.pointsChange24h = difference(data.points, points)
     }
   }
 
@@ -70,12 +72,12 @@ const currencyJob = async (timestamp, currency) => {
     currency.rankChange12hPercentage = calculateDifference(data.rank, currency.rank)
     currency.marketCapChange12hPercentage = calculateDifference(data.marketCap, currency.marketCap)
 
-    currency.priceChange12h = Number(data.price) - Number(currency.price)
-    currency.rankChange12h = Number(data.rank) - Number(currency.rank)
+    currency.priceChange12h = difference(data.price, currency.price)
+    currency.rankChange12h = difference(data.rank, currency.rank)
 
     if (data.points) {
       currency.pointsChange12hPercentage = calculateDifference(data.points, points)
-      currency.pointsChange12h = Number(data.points) - Number(points)
+      currency.pointsChange12h = difference(data.points, points)
     }
   }
 
@@ -88,12 +90,12 @@ const currencyJob = async (timestamp, currency) => {
     currency.volumeChange1hPercentage = calculateDifference(data.volume, currency.volume)
     currency.rankChange1hPercentage = calculateDifference(data.rank, currency.rank)
     currency.marketCapChange1hPercentage = calculateDifference(data.marketCap, currency.marketCap)
-    currency.priceChange1h = Number(data.price) - Number(currency.price)
-    currency.rankChange1h = Number(data.rank) - Number(currency.rank)
+    currency.priceChange1h = difference(data.price, currency.price)
+    currency.rankChange1h = difference(data.rank, currency.rank)
 
     if (data.points) {
       currency.pointsChange1hPercentage = calculateDifference(data.points, points)
-      currency.pointsChange1h = Number(data.points) - Number(points)
+      currency.pointsChange1h = difference(data.points, points)
     }
   }
 

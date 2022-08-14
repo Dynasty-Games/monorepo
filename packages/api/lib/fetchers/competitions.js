@@ -27,7 +27,8 @@ const competitionInfo = async ({category, style, id}, data) => {
       extraData: params.extraData !== '0x' ? JSON.parse(Buffer.from(params.extraData.replace('0x', ''), 'hex').toString()) : {},
       name: params.name,
       startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      prizePool: utils.formatUnits(params.prizePool, 8),
+      prizePool: utils.formatUnits(params.prizePool, 8),      
+      members: params.members,
       state: params.state,
       isLive
     }
