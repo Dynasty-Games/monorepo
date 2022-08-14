@@ -51,7 +51,7 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
     if (currentCompetition.portfolio.length === 8) return
     currentCompetition.portfolio.push(detail.id)
     this.filter.push(detail.id)
-    this.items = this.itemSet.filter(item => this.filter.indexOf(item.id) === -1)
+    this.shadowRoot.querySelector(`portfolio-selector-item[id=${detail.id}]`).setAttribute('hidden', '')
   }
 
   #itemRemoved(detail) {
@@ -59,8 +59,7 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
 
     this.filter.splice(this.filter.indexOf(detail.id), 1)
     currentCompetition.portfolio.splice(detail.id, 1)
-
-    this.items = this.itemSet.filter(item => this.filter.indexOf(item.id) === -1)
+    this.shadowRoot.querySelector(`portfolio-selector-item[id=${detail.id}]`).removeAttribute('hidden')
   }
 
   // TODO: PUBSUB!!!
@@ -73,15 +72,13 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
     this.searchTimeaout = setTimeout(() => {
       const query = this.shadowRoot.querySelector('input').value
 
-      const items = this.itemSet.filter(item => {
+      Array.from(this.shadowRoot.querySelectorAll('portfolio-selector-item')).forEach(item => {
         if (this.filter.indexOf(item.id) === -1) {
           if (item.id.includes(query) || item.name.includes(query) ||
-              item.symbol.includes(query)) return item
+              item.symbol.includes(query)) item.removeAttribute('hidden')
+              else item.setAttribute('hidden', '')
         }
       })
-
-
-      this.items = items
     }, 250);
   }
 
