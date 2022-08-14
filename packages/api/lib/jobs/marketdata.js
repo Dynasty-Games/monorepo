@@ -2,7 +2,7 @@ import getMarketData from './../fetchers/marketdata.js'
 import cache from './../cache.js'
 
 export default async () => {
-  let data = await getMarketData('usd', '250', '4')
+  let data = await getMarketData('usd', '250', '25')
   data = data.map(({
     name, id, symbol, image, current_price, total_supply, salary,
     total_volume, market_cap_rank, circulating_supply,

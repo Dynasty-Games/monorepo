@@ -58,7 +58,7 @@ var timestamps = {
 
 const baseApiURL$1 = 'https://api.coingecko.com/api/v3/';
 
-var getMarketData = async (vsCurrency = 'usd', limit = '250', pages = '1', order = 'market_cap_desc') => {
+var getMarketData = async (vsCurrency = 'usd', limit = '250', pages = '25', order = 'market_cap_desc') => {
   let items = [];
   for (let i = 1; i <= Number(pages); i++) {
     const query = `?vs_currency=${vsCurrency}&order=${order}&per_page=${limit}&page=${i}&sparkline=false`;
@@ -77,10 +77,14 @@ const baseApiURL = 'https://api.coingecko.com/api/v3/';
 
 router$3.get('/currencies', async (ctx, next) => {
   const limit = ctx.query.limit ? Number(ctx.query.limit) : 250;
+  const pages = ctx.query.pages ? Number(ctx.query.pages) : 25;
+  
   let data = cache.get('marketdata');
-  if (data && Number(ctx.query.pages) > 4) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
-  if (!data) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
-  data = data.slice(0, ctx.query.pages ? limit * Number(ctx.query.pages) : limit);
+  if (data && pages > 25) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, pages);
+  if (!data) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, pages);
+  
+  data = data.slice(0, pages ? limit * pages : limit);
+
   if (ctx.query.maxMarketcap) {
     data = data.filter(currency => currency.marketCap <= Number(ctx.query.maxMarketcap));
   }
@@ -2124,7 +2128,7 @@ router$1.get('/faucet', async ctx => {
 router$1.get('/faucet/tot', timedOutMessage);
 
 var marketdata = async () => {
-  let data = await getMarketData('usd', '250', '4');
+  let data = await getMarketData('usd', '250', '25');
   data = data.map(({
     name, id, symbol, image, current_price, total_supply, salary,
     total_volume, market_cap_rank, circulating_supply,

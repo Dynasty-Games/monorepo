@@ -11,10 +11,14 @@ const baseApiURL = 'https://api.coingecko.com/api/v3/'
 
 router.get('/currencies', async (ctx, next) => {
   const limit = ctx.query.limit ? Number(ctx.query.limit) : 250
+  const pages = ctx.query.pages ? Number(ctx.query.pages) : 25
+  
   let data = cache.get('marketdata')
-  if (data && Number(ctx.query.pages) > 4) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages)
-  if (!data) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages)
-  data = data.slice(0, ctx.query.pages ? limit * Number(ctx.query.pages) : limit)
+  if (data && pages > 25) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, pages)
+  if (!data) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, pages)
+  
+  data = data.slice(0, pages ? limit * pages : limit)
+
   if (ctx.query.maxMarketcap) {
     data = data.filter(currency => currency.marketCap <= Number(ctx.query.maxMarketcap))
   }
