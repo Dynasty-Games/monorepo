@@ -95,7 +95,7 @@ export default class DynastyStorage {
 
         try {
           
-          await queue({}, paths.map(path => join('currencies', path.replace('.data', ''))), this.delete, 5000)
+          await queue({}, paths.map(path => join('currencies', path.replace('.data', ''))), this.delete.bind(this), 5000)
         } catch(e) {
           console.error(e);
         }
