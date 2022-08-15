@@ -6,6 +6,7 @@ require('os');
 require('path');
 require('interface-datastore');
 require('@vandeurenglenn/base32');
+require('node:fs/promises');
 require('it-all');
 require('it-drain');
 require('it-filter');

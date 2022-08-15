@@ -2,6 +2,7 @@ import { homedir } from 'os'
 import { join, parse, posix, win32 } from 'path';
 import { Key } from 'interface-datastore'
 import base32 from '@vandeurenglenn/base32';
+import { stat } from 'node:fs/promises';
 import {
   MemoryDatastore,
   ShardingDatastore,
@@ -40,11 +41,12 @@ export default class DynastyStorage {
 
     async #init() {
       await stores.open()      
-      this.#cleanup()
+      this.#cleanupMemory()
+      this.#cleanupStorage()
       return this
     }
 
-    #cleanup() {
+    #cleanupMemory() {
       setTimeout(() => {
         console.time('clean memoryStore')
         let keys = Object.keys(memoryStore.data)
@@ -66,9 +68,38 @@ export default class DynastyStorage {
           })
         }
         console.timeEnd('clean memoryStore')
-        console.log(`removed ${deletions} paths`);        
-        this.#cleanup()
-      }, 1 * 60000)
+        console.log(`removed ${deletions} paths`); 
+        this.#cleanupMemory()
+      }, 10 * 60000)
+    }
+
+    async #cleanupStorage() {
+      // setTimeout(() => {
+        console.time('clean Storage')
+
+        const time = new Date().getTime()
+        
+        let paths = await this.readDir('currencies')
+        paths = paths.filter(path => {
+          return Number(path.split(posix.sep)[1].split('.data')[0]) + (62 * 3.6e+6) < time
+        })
+        
+        const sizes = await Promise.all(paths.map(path => stat(join(homedir(), '.dynasty/data/currencies', path))))
+        const totalSize = sizes.reduce((totalSize, {size}) => {
+          totalSize += size
+          return totalSize
+        }, 0)
+
+        try {
+          
+          await Promise.all(paths.map(path => this.delete(join('currencies', path.replace('.data', '')))))
+        } catch(e) {
+          console.error(e);
+        }
+        console.timeEnd('clean Storage')
+        console.log(`  removed ${paths.length} items \n  freed ${totalSize * 1e-6} Mb`); 
+        // this.#cleanupStorage()
+      // }, 10 * 60000)
     }
 
     createHash(key) {

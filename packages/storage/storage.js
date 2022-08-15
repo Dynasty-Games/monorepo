@@ -4,6 +4,7 @@ var os = require('os');
 var path = require('path');
 var interfaceDatastore = require('interface-datastore');
 var base32 = require('@vandeurenglenn/base32');
+var promises = require('node:fs/promises');
 var all = require('it-all');
 var drain = require('it-drain');
 var filter = require('it-filter');
@@ -23,7 +24,7 @@ var datastoreCore = require('datastore-core');
 var parallel = require('it-parallel-batch');
 var fwa = require('fast-write-atomic');
 var crypto = require('crypto');
-var promises = require('fs/promises');
+var promises$1 = require('fs/promises');
 var globby = require('globby');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -539,11 +540,12 @@ class DynastyStorage {
 
     async #init() {
       await stores.open();      
-      this.#cleanup();
+      this.#cleanupMemory();
+      this.#cleanupStorage();
       return this
     }
 
-    #cleanup() {
+    #cleanupMemory() {
       setTimeout(() => {
         console.time('clean memoryStore');
         let keys = Object.keys(memoryStore.data);
@@ -565,9 +567,38 @@ class DynastyStorage {
           });
         }
         console.timeEnd('clean memoryStore');
-        console.log(`removed ${deletions} paths`);        
-        this.#cleanup();
+        console.log(`removed ${deletions} paths`); 
+        this.#cleanupMemory();
       }, 10 * 60000);
+    }
+
+    async #cleanupStorage() {
+      // setTimeout(() => {
+        console.time('clean Storage');
+
+        const time = new Date().getTime();
+        
+        let paths = await this.readDir('currencies');
+        paths = paths.filter(path$1 => {
+          return Number(path$1.split(path.posix.sep)[1].split('.data')[0]) + 62 * 3.6e+6 < time
+        });
+        
+        const sizes = await Promise.all(paths.map(path$1 => promises.stat(path.join(os.homedir(), '.dynasty/data/currencies', path$1))));
+        const totalSize = sizes.reduce((totalSize, {size}) => {
+          totalSize += size;
+          return totalSize
+        }, 0);
+
+        try {
+          
+          await Promise.all(paths.map(path$1 => this.delete('/' + path.join('currencies', path$1.replace('.data', '')))));
+        } catch(e) {
+          console.error(e);
+        }
+        console.timeEnd('clean Storage');
+        console.log(`  removed ${paths.length} items \n  freed ${totalSize * 1e-6} Mb`); 
+        // this.#cleanupStorage()
+      // }, 10 * 60000)
     }
 
     createHash(key) {
@@ -604,7 +635,7 @@ class DynastyStorage {
     
     async hasDir(path$1) {      
       try {
-        await promises.access(path.join(os.homedir(), '.dynasty/data', path$1), fs.constants.R_OK | fs.constants.W_OK);
+        await promises$1.access(path.join(os.homedir(), '.dynasty/data', path$1), fs.constants.R_OK | fs.constants.W_OK);
         return true
       } catch (e) {
         return false        
