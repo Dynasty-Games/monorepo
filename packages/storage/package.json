@@ -21,6 +21,7 @@
   "homepage": "https://github.com/Dynasty-Games/storage#readme",
   "dependencies": {
     "@vandeurenglenn/base32": "^1.1.0",
+    "@vandeurenglenn/queue": "^1.0.0",
     "datastore-core": "^7.0.2",
     "datastore-fs": "^7.0.0",
     "globby": "^11.1.0",

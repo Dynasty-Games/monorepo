@@ -16,6 +16,7 @@ import { mkdirSync } from 'fs';
 import { access } from 'fs/promises';
 import { constants } from 'fs';
 import globby from 'globby';
+import queue from '@vandeurenglenn/queue'
 
 
 try {
@@ -83,6 +84,8 @@ export default class DynastyStorage {
         paths = paths.filter(path => {
           return Number(path.split(posix.sep)[1].split('.data')[0]) + (62 * 3.6e+6) < time
         })
+
+        console.log(paths);
         
         const sizes = await Promise.all(paths.map(path => stat(join(homedir(), '.dynasty/data/currencies', path))))
         const totalSize = sizes.reduce((totalSize, {size}) => {
@@ -92,7 +95,7 @@ export default class DynastyStorage {
 
         try {
           
-          await Promise.all(paths.map(path => this.delete(join('currencies', path.replace('.data', '')))))
+          await queue({}, paths.map(path => join('currencies', path.replace('.data', ''))), this.delete, 5000)
         } catch(e) {
           console.error(e);
         }

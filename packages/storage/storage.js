@@ -26,6 +26,7 @@ var fwa = require('fast-write-atomic');
 var crypto = require('crypto');
 var promises$1 = require('fs/promises');
 var globby = require('globby');
+var queue = require('@vandeurenglenn/queue');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -45,6 +46,7 @@ var mkdirp__default = /*#__PURE__*/_interopDefaultLegacy(mkdirp);
 var parallel__default = /*#__PURE__*/_interopDefaultLegacy(parallel);
 var fwa__default = /*#__PURE__*/_interopDefaultLegacy(fwa);
 var globby__default = /*#__PURE__*/_interopDefaultLegacy(globby);
+var queue__default = /*#__PURE__*/_interopDefaultLegacy(queue);
 
 const sortAll = (iterable, sorter) => {
   return async function* () {
@@ -580,8 +582,10 @@ class DynastyStorage {
         
         let paths = await this.readDir('currencies');
         paths = paths.filter(path$1 => {
-          return Number(path$1.split(path.posix.sep)[1].split('.data')[0]) + 62 * 3.6e+6 < time
+          return Number(path$1.split(path.posix.sep)[1].split('.data')[0]) + (62 * 3.6e+6) < time
         });
+
+        console.log(paths);
         
         const sizes = await Promise.all(paths.map(path$1 => promises.stat(path.join(os.homedir(), '.dynasty/data/currencies', path$1))));
         const totalSize = sizes.reduce((totalSize, {size}) => {
@@ -591,7 +595,7 @@ class DynastyStorage {
 
         try {
           
-          await Promise.all(paths.map(path$1 => this.delete('/' + path.join('currencies', path$1.replace('.data', '')))));
+          await queue__default["default"]({}, paths.map(path$1 => path.join('currencies', path$1.replace('.data', ''))), this.delete, 5000);
         } catch(e) {
           console.error(e);
         }

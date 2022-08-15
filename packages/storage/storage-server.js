@@ -28,6 +28,7 @@ require('fast-write-atomic');
 require('crypto');
 require('fs/promises');
 require('globby');
+require('@vandeurenglenn/queue');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
