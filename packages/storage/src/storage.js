@@ -75,7 +75,7 @@ export default class DynastyStorage {
     }
 
     async #cleanupStorage() {
-      // setTimeout(() => {
+      setTimeout(() => {
         console.time('clean Storage')
 
         const time = new Date().getTime()
@@ -98,8 +98,8 @@ export default class DynastyStorage {
         }
         console.timeEnd('clean Storage')
         console.log(`  removed ${paths.length} items \n  freed ${totalSize * 1e-6} Mb`); 
-        // this.#cleanupStorage()
-      // }, 10 * 60000)
+        this.#cleanupStorage()
+      }, 10 * 60000)
     }
 
     createHash(key) {
