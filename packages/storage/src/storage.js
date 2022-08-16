@@ -74,8 +74,8 @@ export default class DynastyStorage {
       }, 10 * 60000)
     }
 
-    async #cleanupStorage() {
-      setTimeout(() => {
+    #cleanupStorage() {
+      setTimeout(async () => {
         console.time('clean Storage')
 
         const time = new Date().getTime()
