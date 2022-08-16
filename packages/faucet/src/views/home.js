@@ -51,7 +51,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
           options: {
             address: this.tokenAddress, // The address that the token is at.
             symbol: 'USDD', // A ticker symbol or shorthand, up to 5 chars.
-            decimals: 18, // The number of decimals in the token
+            decimals: 8, // The number of decimals in the token
             // image: tokenImage, // A string url of the token logo
           },
         },
