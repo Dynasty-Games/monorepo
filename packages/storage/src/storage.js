@@ -84,8 +84,6 @@ export default class DynastyStorage {
         paths = paths.filter(path => {
           return Number(path.split(posix.sep)[1].split('.data')[0]) + (62 * 3.6e+6) < time
         })
-
-        console.log(paths);
         
         const sizes = await Promise.all(paths.map(path => stat(join(homedir(), '.dynasty/data/currencies', path))))
         const totalSize = sizes.reduce((totalSize, {size}) => {
@@ -93,8 +91,7 @@ export default class DynastyStorage {
           return totalSize
         }, 0)
 
-        try {
-          
+        try {          
           await queue({}, paths.map(path => join('currencies', path.replace('.data', ''))), this.delete.bind(this), 5000)
         } catch(e) {
           console.error(e);
