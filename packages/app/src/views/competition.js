@@ -16,6 +16,7 @@ export default customElements.define('competition-view', class CompetitionView e
     category: { type: String },
     competitionStyle: { type: String },
     submitDisabled: { type: Boolean },
+    competitionName: { type: String },
     price: { type: String },
     startTime: { type: Number },
     date: {
