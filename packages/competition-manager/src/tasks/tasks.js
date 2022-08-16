@@ -104,14 +104,16 @@ export const close = () => {
       batch.addresses[i] = []
       batch.amounts[i] = []
       for (const member of members) {
-        batch.addresses[i].push(member)
-        batch.amounts[i].push(utils.parseUnits(String(competition.prizePool / members.length), 8))
+        if (member !== '0x0000000000000000000000000000000000000000') {
+          batch.addresses[i].push(member)
+          batch.amounts[i].push(utils.parseUnits(String(competition.prizePool / members.length), 8))
+        }        
       }
       i++
-      console.log(batch);
       // const winnings = await calculateWinnings(competition)
     }
     batch.tokenId = 0
+    console.log(batch);
     for (let i = 0; i < batch.categories.length; i++) {
       await closeCompetition(batch.categories[i], batch.styles[i], batch.ids[i], batch.amounts[i], batch.addresses[i])
     }
