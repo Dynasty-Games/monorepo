@@ -1,6 +1,7 @@
 import '../elements/competition-info-item'
 import { liveCompetitions } from '../api'
 import '../elements/contest-type'
+import categories from './../data/contests'
 import {LitElement, html, css} from 'lit';
 import {map} from 'lit/directives/map.js'
 
@@ -21,42 +22,20 @@ export default customElements.define('live-view', class LiveView extends LitElem
     let competitions = await liveCompetitions()
     const category = 0
     const style = 0
-    let competitionMembers = await Promise.allSettled(
-      competitions.map(
-        async ({category, style, id}, i) => {
-          const members = await contract.members(category, style, id)
-          return {
-            category,
-            style,
-            id,
-            members,
-            i
-          }
-        }
-        )
-    )
 
+    competitions = await Promise.all(competitions.map(async competition => {
+      competition.icon = categories[competition.category].icon
+      const style = await contracts.dynastyContest.style(competition.style)
+      competition.style = {
+        fee: style.fee,
+        name: style.name,
+        id: competition.style
+      }
+      return competition
+    }))
     
-    
-    
-    competitionMembers = await Promise.all(competitionMembers.filter(({status, value}) => status === 'fulfilled' && value.members.indexOf(connector.accounts[0]) !== -1))
-    competitionMembers = competitionMembers.map(({value}) => value)
-    
-    competitionMembers = competitionMembers.reduce((set, current) => {
-      const params = competitions[current.i]
-      const name = competitions[current.i].name.toLowerCase()
-      params.members = current.members
-      set[name] = set[name] || { name, items: [] }
-      set[name].items.push(params)
-      return set
-    }, {})
+    this.items = competitions.filter(value => value.members.indexOf(connector.accounts[0]) !== -1)
 
-    console.log(competitionMembers)
-    if (Object.keys(competitionMembers).length > 0) {
-      this.items = [
-        {type: 'classic', description: 'create a 8 crypto lineup', items: JSON.stringify(Object.values(competitionMembers))}
-      ]
-    }
     if (this.timeout) clearTimeout(this.timeout)
     this.timeout = setTimeout(() => {
       this.#loadUserItems()
@@ -92,6 +71,8 @@ export default customElements.define('live-view', class LiveView extends LitElem
       .container {
         height: 100%;
         overflow-y: auto;
+        color: #555;
+        background: #fff;
       }
 
 
@@ -149,6 +130,40 @@ export default customElements.define('live-view', class LiveView extends LitElem
         cursor: pointer;
         padding-right: 12px;
       }
+      .game-style, .category.name, .price, .prizepool, .members {
+        display: flex;
+        padding-right: 12px;
+      }
+
+      .game-style {
+        min-width: 64px;
+      }
+
+      .category {
+        min-width: 74px;
+      }
+
+      .top-row, .item {
+        padding: 12px 24px;
+        align-item: center;
+      }
+      .name {
+        min-width: 186px;
+        max-width: 240px;
+        width: 100%;
+      }
+
+      .price {
+        min-width: 46px;
+      }
+
+      .prizepool {
+        min-width: 72px;
+      }
+
+      .members {
+        min-width: 52px;
+      }
       @media(min-width: 860px) {
         .container {
           height: 80%;
@@ -165,7 +180,27 @@ export default customElements.define('live-view', class LiveView extends LitElem
 
     <flex-one></flex-one>
     <flex-column class="container">
-      ${this.items?.length > 0 ? map(this.items, item => html`<contest-type description="${item.description}" type="${item.type}" items="${item.items}"></contest-type>`) : html`
+      <flex-row class="top-row">
+        <strong class="category">category</strong>
+        <strong class="game-style" style="align-items: center; justify-content: center;">style</strong>
+        <strong class="name">name</strong>
+        <strong class="price">price</strong>
+        <strong class="prizepool">prizepool</strong>
+        <strong class="members">entries</strong>
+        <strong>ends in</strong>
+      </flex-row>
+      ${this.items?.length > 0 ? map(this.items, item => html`
+        <flex-row class="item">
+          <flex-row class="category" style="align-items: center; justify-content: center;">
+            <custom-svg-icon icon=${item.icon}></custom-svg-icon>
+          </flex-row>
+          <flex-row class="game-style" style="align-items: center; justify-content: center;">${item.style.name}</flex-row>
+          <flex-row class="name" style="align-items: center;">${item.name}</flex-row>
+          <flex-row class="price">${item.price}</flex-row>
+          <flex-row class="prizepool">${item.prizePool}</flex-row>
+          <flex-row class="members">${item.members.length}</flex-row>
+        </flex-row>
+      `) : html`
       <flex-column style="height: 100%; align-items: center; justify-content: center;"><h3>Your live contests will appear here</h3></flex-column>
       `}
     </flex-column>

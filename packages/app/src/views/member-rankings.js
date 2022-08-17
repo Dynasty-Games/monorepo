@@ -7,6 +7,7 @@ import { LitElement, html } from 'lit'
 
 import {map} from 'lit/directives/map.js'
 import { calculateBaseSalary } from '../../../lib/src/lib'
+import { getCompetitionData } from '../utils'
 
 export default customElements.define('member-rankings-view', class MemberRankingsView extends LitElement {
   static properties = {
@@ -41,9 +42,7 @@ export default customElements.define('member-rankings-view', class MemberRanking
       if (key !== 'competition') this[key] = value
     })
     console.log(this.category, this.competitionStyle, this.#competition);
-    const params = await getCompetition(this.category, this.competitionStyle, this.#competition)
-
-    console.log(params);
+    const {params, items, rankById, maxSalary} = await getCompetitionData({category: this.category, style: this.competitionStyle, id: this.#competition})
     this.competitionName = params.name
     this.category = params.category
     this.startTime = params.startTime
@@ -54,20 +53,7 @@ export default customElements.define('member-rankings-view', class MemberRanking
 
     const portfolio = await contract.memberPortfolio(this.category, this.competitionStyle, this.#competition, member)
 
-    console.log(portfolio);
-
-    let items = portfolio.items
-
-    let currencies = await getCurrencies()    
-    currencies = await calculateBaseSalary(currencies.slice(0, 300))
-    const currenciesById = {}
-    for (const currency of currencies) {
-      currenciesById[currency.id] = currency
-    }
-
-    items = items.map(item => ({...currenciesById[item]}))
-    // currencies = currencies.filter(currency => items.indexOf(currency.id) !== -1)
-    this.items = items
+    this.items = portfolio.items.map(item => ({...items[rankById.indexOf(item)]}))
   }
 
   #edit() {

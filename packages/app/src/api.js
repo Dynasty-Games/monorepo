@@ -28,8 +28,7 @@ globalThis.contracts = {
 
 export const currencies = async () => {
   let response = await fetch(`https://${apiURL}/currencies?limit=250&pages=2`)
-  response = await response.json()
-  return response.slice(0, 300)
+  return response.json()
 }
 
 export const competitionAddresses = async () => {
@@ -95,7 +94,7 @@ export const signMessage = (type, category, style, id, value) => {
       ...message,
       category,
       style,
-      id,
+      id
     }
   }
   const data = JSON.stringify(message).toString('hex')
