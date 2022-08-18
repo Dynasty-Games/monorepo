@@ -73,6 +73,16 @@ contract DynastyContests is Initializable, AccessControlUpgradeable, DynastyCont
       // todo implement metatx
     } else {
       uint256 _price = competition_.price;
+      uint256 fee = _styles[style_].fee;
+      uint256 amount = _price - ((_price / 100) * fee);
+
+      unchecked {
+        _competitions[category_][style_][competitionId_].prizePool += amount;  
+      }
+
+      /**
+       * @dev we can safelly burn credits since we keep track of the prizepool
+       */
       if (withCredits_ == 1) {
         uint256 _balance = _token.balanceOf(_msgSender());
         if (_balance > _price) {
@@ -85,14 +95,7 @@ contract DynastyContests is Initializable, AccessControlUpgradeable, DynastyCont
       }
       
       if (_price > 0) {
-        _treasury.deposit(_msgSender(), _price);
-
-        uint256 fee = _styles[style_].fee;
-        uint256 amount = _price - ((_price / 100) * fee);
-
-        unchecked {
-          _competitions[category_][style_][competitionId_].prizePool += amount;  
-        }
+        _treasury.deposit(_msgSender(), _price);        
       }      
     }
   
@@ -221,7 +224,7 @@ contract DynastyContests is Initializable, AccessControlUpgradeable, DynastyCont
 
     for (uint256 i = 0; i < amounts_.length; i++) {
       _token.mint(members_[i], amounts_[i]);
-    }    
+    }
   }
 
   function closeCompetition(uint256 category_, uint256 style_, uint256 competitionId_, uint256[] memory amounts_, address[] memory members_) public onlyRole(MANAGER_ROLE) {

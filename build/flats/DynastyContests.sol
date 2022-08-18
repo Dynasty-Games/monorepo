@@ -1095,6 +1095,13 @@ contract DynastyContests is Initializable, AccessControlUpgradeable, DynastyCont
       // todo implement metatx
     } else {
       uint256 _price = competition_.price;
+      uint256 fee = _styles[style_].fee;
+      uint256 amount = _price - ((_price / 100) * fee);
+
+      unchecked {
+        _competitions[category_][style_][competitionId_].prizePool += amount;  
+      }
+
       if (withCredits_ == 1) {
         uint256 _balance = _token.balanceOf(_msgSender());
         if (_balance > _price) {
@@ -1107,14 +1114,7 @@ contract DynastyContests is Initializable, AccessControlUpgradeable, DynastyCont
       }
       
       if (_price > 0) {
-        _treasury.deposit(_msgSender(), _price);
-
-        uint256 fee = _styles[style_].fee;
-        uint256 amount = _price - ((_price / 100) * fee);
-
-        unchecked {
-          _competitions[category_][style_][competitionId_].prizePool += amount;  
-        }
+        _treasury.deposit(_msgSender(), _price);        
       }      
     }
   
