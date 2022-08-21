@@ -71,7 +71,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
         display: flex;
         width: 100%;        
         background: #fff;
-        padding: 48px 0 0 48px;
+        padding: 24px 0 0 48px;
         box-sizing: border-box;
         border-radius: 12px;
         overflow-y: auto;
