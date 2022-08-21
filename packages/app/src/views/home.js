@@ -80,7 +80,6 @@ export default customElements.define('home-view', class HomeView extends LitElem
 
       .ref-container {
         align-items: center;
-        padding: 0 0 24px 0;
         box-sizing: border-box;
       }
       flex-row {
@@ -167,7 +166,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
             <flex-one></flex-one>
             <strong>claim stakes</strong>
           </button>
-          <flex-row style="padding-top: 24px;">
+          <flex-row style="padding-top: 12px;">
             <button title="click to share" @click="${() => navigator.share({ url: `https://dynastygames.games?ref=${this._account}`})}">
               <custom-svg-icon icon="share"></custom-svg-icon>
               <strong>share</strong>
