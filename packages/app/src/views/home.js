@@ -120,10 +120,6 @@ export default customElements.define('home-view', class HomeView extends LitElem
         border-radius: 12px;
       }
 
-      ::slotted(.avatar) {
-        margin-top: -86px;
-      }
-
       .ref-container h3 {
         width: 100%;
         text-align: center;
@@ -141,6 +137,12 @@ export default customElements.define('home-view', class HomeView extends LitElem
 
       .ref-container flex-column {
         height: 100%;
+      }
+      @media(min-width: 760px) {      
+
+        ::slotted(.avatar) {
+          margin-top: -86px;
+        }
       }
       @media (max-width: 760px) {
 
