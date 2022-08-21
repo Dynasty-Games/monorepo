@@ -74,6 +74,8 @@ export default customElements.define('home-view', class HomeView extends LitElem
         padding: 48px 0 0 48px;
         box-sizing: border-box;
         border-radius: 12px;
+        overflow-y: auto;
+        pointer-events: auto;
       }
 
       .ref-container {
