@@ -18,9 +18,9 @@ export const matrixes = {
     }
 
     if (marketCapDifference < 0) {
-      fantasyPoints -= (marketCapDifference / 50)
+      fantasyPoints -= Math.round((marketCapDifference / 50))
     } else {
-      fantasyPoints += (marketCapDifference * 25)
+      fantasyPoints += Math.round(marketCapDifference * 25)
     }
     return Math.round(fantasyPoints * 100) / 100
   }
@@ -44,7 +44,19 @@ export const calculateDifference = (a, b) => {
   }
 }
 
+export const difference = (a, b) => {
+  a = Number(a)
+  b = Number(b)
+  if (isNaN(a) || isNaN(b)) throw new Error(isNaN(a) ? `a: ${a} isNaN` :  `b: ${b} isNaN`)
 
+  if (a < b) {
+    if (b === 0) return 0
+    return (b - a)
+  } else {
+    if (a === 0) return 0
+    return -(a - b)
+  }
+}
 
 const differenceOf = (a, b, c) => {
   return (a - b) / (a - c)

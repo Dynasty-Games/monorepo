@@ -3,6 +3,9 @@ import contests from '../data/contests.js'
 import {html, LitElement} from 'lit'
 import {map} from 'lit/directives/map.js'
 
+import awesomefont from './../icons/awesomefont-icons'
+import awesomefontWidth from './../icons/awesomefont-icons-width'
+
 export default customElements.define('games-view', class gamesView extends LitElement {
   static properties = {
     items: {
@@ -58,7 +61,9 @@ export default customElements.define('games-view', class gamesView extends LitEl
         pointer-events: none;
         opacity: 0.65;
       }
-    </style>
+    </style>    
+    ${awesomefontWidth}
+    ${awesomefont}
     <span class="container">
     ${map(this.items, item => html`
       <contest-item name="${item.name}" icon="${item.icon}" data-id="${item.id}" ?disabled="${item.disabled}" @click="${() => location.hash = `#!/styles?category=${item.id}`}"></contest-item>

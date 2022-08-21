@@ -25,7 +25,7 @@ export default customElements.define('nav-bar', class NavBar extends LitElement 
 
       custom-selector {
         height: 100%;
-        max-width: 540px;
+        max-width: 620px;
         width: 100%;        
         padding: 0 12px;
         display: flex;

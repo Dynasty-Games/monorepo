@@ -19,7 +19,7 @@ export default customElements.define('credit-element', class creditElement exten
   }
 
   set amount(value) {
-    if (globalThis?.connector?.accounts.length > 0) {
+    if (globalThis?.connector?.accounts?.length > 0) {
       if (Number(value) === 0)  this.link = `https://dynastyfaucet.web.app?address=${connector.accounts[0]}`
       else this.link = null
       this._amount = value
@@ -46,7 +46,7 @@ export default customElements.define('credit-element', class creditElement exten
       :host {
         display: flex;
         align-items: center;
-        padding: 12px 24px;
+        padding: 6px 12px;
       }
 
       .amount {

@@ -5,15 +5,11 @@ import './../node_modules/custom-pages/src/custom-pages'
 import './../node_modules/custom-svg-iconset/custom-svg-iconset'
 import './../node_modules/custom-svg-icon/custom-svg-icon'
 
-
 import {LitElement, html} from 'lit'
 
-import icons from './icons'
-import awesomefont from './awesomefont-icons'
-import awesomefontWidth from './awesomefont-icons-width'
+import icons from './icons/icons'
 import './elements/nav-bar'
 import './elements/account-menu'
-import {map} from 'lit/directives/map.js'
 
 import connect from './wallet/connect'
 
@@ -243,13 +239,27 @@ export default customElements.define('app-shell', class AppShell extends LitElem
         height: 48px;
       }
 
+      .home-wrapper {
+        background: var(--accent-color);
+      }
+
       @media(min-width: 960px) {
         .top-header {
           justify-content: center;
         }
       }
 
+      @media(max-height: 839px) {
+        home-view {
+          justify-content: initial;
+        }
+      }
+
       @media(max-width: 959px) {
+        nav-bar {
+          height: 54px;
+        }
+
         [headerhidden] {
           opacity: 0;
           pointer-events: none;
@@ -270,8 +280,6 @@ export default customElements.define('app-shell', class AppShell extends LitElem
 
       @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,300;0,400;0,600;0,700;0,800;1,300;1,400&display=swap');
     </style>
-    ${awesomefontWidth}
-    ${awesomefont}
     ${icons}
     <flex-column class="main">
       <flex-row class="header" ?headerhidden="${this.selected === 'competition'}">
@@ -284,7 +292,12 @@ export default customElements.define('app-shell', class AppShell extends LitElem
       
       <nav-bar ?hidden="${this.selected === 'competition'}"></nav-bar>
       <custom-pages attr-for-selected="data-route">
-        <home-view data-route="home"></home-view>
+        <home-view data-route="home">
+          <span class="avatar" slot="avatar"></span>
+          <balance-element class="usdc"></balance-element>
+          <credit-element></credit-element>
+          <balance-element class="total"></balance-element>
+        </home-view>
         <games-view data-route="games"></games-view>
         <styles-view data-route="styles"></styles-view>
         <competitions-view data-route="competitions"></competitions-view>        

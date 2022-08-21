@@ -5,13 +5,13 @@ export default [
     id: 0
   },
   {
-    name: 'MLB',
-    icon: 'awesomefont-width::baseball',
+    name: 'NFL',
+    icon: 'awesomefont::football',
     disabled: true
   },
   {
-    name: 'NFL',
-    icon: 'awesomefont::football',
+    name: 'MLB',
+    icon: 'awesomefont-width::baseball',
     disabled: true
   },
   {
