@@ -140,13 +140,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
       .ref-container flex-column {
         height: 100%;
       }
-      @media(min-width: 760px) {      
-
-        ::slotted(.avatar) {
-          margin-top: -86px;
-        }
-      }
-      @media (max-width: 760px) {
+      @media (max-width: 759px) {
 
         .container {
           background: transparent;
@@ -165,8 +159,6 @@ export default customElements.define('home-view', class HomeView extends LitElem
         
         <flex-column  >
           <h3>${this._account ? `${this._account.slice(0, 6)}...${this._account.slice(-6)}` : ''}</h3>
-          
-          <flex-one></flex-one>
 
           <button>
             <custom-svg-icon icon="done"></custom-svg-icon>
