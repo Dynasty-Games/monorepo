@@ -71,7 +71,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
         display: flex;
         width: 100%;        
         background: #fff;
-        padding: 24px 0 0 48px;
+        padding: 48px 0 0 48px;
         box-sizing: border-box;
         border-radius: 12px;
         overflow-y: auto;
@@ -148,7 +148,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
           background: transparent;
           flex-direction: column;
           align-items: center;
-          padding: 24px;
+          padding: 12px 24px 24px;
         }
 
       }
