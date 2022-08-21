@@ -2,7 +2,7 @@ import {html, LitElement} from 'lit'
 import './../elements/balance'
 import './../elements/credit'
 import { gameCredits, balance } from '../api'
-import {map} from 'lit/directives/map.js'
+import { scrollbar } from '../shared/styles'
 
 export default customElements.define('home-view', class HomeView extends LitElement {
   static properties = {
@@ -140,6 +140,8 @@ export default customElements.define('home-view', class HomeView extends LitElem
       .ref-container flex-column {
         height: 100%;
       }
+
+      ${scrollbar}
       @media (max-width: 759px) {
 
         .container {
