@@ -9,7 +9,7 @@ export default async (vsCurrency = 'usd', limit = '250', pages = '25', order = '
     const url = `${baseApiURL}coins/markets${query}`
     const response = await fetch(url)
     const item = await response.json()
-    items = [...items, ...item]
+    if (Array.isArray(item)) items = [...items, ...item]
   }
   return items
 }

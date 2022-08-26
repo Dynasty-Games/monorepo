@@ -65,7 +65,7 @@ var getMarketData = async (vsCurrency = 'usd', limit = '250', pages = '25', orde
     const url = `${baseApiURL$1}coins/markets${query}`;
     const response = await fetch__default["default"](url);
     const item = await response.json();
-    items = [...items, ...item];
+    if (Array.isArray(item)) items = [...items, ...item];
   }
   return items
 };
@@ -127,7 +127,7 @@ router$3.get('/currency-icon', async (ctx, next) => {
 
 var FakeUSDC$1 = "0xab5417222849D9bF8F55059502E86bDDdb496fB5";
 var DynastyTreasury = "0xE7C5B5Cd9DF18281C043084A4dF872d942C2af33";
-var DynastyContests = "0xfee12c5063c46F3E9B6c992f1bc7D78E114695b1";
+var DynastyContests = "0xaAF97b567DE574C13E8b435F995bD77B72A035A2";
 var RLPReader = "0x193481aDcd1223c80105c5431A9028b49B7D99a4";
 var MerklePatriciaProof = "0xc7D9c2A86e23dB3eAd63A731c0a39890Ba64207E";
 var Merkle = "0x05DB74e048b48E98e04cA0cc6eA2ABe3d7De2744";
@@ -1271,14 +1271,14 @@ var provider$1 = ethers.getDefaultProvider(network$1, {
 
 const _runQueue = (items, data, job) => Promise.all(items.map(item => job(item, data)));
 
-const runQueue = async (data, queue, job) => {
-  await _runQueue(queue.splice(0, queue.length > 10 ? 10 : queue.length), data, job);
+const runQueue = async (data, queue, job, concurrency = 10) => {
+  await _runQueue(queue.splice(0, queue.length > concurrency ? concurrency : queue.length), data, job);
   if (queue.length > 0) return runQueue(data, queue, job)  
 };
 
-var runQueue$1 = async (data, queue, job) => {
+var runQueue$1 = async (data, queue, job, concurrency) => {
   console.time(job.name);
-  await runQueue(data, queue, job);
+  await runQueue(data, queue, job, concurrency);
   console.timeEnd(job.name);
   return
 };
