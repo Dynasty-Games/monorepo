@@ -50,8 +50,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
     const connected = localStorage.getItem('dynasty.wallet-connected')
     this.selectedWalletProvider = localStorage.getItem('dynasty.selectedWalletProvider')
     this.selectedWalletProvider !== undefined && await connect(this.selectedWalletProvider)
-
-    this._setupFirebase()
+    // this._setupFirebase()
   }
 
   #isDesktop({matches}) {
@@ -97,10 +96,10 @@ export default customElements.define('app-shell', class AppShell extends LitElem
   async #onAccountsChange({detail}) {
     this.#pages.select(this.lastSelected)
     if (Array.isArray(detail)) {
-      pubsub.subscribe("firebase.ready", () => {
-        globalThis.userRef = firebase.ref(firebase.database, `user/${detail[0].toLowerCase()}`)
-      })
-      if (pubsub.subscribers?.["firebase.ready"]?.value) globalThis.userRef = firebase.ref(firebase.database, `user/${detail[0].toLowerCase()}`)
+      // pubsub.subscribe("firebase.ready", () => {
+      //   globalThis.userRef = firebase.ref(firebase.database, `user/${detail[0].toLowerCase()}`)
+      // })
+      // if (pubsub.subscribers?.["firebase.ready"]?.value) globalThis.userRef = firebase.ref(firebase.database, `user/${detail[0].toLowerCase()}`)
 
       localStorage.setItem('dynasty.wallet-connected', true)
       this.shadowRoot.querySelector('account-menu-element').setAttribute('account', detail[0])
@@ -111,7 +110,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
       pubsub.subscribe('wallet.ready', () => {})
       pubsub.publish('wallet.ready', true)
     } else {
-      globalThis.userRef = undefined
+      // globalThis.userRef = undefined
       localStorage.setItem('dynasty.wallet-connected', false)
       this.shadowRoot.querySelector('account-menu-element').setAttribute('account', undefined)
       this.shadowRoot.querySelector('home-view').setAttribute('account', undefined)
@@ -249,7 +248,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
         }
       }
 
-      @media(max-height: 839px) {
+      @media(max-height: 640px) {
         home-view {
           justify-content: initial;
         }

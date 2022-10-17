@@ -139,9 +139,7 @@ export default customElements.define('competition-view', class CompetitionView e
     this.price = params.price
     // this.competitionCategory = params.category
     this.competitionName = params.name
-
-    pubsub.subscribe("firebase.ready", this.loadUserItems.bind(this))
-    pubsub.subscribers?.["firebase.ready"]?.value && this.loadUserItems()
+    this.loadUserItems()
   }
 
   render() {
