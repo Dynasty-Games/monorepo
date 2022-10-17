@@ -39,9 +39,6 @@ export default customElements.define('contests-view', class ContestsView extends
         )
     )
 
-    
-    
-    
     competitionMembers = await Promise.all(competitionMembers.filter(({status, value}) => status === 'fulfilled' && value.members.indexOf(connector.accounts[0]) !== -1))
     competitionMembers = competitionMembers.map(({value}) => value)
     

@@ -11,7 +11,7 @@ import icons from './icons/icons'
 import './elements/nav-bar'
 import './elements/account-menu'
 
-import connect from './wallet/connect'
+
 
 globalThis.pubsub = new Pubsub()
 export default customElements.define('app-shell', class AppShell extends LitElement {
@@ -34,6 +34,11 @@ export default customElements.define('app-shell', class AppShell extends LitElem
   #lastSelectedView
   #previousSelected
 
+  async #connect() {    
+    const importee = await import('./wallet/connect')
+    return importee.default(this.selectedWalletProvider)    
+  }
+
   async connectedCallback() {
     super.connectedCallback()
     // document.addEventListener('click', event => {
@@ -47,10 +52,8 @@ export default customElements.define('app-shell', class AppShell extends LitElem
     onhashchange = this.onhashchange.bind(this)
     this.onhashchange()
 
-    const connected = localStorage.getItem('dynasty.wallet-connected')
     this.selectedWalletProvider = localStorage.getItem('dynasty.selectedWalletProvider')
-    this.selectedWalletProvider !== undefined && await connect(this.selectedWalletProvider)
-    // this._setupFirebase()
+    this.selectedWalletProvider !== undefined && await this.#connect()
   }
 
   #isDesktop({matches}) {
@@ -66,16 +69,6 @@ export default customElements.define('app-shell', class AppShell extends LitElem
 
   get #navbar() {
     return this.shadowRoot.querySelector('nav-bar')
-  }
-
-  async _setupFirebase() {
-    let importee = await import(/* webpackChunkName: "firebase" */ './firebase.js')
-    const {app, database, ref, set, get, push, child} = importee.default()
-    globalThis.firebase = {app, database, ref, set, get, push, child}
-    pubsub.subscribe('firebase.ready', () => {})
-    pubsub.publish('firebase.ready', true)
-    this.database = database
-    this.ref = ref
   }
 
   async connect() {
