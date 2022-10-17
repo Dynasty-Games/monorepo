@@ -5,7 +5,7 @@ import path from 'path'
 import {readFileSync, writeFileSync} from 'fs'
 import {terser} from 'rollup-plugin-terser';
 import replace from '@rollup/plugin-replace';
-
+import commonjs from '@rollup/plugin-commonjs'
 try {
   execSync('rm -rf www/themes/*.js')
   execSync('rm -rf www/*.js')
@@ -39,6 +39,7 @@ export default [{
     nodeResolve({
       browser: true
     }),
+    commonjs(),
     terser({
       output: {
         comments: false
