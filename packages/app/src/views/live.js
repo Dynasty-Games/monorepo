@@ -130,7 +130,7 @@ export default customElements.define('live-view', class LiveView extends LitElem
         cursor: pointer;
         padding-right: 12px;
       }
-      .game-style, .category.name, .price, .prizepool, .members {
+      .game-style, .category, .name, .price, .prizepool, .members {
         display: flex;
         padding-right: 12px;
       }
@@ -145,11 +145,10 @@ export default customElements.define('live-view', class LiveView extends LitElem
 
       .top-row, .item {
         padding: 12px 24px;
-        align-item: center;
+        align-items: center;
       }
       .name {
-        min-width: 186px;
-        max-width: 240px;
+        min-width: 120px;
         width: 100%;
       }
 
@@ -169,6 +168,11 @@ export default customElements.define('live-view', class LiveView extends LitElem
           height: 80%;
         }
       }
+
+      .container {
+        grid-template-columns: [first] 40px [line2] 50px [line3] auto [col4-start] 50px [five] 40px [end];
+        grid-template-rows: [row1-start] 25% [row1-end] 100px [third-line] auto [last-line];
+      }
     </style>
     <flex-row class="header">
       <flex-row class="inner-header">
@@ -184,6 +188,7 @@ export default customElements.define('live-view', class LiveView extends LitElem
         <strong class="category">category</strong>
         <strong class="game-style" style="align-items: center; justify-content: center;">style</strong>
         <strong class="name">name</strong>
+        <flex-one></flex-one>
         <strong class="price">price</strong>
         <strong class="prizepool">prizepool</strong>
         <strong class="members">entries</strong>

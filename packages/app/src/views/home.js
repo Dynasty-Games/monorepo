@@ -76,6 +76,8 @@ export default customElements.define('home-view', class HomeView extends LitElem
         border-radius: 12px;
         overflow-y: auto;
         pointer-events: auto;
+        max-height: 364px;
+        height: 100%;
       }
 
       .ref-container {
@@ -126,7 +128,8 @@ export default customElements.define('home-view', class HomeView extends LitElem
         text-align: center;
         background: var(--accent-color);
         box-sizing: border-box;
-        padding: 12px;
+        padding: 6px;
+        margin: 12px 0;
         border-radius: 12px;
       }
       
@@ -148,6 +151,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
           flex-direction: column;
           align-items: center;
           padding: 12px 24px 24px;
+          max-height: 100%;
         }
 
       }

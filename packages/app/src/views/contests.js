@@ -21,6 +21,9 @@ export default customElements.define('contests-view', class ContestsView extends
     let competitions = [...await closedCompetitions(), ...await openCompetitions()]
     const category = 0
     const style = 0
+
+    competitions = competitions.filter(({members}) => (members.find(member => member === connector.accounts[0])))
+
     let competitionMembers = await Promise.allSettled(
       competitions.map(
         async ({category, style, id}, i) => {
@@ -42,10 +45,6 @@ export default customElements.define('contests-view', class ContestsView extends
     competitionMembers = await Promise.all(competitionMembers.filter(({status, value}) => status === 'fulfilled' && value.members.indexOf(connector.accounts[0]) !== -1))
     competitionMembers = competitionMembers.map(({value}) => value)
     
-    // && value === connector.accounts[0]
-    console.log({competitionMembers})
-    console.log({competitions});
-    
     competitionMembers = competitionMembers.reduce((set, current) => {
       const params = competitions[current.i]
       const name = competitions[current.i].name.toLowerCase()
@@ -55,7 +54,6 @@ export default customElements.define('contests-view', class ContestsView extends
       return set
     }, {})
 
-    console.log(competitionMembers)
     if (Object.keys(competitionMembers).length > 0) {
       this.items = [
         {type: 'classic', description: 'create a 8 crypto lineup', items: JSON.stringify(Object.values(competitionMembers))}
