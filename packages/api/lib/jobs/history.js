@@ -18,13 +18,15 @@ const currencyJob = async (timestamp, currency) => {
   if (stampsOneHoursAgo.length === 0) return currency;
 
   let stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
-    return timestamp - stamp > twelveHours
+    const time = timestamp - stamp
+    return time > twelveHours && time < twenfyFourHours
   })
 
   stampsTwelveHoursAgo = stampsTwelveHoursAgo.sort((a, b) => a - b)
 
   let stampsTwentyFourHoursAgo = currency.timestamps.filter(stamp => {
-    return timestamp - stamp > twenfyFourHours
+    const time = timestamp - stamp
+    return time > twenfyFourHours && time < twenfyFourHours * 2
   })
 
   stampsTwentyFourHoursAgo = stampsTwentyFourHoursAgo.sort((a, b) => a - b)
@@ -32,7 +34,7 @@ const currencyJob = async (timestamp, currency) => {
   let points = 0
 
   if (stampsTwentyFourHoursAgo.length > 0) {
-    const stamp = stampsTwentyFourHoursAgo[stampsTwentyFourHoursAgo.length - 1]
+    const stamp = stampsTwentyFourHoursAgo[0]
     let data = await storage.get(`currencies/${currency.id}/${stamp}`)
     data = JSON.parse(data.toString())
     if (data.volumeChange24hPercentage !== undefined) {
@@ -47,7 +49,7 @@ const currencyJob = async (timestamp, currency) => {
   currency.points = points
 
   if (stampsTwentyFourHoursAgo.length > 0) {
-    const stamp = stampsTwentyFourHoursAgo[stampsTwentyFourHoursAgo.length - 1]
+    const stamp = stampsTwentyFourHoursAgo[0]
     let data = await storage.get(`currencies/${currency.id}/${stamp}`)
     data = JSON.parse(data.toString())
 
@@ -63,7 +65,7 @@ const currencyJob = async (timestamp, currency) => {
   }
 
   if (stampsTwelveHoursAgo.length > 0) {
-    const stamp = stampsTwelveHoursAgo[stampsTwelveHoursAgo.length - 1]
+    const stamp = stampsTwelveHoursAgo[0]
     let data = await storage.get(`currencies/${currency.id}/${stamp}`)
     data = JSON.parse(data.toString())
 
@@ -82,7 +84,7 @@ const currencyJob = async (timestamp, currency) => {
   }
 
   if (stampsOneHoursAgo.length > 0) {
-    const stamp = stampsOneHoursAgo[stampsOneHoursAgo.length - 1]
+    const stamp = stampsOneHoursAgo[0]
     let data = await storage.get(`currencies/${currency.id}/${stamp}`)
     data = JSON.parse(data.toString())
 

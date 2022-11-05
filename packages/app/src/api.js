@@ -54,6 +54,12 @@ export const openCompetitions = async () => {
   return response
 }
 
+export const openCompetitionNames = async () => {
+  let response = await fetch(`https://${apiURL}/open-competition-names`)
+  response = await response.json()
+  return response
+}
+
 export const closedCompetitions = async () => {
   let response = await fetch(`https://${apiURL}/closed-competitions`)
   const date = new Date()

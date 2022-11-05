@@ -35,14 +35,18 @@ const competitionInfo = async ({category, style, id}, data) => {
 
     if (params.state === 0 && endTime > time) {
       if (isLive) {
+        data.liveNames.indexOf(params.name) === -1 && data.liveNames.push(params.name)
         data.live.push(competition)
-      } else {
+      } else {        
+        data.openNames.indexOf(params.name) === -1 && data.openNames.push(params.name)
         data.open.push(competition)
       }
 
     } else {
       data.closed.push(competition)
     }
+
+    data.names.indexOf(params.name) === -1 && data.names.push(params.name)
   } catch (e) {
     console.warn(style, category, id);
     console.trace(e)
@@ -121,7 +125,10 @@ export default async () => {
   data = {
     open: [],
     live: [],
-    closed: []
+    closed: [],
+    names: [],
+    openNames: [],
+    liveNames: []
   }
 
   await runQueue(data, queue, competitionInfo)

@@ -1,7 +1,7 @@
 import { LitElement, html } from 'lit'
+import './dropdown'
 import './balance'
 import './credit'
-import './dropdown'
 import { balance, gameCredits } from './../api'
 
 export default customElements.define('account-menu-element', class AccountMenuElement extends LitElement {
