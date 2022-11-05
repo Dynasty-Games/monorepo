@@ -574,18 +574,17 @@ class DynastyStorage {
       }, 10 * 60000);
     }
 
-    async #cleanupStorage() {
-      // setTimeout(() => {
+    #cleanupStorage() {
+      setTimeout(async () => {
         console.time('clean Storage');
 
         const time = new Date().getTime();
         
         let paths = await this.readDir('currencies');
         paths = paths.filter(path$1 => {
-          return Number(path$1.split(path.posix.sep)[1].split('.data')[0]) + (62 * 3.6e+6) < time
+          // 1 year and 24h
+          return Number(path$1.split(path.posix.sep)[1].split('.data')[0]) + (8790 * 3.6e+6) < time
         });
-
-        console.log(paths);
         
         const sizes = await Promise.all(paths.map(path$1 => promises.stat(path.join(os.homedir(), '.dynasty/data/currencies', path$1))));
         const totalSize = sizes.reduce((totalSize, {size}) => {
@@ -593,16 +592,15 @@ class DynastyStorage {
           return totalSize
         }, 0);
 
-        try {
-          
+        try {          
           await queue__default["default"]({}, paths.map(path$1 => path.join('currencies', path$1.replace('.data', ''))), this.delete.bind(this), 5000);
         } catch(e) {
           console.error(e);
         }
         console.timeEnd('clean Storage');
         console.log(`  removed ${paths.length} items \n  freed ${totalSize * 1e-6} Mb`); 
-        // this.#cleanupStorage()
-      // }, 10 * 60000)
+        this.#cleanupStorage();
+      }, 10 * 60000);
     }
 
     createHash(key) {

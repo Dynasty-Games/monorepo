@@ -82,7 +82,8 @@ export default class DynastyStorage {
         
         let paths = await this.readDir('currencies')
         paths = paths.filter(path => {
-          return Number(path.split(posix.sep)[1].split('.data')[0]) + (62 * 3.6e+6) < time
+          // 1 year and 24h
+          return Number(path.split(posix.sep)[1].split('.data')[0]) + (8790 * 3.6e+6) < time
         })
         
         const sizes = await Promise.all(paths.map(path => stat(join(homedir(), '.dynasty/data/currencies', path))))
