@@ -5,7 +5,7 @@
   "main": "api.js",
   "module": "lib/api.js",
   "scripts": {
-    "c": "rollup -c",
+    "build": "rollup -c",
     "test": "node test.js"
   },
   "repository": {

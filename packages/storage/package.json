@@ -1,6 +1,6 @@
 {
   "name": "@dynasty-games/storage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Storage handler & client for internal database interaction",
   "main": "storage.js",
   "module": "src/storage.js",

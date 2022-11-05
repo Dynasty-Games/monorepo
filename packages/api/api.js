@@ -2131,10 +2131,21 @@ router$1.get('/faucet/tot', timedOutMessage);
 var marketdata = async () => {
   let data = await getMarketData('usd', '250', '25');
   data = data.map(({
-    name, id, symbol, image, current_price, total_supply, salary,
-    total_volume, market_cap_rank, circulating_supply,
-    price_change_percentage_24h, roi, market_cap,
-    market_cap_change_percentage_24h, max_supply
+    name,
+    id,
+    symbol,
+    image,
+    current_price,
+    total_supply,
+    salary,
+    total_volume,
+    market_cap_rank,
+    circulating_supply,
+    price_change_percentage_24h,
+    roi,
+    market_cap,
+    market_cap_change_percentage_24h,
+    max_supply
   }, i) => {
     return {
       name,
@@ -2239,12 +2250,12 @@ const oneHour = 60 * 60000;
 const currencyJob = async (timestamp, currency) => {
 
   let stampsOneHoursAgo = currency.timestamps.filter(stamp => {
-    return timestamp - stamp > oneHour
+    return timestamp - stamp > oneHour && timestamp - stamp < oneHour * 2
   });
 
   stampsOneHoursAgo = stampsOneHoursAgo.sort((a, b) => a - b);
 
-  if (stampsOneHoursAgo[stampsOneHoursAgo.length - 1] + oneHour < timestamp || stampsOneHoursAgo.length === 0) return currency;
+  if (stampsOneHoursAgo.length === 0) return currency;
 
   let stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
     return timestamp - stamp > twelveHours
