@@ -29,6 +29,10 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
     this.shown = !this.shown
   }
 
+  #showCompetitionNameView() {
+    location.hash = `#!/competition-list?category=${this.category}&style=${this.style}&name=${this.name}`
+  }
+
   render() {
     return html`
     <style>
@@ -95,12 +99,12 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
         pointer-events: none !important;
       }
     </style>
-    <flex-row class="toggle" @click="${this.#toggle}">
+    <flex-row class="toggle" @click="${this.#showCompetitionNameView}">
       <flex-column>
         <h3>${this.name}</h3>
       </flex-column>
       <flex-one></flex-one>
-      ${this.shown ? html`<custom-svg-icon icon="icons::arrow-drop-up"></custom-svg-icon>` : html`<custom-svg-icon icon="icons::arrow-drop-down"></custom-svg-icon>`}
+      ${this.shown ? html`<custom-svg-icon icon="icons::arrow-drop-up"  @click="${this.#toggle}"></custom-svg-icon>` : html`<custom-svg-icon icon="icons::info" @click="${this.#toggle}"></custom-svg-icon>`}
 
     </flex-row>
     <flex-column class="container" ?hidden=${!this.shown}>

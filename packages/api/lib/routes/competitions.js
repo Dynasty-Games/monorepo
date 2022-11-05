@@ -6,36 +6,23 @@ const router = new Router();
 
 const filter = ctx => {
   
-  const { category, style, id } = ctx.request.query
-  if (category && style && id) {
-    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.style === Number(style) && item.id === Number(id))
-    return ctx.body
-  }
+  const { category, style, id, name } = ctx.request.query
+  if (category && style && id && name) return ctx.body.filter(item => item.category === Number(category) && item.style === Number(style) && item.id === Number(id) && item.name === name)
 
-  if (category && id) {
-    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.id === Number(id))
-    return ctx.body
-  }
+  if (category && id) return ctx.body.filter(item => item.category === Number(category) && item.id === Number(id))    
 
-  if (style && id) {
-    ctx.body = ctx.body.filter(item => item.id === Number(id) && item.style === Number(style))
-    return ctx.body
-  }
+  if (style && id) return ctx.body.filter(item => item.id === Number(id) && item.style === Number(style))    
 
-  if (category && style) {
-    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.style === Number(style))
-    return ctx.body
-  }
+  if (category && style) return ctx.body.filter(item => item.category === Number(category) && item.style === Number(style))    
 
-  if (category) {
-    ctx.body = ctx.body.filter(item => item.category === Number(category))
-    return ctx.body
-  }
+  if (category) return ctx.body.filter(item => item.category === Number(category))    
 
-  if (style) {
-    ctx.body = ctx.body.filter(item => item.style === Number(style))
-    return ctx.body
-  }
+  if (style) return ctx.body.filter(item => item.style === Number(style))
+  
+  if (id) return ctx.body.filter(item => item.id === Number(id))
+
+  if (name) return ctx.body.filter(item => item.name === name)
+    
 }
 
 // router.get('/competitionsByCategory', async ctx => {

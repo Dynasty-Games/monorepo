@@ -1314,14 +1314,18 @@ const competitionInfo = async ({category, style, id}, data) => {
 
     if (params.state === 0 && endTime > time) {
       if (isLive) {
+        data.liveNames.indexOf(params.name) === -1 && data.liveNames.push(params.name);
         data.live.push(competition);
-      } else {
+      } else {        
+        data.openNames.indexOf(params.name) === -1 && data.openNames.push(params.name);
         data.open.push(competition);
       }
 
     } else {
       data.closed.push(competition);
     }
+
+    data.names.indexOf(params.name) === -1 && data.names.push(params.name);
   } catch (e) {
     console.warn(style, category, id);
     console.trace(e);
@@ -1400,7 +1404,10 @@ var competitions$1 = async () => {
   data = {
     open: [],
     live: [],
-    closed: []
+    closed: [],
+    names: [],
+    openNames: [],
+    liveNames: []
   };
 
   await runQueue$1(data, queue, competitionInfo);
@@ -1413,36 +1420,23 @@ const router$2 = new Router__default["default"]();
 
 const filter = ctx => {
   
-  const { category, style, id } = ctx.request.query;
-  if (category && style && id) {
-    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.style === Number(style) && item.id === Number(id));
-    return ctx.body
-  }
+  const { category, style, id, name } = ctx.request.query;
+  if (category && style && id && name) return ctx.body.filter(item => item.category === Number(category) && item.style === Number(style) && item.id === Number(id) && item.name === name)
 
-  if (category && id) {
-    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.id === Number(id));
-    return ctx.body
-  }
+  if (category && id) return ctx.body.filter(item => item.category === Number(category) && item.id === Number(id))    
 
-  if (style && id) {
-    ctx.body = ctx.body.filter(item => item.id === Number(id) && item.style === Number(style));
-    return ctx.body
-  }
+  if (style && id) return ctx.body.filter(item => item.id === Number(id) && item.style === Number(style))    
 
-  if (category && style) {
-    ctx.body = ctx.body.filter(item => item.category === Number(category) && item.style === Number(style));
-    return ctx.body
-  }
+  if (category && style) return ctx.body.filter(item => item.category === Number(category) && item.style === Number(style))    
 
-  if (category) {
-    ctx.body = ctx.body.filter(item => item.category === Number(category));
-    return ctx.body
-  }
+  if (category) return ctx.body.filter(item => item.category === Number(category))    
 
-  if (style) {
-    ctx.body = ctx.body.filter(item => item.style === Number(style));
-    return ctx.body
-  }
+  if (style) return ctx.body.filter(item => item.style === Number(style))
+  
+  if (id) return ctx.body.filter(item => item.id === Number(id))
+
+  if (name) return ctx.body.filter(item => item.name === name)
+    
 };
 
 // router.get('/competitionsByCategory', async ctx => {
@@ -2174,10 +2168,16 @@ var competitions = async () => {
   const data = await competitions$1();
   const categories = [...data.categories];
   const styles = [...data.styles];
-  cache.add('info', {categories, styles});
+  const names = [...data.names];
+  const openNames = [...data.openNames];
+  const liveNames = [...data.liveNames];
+  cache.add('info', {categories, styles, names, openNames, liveNames});
   
   delete data.styles;
   delete data.categories;
+  delete data.openNames;
+  delete data.names;
+  delete data.liveNames;
   cache.add('competitions', data);
 };
 
@@ -2258,13 +2258,15 @@ const currencyJob = async (timestamp, currency) => {
   if (stampsOneHoursAgo.length === 0) return currency;
 
   let stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
-    return timestamp - stamp > twelveHours
+    const time = timestamp - stamp;
+    return time > twelveHours && time < twenfyFourHours
   });
 
   stampsTwelveHoursAgo = stampsTwelveHoursAgo.sort((a, b) => a - b);
 
   let stampsTwentyFourHoursAgo = currency.timestamps.filter(stamp => {
-    return timestamp - stamp > twenfyFourHours
+    const time = timestamp - stamp;
+    return time > twenfyFourHours && time < twenfyFourHours * 2
   });
 
   stampsTwentyFourHoursAgo = stampsTwentyFourHoursAgo.sort((a, b) => a - b);
@@ -2272,7 +2274,7 @@ const currencyJob = async (timestamp, currency) => {
   let points = 0;
 
   if (stampsTwentyFourHoursAgo.length > 0) {
-    const stamp = stampsTwentyFourHoursAgo[stampsTwentyFourHoursAgo.length - 1];
+    const stamp = stampsTwentyFourHoursAgo[0];
     let data = await storage.get(`currencies/${currency.id}/${stamp}`);
     data = JSON.parse(data.toString());
     if (data.volumeChange24hPercentage !== undefined) {
@@ -2287,7 +2289,7 @@ const currencyJob = async (timestamp, currency) => {
   currency.points = points;
 
   if (stampsTwentyFourHoursAgo.length > 0) {
-    const stamp = stampsTwentyFourHoursAgo[stampsTwentyFourHoursAgo.length - 1];
+    const stamp = stampsTwentyFourHoursAgo[0];
     let data = await storage.get(`currencies/${currency.id}/${stamp}`);
     data = JSON.parse(data.toString());
 
@@ -2303,7 +2305,7 @@ const currencyJob = async (timestamp, currency) => {
   }
 
   if (stampsTwelveHoursAgo.length > 0) {
-    const stamp = stampsTwelveHoursAgo[stampsTwelveHoursAgo.length - 1];
+    const stamp = stampsTwelveHoursAgo[0];
     let data = await storage.get(`currencies/${currency.id}/${stamp}`);
     data = JSON.parse(data.toString());
 
@@ -2322,7 +2324,7 @@ const currencyJob = async (timestamp, currency) => {
   }
 
   if (stampsOneHoursAgo.length > 0) {
-    const stamp = stampsOneHoursAgo[stampsOneHoursAgo.length - 1];
+    const stamp = stampsOneHoursAgo[0];
     let data = await storage.get(`currencies/${currency.id}/${stamp}`);
     data = JSON.parse(data.toString());
 
@@ -2418,6 +2420,21 @@ router.get('/styles', async ctx => {
 router.get('/categories', async ctx => {
   let data = cache.get('info');
   if (data) ctx.body = data.categories;
+});
+
+router.get('/open-competition-names', async ctx => {
+  let data = cache.get('info');
+  if (data) ctx.body = data.openNames;
+});
+
+router.get('/live-competition-names', async ctx => {
+  let data = cache.get('info');
+  if (data) ctx.body = data.liveNames;
+});
+
+router.get('/competition-names', async ctx => {
+  let data = cache.get('info');
+  if (data) ctx.body = data.names;
 });
 
 class DynastyStorageClient {  
