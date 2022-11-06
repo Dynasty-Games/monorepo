@@ -4,10 +4,21 @@ import cache from './../cache.js'
 export default async () => {
   let data = await getMarketData('usd', '250', '25')
   data = data.map(({
-    name, id, symbol, image, current_price, total_supply, salary,
-    total_volume, market_cap_rank, circulating_supply,
-    price_change_percentage_24h, roi, market_cap,
-    market_cap_change_percentage_24h, max_supply
+    name,
+    id,
+    symbol,
+    image,
+    current_price,
+    total_supply,
+    salary,
+    total_volume,
+    market_cap_rank,
+    circulating_supply,
+    price_change_percentage_24h,
+    roi,
+    market_cap,
+    market_cap_change_percentage_24h,
+    max_supply
   }, i) => {
     return {
       name,
