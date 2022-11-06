@@ -4,7 +4,7 @@ import '../elements/contest-type'
 import categories from './../data/contests'
 import {LitElement, html, css} from 'lit';
 import {map} from 'lit/directives/map.js'
-
+import awesomefont from './../icons/awesomefont-icons'
 
 export default customElements.define('live-view', class LiveView extends LitElement {
   static properties = {
@@ -174,6 +174,7 @@ export default customElements.define('live-view', class LiveView extends LitElem
         grid-template-rows: [row1-start] 25% [row1-end] 100px [third-line] auto [last-line];
       }
     </style>
+    ${awesomefont}
     <flex-row class="header">
       <flex-row class="inner-header">
         <custom-svg-icon icon="chevron-left" @click=${this.back}></custom-svg-icon>
@@ -189,10 +190,9 @@ export default customElements.define('live-view', class LiveView extends LitElem
         <strong class="game-style" style="align-items: center; justify-content: center;">style</strong>
         <strong class="name">name</strong>
         <flex-one></flex-one>
-        <strong class="price">price</strong>
         <strong class="prizepool">prizepool</strong>
         <strong class="members">entries</strong>
-        <strong>ends in</strong>
+        <strong style="96px">ends in</strong>
       </flex-row>
       ${this.items?.length > 0 ? map(this.items, item => html`
         <flex-row class="item">
@@ -201,7 +201,6 @@ export default customElements.define('live-view', class LiveView extends LitElem
           </flex-row>
           <flex-row class="game-style" style="align-items: center; justify-content: center;">${item.style.name}</flex-row>
           <flex-row class="name" style="align-items: center;">${item.name}</flex-row>
-          <flex-row class="price">${item.price}</flex-row>
           <flex-row class="prizepool">${item.prizePool}</flex-row>
           <flex-row class="members">${item.members.length}</flex-row>
         </flex-row>

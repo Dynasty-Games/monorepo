@@ -39,7 +39,6 @@ export default [{
     nodeResolve({
       browser: true
     }),
-    commonjs(),
     terser({
       output: {
         comments: false

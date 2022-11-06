@@ -1,11 +1,13 @@
-import { Web3Provider } from '@ethersproject/providers'
 
 export default async (walletProvider = 'metamask') => {
   if (walletProvider === 'walletConnect') {
     if (!globalThis.walletConnect) await import(/* webpackChunkName: "walletConnect" */ './../walletconnect/walletconnect.js')
     await walletConnect.connect()
   } else if (walletProvider === 'metamask') {
-    const provider = new Web3Provider(globalThis.ethereum, 'any');
+    const {providers} = await import('ethers/dist/ethers.esm')
+    // console.log({importee});
+    // const Web3Provider = importee.default.Web3Provider
+    const provider = new providers.Web3Provider(globalThis.ethereum, 'any');
     // Prompt user for account connections
     await provider.send('eth_requestAccounts', []);
     const signer = provider.getSigner();

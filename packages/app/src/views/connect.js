@@ -9,12 +9,13 @@ export default customElements.define('connect-view', class ConnectView extends H
     this.shadowRoot.addEventListener('click', this.#click.bind(this))
   }
 
-  #click(event) {
+  async #click(event) {
     const target = event.composedPath()[0]
 
     this.selectedWalletProvider = target.dataset.provider
     localStorage.setItem('dynasty.selectedWalletProvider', this.selectedWalletProvider)
-    connect(this.selectedWalletProvider)
+    await connect(this.selectedWalletProvider)
+    location.hash = '#!/home'
   }
 
   get template() {

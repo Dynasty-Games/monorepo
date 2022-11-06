@@ -50,16 +50,23 @@ export default customElements.define('app-shell', class AppShell extends LitElem
     document.addEventListener('accountsChange', this.#onAccountsChange.bind(this))
 
     onhashchange = this.onhashchange.bind(this)
-    this.onhashchange()
 
     this.selectedWalletProvider = localStorage.getItem('dynasty.selectedWalletProvider')
-    this.selectedWalletProvider !== undefined && await this.#connect()
+    this.walletConnected = localStorage.getItem('dynasty.wallet-connected')
+
+    if (this.walletConnected === 'true' && this.selectedWalletProvider !== undefined) {      
+      
+      await this.#connect()
+      this.onhashchange()
+    } else {
+      globalThis.location.hash = '#!/connect'      
+    }
+    this.onhashchange()
   }
 
   #isDesktop({matches}) {
     if (matches) this.isDesktop = true
     else this.isDesktop = false
-    console.log({matches});
     this.requestUpdate()
   }
 
@@ -84,6 +91,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
     localStorage.setItem('dynasty.wallet-connected', false)
 
     this.shadowRoot.querySelector('account-menu-element').setAttribute('account', 'undefined')
+    location.hash = '#!/connect'
   }
 
   async #onAccountsChange({detail}) {
@@ -267,7 +275,12 @@ export default customElements.define('app-shell', class AppShell extends LitElem
         height: 0;
         padding: 0;
       }
-
+      home-view {
+        opacity: 0;
+      }
+      home-view[loaded] {
+        opacity: 1;
+      }
 
 
       @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,300;0,400;0,600;0,700;0,800;1,300;1,400&display=swap');
@@ -293,6 +306,7 @@ export default customElements.define('app-shell', class AppShell extends LitElem
         <games-view data-route="games"></games-view>
         <styles-view data-route="styles"></styles-view>
         <competitions-view data-route="competitions"></competitions-view>        
+        <competition-list-view data-route="competition-list"></competition-list-view>
         <competition-view data-route="competition" ?is-desktop="${this.isDesktop}"></competition-view>
         <history-view data-route="history"></history-view>
         <connect-view data-route="connect"></connect-view>

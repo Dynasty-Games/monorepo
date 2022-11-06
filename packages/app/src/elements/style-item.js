@@ -31,9 +31,12 @@ export default customElements.define('style-item', class StyleItem extends LitEl
         border-radius: 12px;
         pointer-events: auto;
         width: 100%;
-        border-radius: 24px;
-        border: 1px solid #355050;
-        margin-bottom: 6px;
+        border-radius: 24px;        
+        box-sizing: border-box;
+        
+        margin-bottom: 12px;
+        background: #262626;
+        // border: 1px solid #355050;
       }
 
       h4 {

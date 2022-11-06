@@ -72,7 +72,7 @@ export default customElements.define('styles-view', class StylesView extends Lit
 
       .container {
         width: 100%;
-        max-width: 760px;
+        max-width: 640px;
       }
 
       h2, h4 {
@@ -89,7 +89,7 @@ export default customElements.define('styles-view', class StylesView extends Lit
         height: 54px;
       }
       .inner-header {
-        max-width: 760px;
+        max-width: 640px;
         width: 100%;
         align-items: center;
         height: 54px;

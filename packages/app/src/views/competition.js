@@ -13,9 +13,9 @@ export default customElements.define('competition-view', class CompetitionView e
   static properties = {
     selected: { type: String },
     backHidden: { type: Boolean },
-    competition: { type: String },
-    category: { type: String },
-    competitionStyle: { type: String },
+    competition: { type: Number },
+    category: { type: Number },
+    competitionStyle: { type: Number },
     submitDisabled: { type: Boolean },
     competitionName: { type: String },
     price: { type: String },
@@ -68,14 +68,14 @@ export default customElements.define('competition-view', class CompetitionView e
   async _loadUserItems() {
     pubsub.publish('load-user-portfolio', [])
     
-    const snap = await firebase.get(firebase.child(globalThis.userRef, `${currentCompetition.category}/${currentCompetition.style}/${currentCompetition.id}`))
+    // const snap = await firebase.get(firebase.child(globalThis.userRef, `${currentCompetition.category}/${currentCompetition.style}/${currentCompetition.id}`))
 
-    if (await snap.exists()) {
-      let ids = snap.val()
+    // if (await snap.exists()) {
+    //   let ids = snap.val()
 
-      ids = ids.filter(id => id.length > 0)
-      pubsub.publish('load-user-portfolio', ids)
-    }
+    //   ids = ids.filter(id => id.length > 0)
+    //   pubsub.publish('load-user-portfolio', ids)
+    // }
   }
 
   loadUserItems() {
@@ -107,22 +107,34 @@ export default customElements.define('competition-view', class CompetitionView e
 
   set competition(value) {
     this.#competition = value
-    this.#setCompetition(this.#category, this.#competitionStyle, value)
+    if (this.#category && this.#competitionStyle) this.#setCompetition(this.#category, this.#competitionStyle, value)
   }
 
   set category(value) {
     this.#category = value
-    this.#setCompetition(value, this.#competitionStyle, this.#competition)
+    if (this.#competitionStyle && this.#competition) this.#setCompetition(value, this.#competitionStyle, this.#competition)
   }
 
   set competitionStyle(value) {
     this.#competitionStyle = value
-    this.#setCompetition(this.#category, value, this.#competition)
+    if (this.#category && this.#competition) this.#setCompetition(this.#category, value, this.#competition)
+  }
+
+  #shouldUpdate() {
+    if (!this.#category || !this.#competitionStyle || !this.#competition) return false
+    if (this.#category === this._category && this.#competitionStyle === this._competitionStyle && this.#competition === this._competition) return false
+    
+    this._category = this.#category
+    this._competitionStyle = this.#competitionStyle
+    this._competition = this.#competition
+
+    return true
   }
 
   async #setCompetition(category, style, id) {
-    if (category === undefined || style === undefined || id === undefined) return
-    const {params, items, rankById, maxSalary} = await getCompetitionData({category, style, id})
+    if (!this.#shouldUpdate()) return;
+
+    const {params, items, rankById, maxSalary} = await getCompetitionData({category: this.#category, style: this.#competitionStyle, id: this.#competition})
 
     globalThis.currentCompetition = {
       category,

@@ -62,6 +62,7 @@ export default customElements.define('portfolio-element', class PortfolioElement
   }
 
   async #loadUserItems(ids) {
+    this.#clear()
     this.submitDisabled = true
     const contract = await contracts.dynastyContest.connect(connector)
     let edits
@@ -126,10 +127,11 @@ export default customElements.define('portfolio-element', class PortfolioElement
   }
 
   #save() {
-    editPortfolio(currentCompetition)
+    // editPortfolio(currentCompetition)
   }
 
   #clear() {
+    if (currentCompetition.portfolio.length == 0) return
     this.positionsFilled = 0
     currentCompetition.portfolio = []
     pubsub.publish('load-user-portfolio', [])

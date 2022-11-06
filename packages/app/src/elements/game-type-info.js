@@ -7,6 +7,12 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
     name: {
       type: String
     },
+    category: {
+      type: Number
+    },
+    gameStyle: {
+      type: Number
+    },
     description: {
       type: String,
       reflect: false
@@ -21,7 +27,8 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
     super()
   }
 
-  async #toggle() {
+  async #toggle(event) {
+    event.stopPropagation()
     if (!this.shown) {
       const length = Array.from(this.querySelectorAll('competition-info-item')).length
       this.style.setProperty('--items-length', `${length * 64}px`)
@@ -30,7 +37,7 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
   }
 
   #showCompetitionNameView() {
-    location.hash = `#!/competition-list?category=${this.category}&style=${this.style}&name=${this.name}`
+    location.hash = `#!/competition-list?category=${this.category}&gameStyle=${this.gameStyle}&name=${this.name}`
   }
 
   render() {
@@ -49,9 +56,12 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
         font-family: 'Noto Sans', sans-serif;
         border-radius: 24px;
         overflow: hidden;
-        min-height: 48px;
-        margin-bottom: 12px;
-        border: 1px solid var(--main-color);
+        min-height: 64px;
+        margin-bottom: 12px;     
+        background: #262626;
+        justify-content: center;
+        box-sizing: border-box;
+        // border: 1px solid var(--main-color);
       }
 
       competition-info-item {

@@ -18,6 +18,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
   connectedCallback() {
     super.connectedCallback()
     if (globalThis.connector?.accounts) this.account = globalThis.connector.accounts[0]
+    this.setAttribute('loaded', '')
   }
 
   set account(value) {

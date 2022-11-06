@@ -1,16 +1,22 @@
-import './../elements/competition-info-item'
-import './../elements/game-type-info'
-import { openCompetitions, openCompetitionNames } from './../../../utils/src/utils'
-import {LitElement, html, css} from 'lit';
+import '../elements/competition-info-item'
+import '../elements/game-type-info'
+import { openCompetitions, openCompetitionNames } from '../../../utils/src/utils'
+import {LitElement, html} from 'lit';
 import {map} from 'lit/directives/map.js'
 
-export default customElements.define('competitions-view', class CompetitionsView extends LitElement {
+export default customElements.define('competition-list-view', class CompetitionListView extends LitElement {
   static properties = {
     category: {
       type: Number
     },
     gameStyle: {
       type: Number
+    },
+    name: {
+      type: String
+    },
+    items: {
+      type: Array
     }
   }
   constructor() {
@@ -27,34 +33,50 @@ export default customElements.define('competitions-view', class CompetitionsView
     if (!target.hasAttribute('disabled')) location.hash = `#!/competition?competition=${target.competition}&category=${target.category}&competitionStyle=${target.competitionStyle}`
   }
 
-  attributeChangedCallback(name, old, value) {
-    if (old !== value) this[name] = value
-  }
-
   set category(value) {
     this._category = value;
-    if (this._gameStyle) this.#parseContest()
+    this.#parseContest()
   }
 
   set gameStyle(value) {
     this._gameStyle = value;
-    if (this._category) this.#parseContest()
+    this.#parseContest()
+  }
+
+  set name(value) {
+    this._name = value;
+    this.#parseContest()
+  }
+
+  #shouldUpdate() {
+    if (!this._category || !this._gameStyle || !this._name) return false
+    if (this._category === this.__category && this._name === this.__name && this._gameStyle === this.__gameStyle) return false
+
+    this.__category = this._category
+    this.__name = this._name
+    this.__gameStyle = this._gameStyle
+    return true
   }
 
   async #parseContest() {
-    let items = await openCompetitions(`category=${this._category}&style=${this._gameStyle}`)
-    items = items 
+    if (!this.#shouldUpdate()) return  
+
+    let items = await openCompetitions(`category=${this._category}&style=${this._gameStyle}&name=${this._name}`)
+
+    items = items
+      .filter(item => item.name.toLowerCase() === this._name)
       .sort((a, b) => a.startTime - b.startTime)
 
-    items = items.reduce((set, current) => {
-      const name = current.name.toLowerCase()
-      set[name] = set[name] || { name, items: [] }
-      set[name].items.push(current)
-      return set
-    }, {})
-    this.items = [...Object.values(items)]
-    
-    this.requestUpdate();
+    // items = items.reduce((set, current) => {
+    //   const name = current.name.toLowerCase()
+    //   set[name] = set[name] || { name, items: [] }
+    //   set[name].items.push(current)
+    //   return set
+    // }, {})
+
+    this.items = items
+console.log(this.items);    
+    // this.requestUpdate();
   }
 
   render() {
@@ -153,22 +175,16 @@ export default customElements.define('competitions-view', class CompetitionsView
     <flex-row class="header">
       <flex-row class="inner-header">
         <custom-svg-icon icon="chevron-left" @click=${this.back}></custom-svg-icon>
-        <h2>select competition style</h2>
+        <h2>Choose a competition</h2>
         <flex-one></flex-one>
       </flex-row>
     </flex-row>
 
     <flex-one></flex-one>
     <flex-column class="container">
-      ${map(this.items, item => html`
-        <game-type-info name="${item.name}" category="${this._category}" gameStyle="${this._gameStyle}">
-        <blockquote>some info</blockquote>
-        <!-- ${map(item.items, (item, i) => html`
-          <competition-info-item name="${item.name}" competitionStyle=${item.style} competition="${item.id}" description="${item.description}" category="${item.category}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" participants="${item.participants}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>
-        `)}  -->        
-        </game-type-info>
+      ${map(this.items, (item, i) => html`
+        <competition-info-item name="${item.name}" competitionStyle=${item.style} competition="${item.id}" description="${item.description}" category="${item.category}" startTime="${item.startTime.toString()}" date="${item.startTime.toString()}" participants="${item.participants}" @click="${this.#click}" ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>        
       `)}
-        
     </flex-column>
     <flex-one></flex-one>
     `

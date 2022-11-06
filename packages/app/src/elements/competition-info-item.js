@@ -43,13 +43,17 @@ export default customElements.define('competition-info-item', class CompetitionI
       :host {
         display: flex;
         flex-direction: column;
-        height: 54px;
-        padding: 12px 12px;
+        height: 64px;
         box-sizing: border-box;
         pointer-events: auto !important;
         cursor: pointer;
-        border-bottom: 1px solid #355050;
-        // background: var(--dialog-background-color);
+        justify-content: center;
+        padding: 24px;
+        width: 100%;
+        border-radius: 24px;
+        
+        margin-bottom: 12px;
+        background: #262626;        
       }
 
       flex-row {
