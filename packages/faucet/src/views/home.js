@@ -76,7 +76,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
     this.dialogShown = true
     this.busyShown = true
     const value = this.shadowRoot.querySelector('input').value
-    let response = await fetch(`https://dynasty-api.leofcoin.org/faucet?address=${value}`)
+    let response = await fetch(`https://api.dynastygames.games/faucet?address=${value}`)
     let data = await response.text()
     data = JSON.parse(data)
     this.etherTX = data.ether
