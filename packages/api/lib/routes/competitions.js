@@ -7,21 +7,20 @@ const router = new Router();
 const filter = ctx => {
   
   const { category, style, id, name } = ctx.request.query
-  if (category && style && id && name) return ctx.body.filter(item => item.category === Number(category) && item.style === Number(style) && item.id === Number(id) && item.name === name)
 
-  if (category && id) return ctx.body.filter(item => item.category === Number(category) && item.id === Number(id))    
-
-  if (style && id) return ctx.body.filter(item => item.id === Number(id) && item.style === Number(style))    
-
-  if (category && style) return ctx.body.filter(item => item.category === Number(category) && item.style === Number(style))    
-
-  if (category) return ctx.body.filter(item => item.category === Number(category))    
-
-  if (style) return ctx.body.filter(item => item.style === Number(style))
-  
-  if (id) return ctx.body.filter(item => item.id === Number(id))
-
-  if (name) return ctx.body.filter(item => item.name === name)
+  return ctx.body.filter(item => {
+    if (category && style && id && name) return item.category === Number(category) && item.style === Number(style) && item.id === Number(id) && item.name === name
+    if (category && style && id) return item.category === Number(category) && item.style === Number(style) && item.id === Number(id)
+    if (category && style && name) return item.category === Number(category) && item.style === Number(style) && item.name === name
+    if (category && style) return item.category === Number(category) && item.style === Number(style)
+    if (category && name) return item.category === Number(category) && item.name === name
+    if (name && style) return item.name === name && item.style === Number(style)
+    
+    if (id) return item.id === Number(id)
+    if (name) return item.name === name
+    if (category) return item.category === Number(category)
+    if (style) return item.style === Number(style)
+  })
     
 }
 

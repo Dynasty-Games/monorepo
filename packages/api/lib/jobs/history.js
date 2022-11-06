@@ -100,7 +100,7 @@ const currencyJob = async (timestamp, currency) => {
       currency.pointsChange1h = difference(data.points, points)
     }
   }
-
+  
   delete currency.timestamps
   delete currency.salary
 
