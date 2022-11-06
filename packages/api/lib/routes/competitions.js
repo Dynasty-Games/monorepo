@@ -8,7 +8,7 @@ const filter = ctx => {
   
   const { category, style, id, name } = ctx.request.query
 
-  return ctx.body.filter(item => {
+  ctx.body = ctx.body.filter(item => {
     if (category && style && id && name) return item.category === Number(category) && item.style === Number(style) && item.id === Number(id) && item.name.toLowerCase() === name
     if (category && style && id) return item.category === Number(category) && item.style === Number(style) && item.id === Number(id)
     if (category && style && name) return item.category === Number(category) && item.style === Number(style) && item.name.toLowerCase() === name
@@ -20,8 +20,9 @@ const filter = ctx => {
     if (name) return item.name.toLowerCase() === name
     if (category) return item.category === Number(category)
     if (style) return item.style === Number(style)
+    return true
   })
-    
+  return 
 }
 
 // router.get('/competitionsByCategory', async ctx => {
