@@ -2399,7 +2399,7 @@ class JobRunner {
     cron__default["default"].schedule('0 */1 * * *', job);
     // every 5 minutes
     await competitions();
-    cron__default["default"].schedule('*/5 * * * *', competitions);      
+    cron__default["default"].schedule('*/1 * * * *', competitions);      
   }
 }
 
