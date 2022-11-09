@@ -5,8 +5,6 @@ const twenfyFourHours = (24 * 60) * 60000
 const twelveHours = (12 * 60) * 60000
 const oneHour = 60 * 60000
 
-
-
 const currencyJob = async (timestamp, currency) => {
 
   let stampsOneHoursAgo = currency.timestamps.filter(stamp => {

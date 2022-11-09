@@ -6,6 +6,7 @@ var Router = require('@koa/router');
 var fetch = require('node-fetch');
 var ethers = require('ethers');
 require('dotenv/config');
+var cron = require('node-cron');
 var client = require('socket-request-client');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -14,6 +15,7 @@ var Koa__default = /*#__PURE__*/_interopDefaultLegacy(Koa);
 var cors__default = /*#__PURE__*/_interopDefaultLegacy(cors);
 var Router__default = /*#__PURE__*/_interopDefaultLegacy(Router);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
+var cron__default = /*#__PURE__*/_interopDefaultLegacy(cron);
 var client__default = /*#__PURE__*/_interopDefaultLegacy(client);
 
 globalThis.__cache__ = globalThis.__cache__ || {};
@@ -2245,8 +2247,6 @@ const twenfyFourHours = (24 * 60) * 60000;
 const twelveHours = (12 * 60) * 60000;
 const oneHour = 60 * 60000;
 
-
-
 const currencyJob = async (timestamp, currency) => {
 
   let stampsOneHoursAgo = currency.timestamps.filter(stamp => {
@@ -2382,31 +2382,20 @@ var history = async () => {
 
 class JobRunner {
   constructor() {
-    // 5 min timeout
-    this.timeout = 5 * 60000;
-    this.jobs = [
-      marketdata,
-      history,
-      competitions
-    ];
-
-    this.runJobs = this.runJobs.bind(this);
-
     this.#init();
-
   }
 
   async #init() {
-    // await firbase.signInWithEmailAndPassword(auth, process.env.EMAIL, process.env.PASSWORD)
-    await this.runJobs();
-  }
-  // some need other jobs to be finished first so jobs are run sync
-  async runJobs() {
+    const job = async () => {
+      await marketdata();
+      await history();
+    };
 
-    for (const job of this.jobs) {
-      await job();
-    }
-    setTimeout(this.runJobs, this.timeout);
+    await job();
+    // every hour
+    cron__default["default"].schedule('0 */1 * * *', job);
+    // every 5 minutes
+    cron__default["default"].schedule('*/5 * * * *', competitions);      
   }
 }
 

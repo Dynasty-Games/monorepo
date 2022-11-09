@@ -1,35 +1,26 @@
 import marketdata from './marketdata'
 import competitions from './competitions'
 import history from './history'
+import cron from 'node-cron'
+
 // import firebase from './../firebase'
 // import 'dotenv/config'
 
 export default class JobRunner {
   constructor() {
-    // 5 min timeout
-    this.timeout = 5 * 60000
-    this.jobs = [
-      marketdata,
-      history,
-      competitions
-    ]
-
-    this.runJobs = this.runJobs.bind(this)
-
     this.#init()
-
   }
 
   async #init() {
-    // await firbase.signInWithEmailAndPassword(auth, process.env.EMAIL, process.env.PASSWORD)
-    await this.runJobs()
-  }
-  // some need other jobs to be finished first so jobs are run sync
-  async runJobs() {
-
-    for (const job of this.jobs) {
-      await job()
+    const job = async () => {
+      await marketdata()
+      await history()
     }
-    setTimeout(this.runJobs, this.timeout)
+
+    await job()
+    // every hour
+    cron.schedule('0 */1 * * *', job)
+    // every 5 minutes
+    cron.schedule('*/5 * * * *', competitions)      
   }
 }

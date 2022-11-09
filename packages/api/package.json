@@ -27,7 +27,8 @@
     "@koa/router": "^10.1.1",
     "dotenv": "^16.0.1",
     "ethers": "^5.6.9",
-    "koa": "^2.13.4"
+    "koa": "^2.13.4",
+    "node-cron": "^3.0.2"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
