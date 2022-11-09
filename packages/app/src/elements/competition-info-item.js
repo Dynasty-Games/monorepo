@@ -53,7 +53,7 @@ export default customElements.define('competition-info-item', class CompetitionI
         border-radius: 24px;
         
         margin-bottom: 12px;
-        background: #262626;        
+        background: #3763e836;        
       }
 
       flex-row {

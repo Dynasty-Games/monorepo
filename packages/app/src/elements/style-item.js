@@ -35,7 +35,7 @@ export default customElements.define('style-item', class StyleItem extends LitEl
         box-sizing: border-box;
         
         margin-bottom: 12px;
-        background: #262626;
+        background: #3763e836;
         // border: 1px solid #355050;
       }
 

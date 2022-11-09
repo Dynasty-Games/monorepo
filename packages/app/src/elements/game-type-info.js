@@ -58,7 +58,7 @@ export default customElements.define('game-type-info', class GameTypeInfo extend
         overflow: hidden;
         min-height: 64px;
         margin-bottom: 12px;     
-        background: #262626;
+        background: #3763e836;
         justify-content: center;
         box-sizing: border-box;
         // border: 1px solid var(--main-color);
