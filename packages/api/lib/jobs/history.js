@@ -13,7 +13,10 @@ const currencyJob = async (timestamp, currency) => {
 
   stampsOneHoursAgo = stampsOneHoursAgo.sort((a, b) => b - a)
 
-  if (stampsOneHoursAgo.length === 0) return currency;
+  if (stampsOneHoursAgo.length === 0) {
+    delete currency.timestamps
+    return currency
+  }
 
   let stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
     const time = timestamp - stamp

@@ -2255,7 +2255,10 @@ const currencyJob = async (timestamp, currency) => {
 
   stampsOneHoursAgo = stampsOneHoursAgo.sort((a, b) => b - a);
 
-  if (stampsOneHoursAgo.length === 0) return currency;
+  if (stampsOneHoursAgo.length === 0) {
+    delete currency.timestamps;
+    return currency
+  }
 
   let stampsTwelveHoursAgo = currency.timestamps.filter(stamp => {
     const time = timestamp - stamp;
@@ -2395,6 +2398,7 @@ class JobRunner {
     // every hour
     cron__default["default"].schedule('0 */1 * * *', job);
     // every 5 minutes
+    await competitions();
     cron__default["default"].schedule('*/5 * * * *', competitions);      
   }
 }
