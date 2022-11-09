@@ -21,6 +21,7 @@ export default class JobRunner {
     // every hour
     cron.schedule('0 */1 * * *', job)
     // every 5 minutes
+    await competitions()
     cron.schedule('*/5 * * * *', competitions)      
   }
 }
