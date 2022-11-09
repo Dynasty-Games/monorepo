@@ -58,7 +58,7 @@ const currencyJob = async (timestamp, currency) => {
     currency.rankChange24h = difference(data.rank, currency.rank)
     currency.priceChange24h = difference(data.price, currency.price)
 
-    if (data.points) {
+    if (!isNaN(data.points)) {
       currency.pointsChange24hPercentage = calculateDifference(data.points, currency.points)
       currency.pointsChange24h = difference(data.points, points)
     }
@@ -77,7 +77,7 @@ const currencyJob = async (timestamp, currency) => {
     currency.priceChange12h = difference(data.price, currency.price)
     currency.rankChange12h = difference(data.rank, currency.rank)
 
-    if (data.points) {
+    if (!isNaN(data.points)) {
       currency.pointsChange12hPercentage = calculateDifference(data.points, points)
       currency.pointsChange12h = difference(data.points, points)
     }
@@ -95,7 +95,7 @@ const currencyJob = async (timestamp, currency) => {
     currency.priceChange1h = difference(data.price, currency.price)
     currency.rankChange1h = difference(data.rank, currency.rank)
 
-    if (data.points) {
+    if (!isNaN(data.points)) {
       currency.pointsChange1hPercentage = calculateDifference(data.points, points)
       currency.pointsChange1h = difference(data.points, points)
     }
