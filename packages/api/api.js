@@ -118,7 +118,11 @@ router$3.get('/currency-info', async (ctx, next) => {
     const url = `${baseApiURL}coins/${ctx.query.id}?tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false`;
     let response = await fetch__default["default"](url);
     data = await response.json();
-    cache.add(`currency_${ctx.query.id}`);
+    data = {
+      description: data.description.en,
+      links: data.links
+    };
+    cache.add(`currency_${ctx.query.id}`, data);
   }
   ctx.body = data;
 });
