@@ -93,8 +93,8 @@ export default async () => {
           if (competition.endTime.toString() === '0') return
 
           competition =  {
-            style: staticStyles[style],
-            category: staticCategories[category],
+            style: style,
+            category: category,
             id: competition.id.toNumber(),
             endTime,
             liveTime,

@@ -47,7 +47,7 @@ router.get('/open-competitions', async ctx => {
 })
 
 router.get('/closed-competitions', async ctx => {
-  ctx.body = awJSON.parse((await storage.get('/competitions/closed')).toString())
+  ctx.body = JSON.parse((await storage.get('/competitions/closed')).toString())
   filter(ctx)
 })
 
