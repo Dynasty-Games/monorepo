@@ -2408,7 +2408,8 @@ router.get('/portfolio-points', async ctx => {
   }));
 
   const total = points.reduce((prev, curr) => {
-    return prev + curr
+    if (curr.status === 'rejected') return prev
+    return prev + curr.value
   }, 0);
 
   ctx.body = {points, total};
