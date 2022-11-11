@@ -1,6 +1,6 @@
 import createCompetitionBatch from './create-competition-batch'
 import cron from 'node-cron'
-import { isOpen, getCompetitionParams, getCompetitionsToClose, hasStarted, hasEnded, getCompetitionPortfolios, getOpenCompetitions, getStartedCompetitions, getPortfolios, getMembers, portfolioPoints } from './../utils'
+import { isOpen, getCompetitionParams, getCompetitionsToClose, hasStarted, hasEnded, getCompetitionPortfolios, getOpenCompetitions, getStartedCompetitions, getPortfolios, getMembers } from './../utils'
 import { calculate } from '../../../app/src/apis/contests'
 import getRankings from './rankings.js'
 import closeCompetition from './close-competition'
@@ -8,6 +8,7 @@ import { BigNumber, utils } from 'ethers'
 import { isOdd } from './../utils'
 import { DynastyTreasury } from './../../../addresses/goerli.json'
 import { calculateBaseWinnings } from '../../../lib/src/lib'
+import { portfolioPoints } from '../../../utils/src/utils'
 /**
  * runs everyday at 15:00
  * creates all competitions from same day 17:00 to day after 15:00
@@ -86,7 +87,7 @@ export const close = () => {
       const members = await getMembers(competition.category, competition.style, competition.id)
       const portfolios = await getPortfolios(competition.category, competition.style, competition.id, members)
       const points = await Promise.all(portfolios.map(portfolio => portfolioPoints(`portfolio=${portfolio.join()}`)))
-
+      
       batch.categories.push(competition.category)
       batch.styles.push(competition.style)
       batch.ids.push(competition.id)
