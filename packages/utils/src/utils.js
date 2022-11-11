@@ -15,6 +15,12 @@ export const currencies = query => fetch('currencies', query)
 
 export const openCompetitions = query => fetch('open-competitions', query)
 
+export const openCompetitionNames = query => fetch('open-competition-names', query)
+
+export const liveCompetitionNames = query => fetch('live-competition-names', query)
+
+export const competitionNames = query => fetch('competition-names', query)
+
 export const liveCompetitions = query => fetch('live-competitions', query)
 
 export const closedCompetitions = query => fetch('closed-competitions', query)
@@ -22,3 +28,5 @@ export const closedCompetitions = query => fetch('closed-competitions', query)
 export const styles = query => fetch('styles', query)
 
 export const categories = query => fetch('categories', query)
+
+export const portfolioPoints = query => fetch('portfolio-points', query)

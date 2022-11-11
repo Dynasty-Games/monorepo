@@ -2390,7 +2390,8 @@ router$1.get('/competition-names', async ctx => ctx.body = (await storage.get('/
 const router = new Router__default["default"]();
 
 router.get('/portfolio-points', async ctx => {
-  const {portfolio} = ctx.request.query;
+  let {portfolio} = ctx.request.query;
+  portfolio = portfolio.split(',');
   let stamps = await Promise.all(portfolio.map(id => storage.dir(`currencies/${id}`)));  
   
   let points = await Promise.all(portfolio.map(async (id, i) => {
@@ -2404,7 +2405,7 @@ router.get('/portfolio-points', async ctx => {
     return prev + curr
   }, 0);
 
-  ctx.body = {points, total}; 
+  ctx.body = {points, total};
 });
 
 class DynastyStorageClient {  
