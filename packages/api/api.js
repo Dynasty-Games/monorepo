@@ -2059,14 +2059,14 @@ const difference = (a, b) => {
  * static list of categories set in contract
  */
 const staticCategories = [
-  { name: 'crypto' }
+  { name: 'crypto', id: 0 }
 ];
 
 /**
  * static list of styles set in contract
  */
 const staticStyles = [
-  { name: 'classic', fee: 4 }
+  { name: 'classic', fee: 4, id: 0 }
 ];
 
 const contract = new ethers.Contract(DynastyContestsProxy, contestsABI, provider);

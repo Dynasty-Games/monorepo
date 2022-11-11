@@ -43,6 +43,7 @@ export default customElements.define('competitions-view', class CompetitionsView
 
   async #parseContest() {
     let items = await openCompetitions(`category=${this._category}&style=${this._gameStyle}`)
+    console.log(items);
     items = items 
       .sort((a, b) => a.startTime - b.startTime)
 

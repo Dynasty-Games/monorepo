@@ -38,8 +38,7 @@ export default customElements.define('styles-view', class StylesView extends Lit
 
   async #parseContest() {
     let items = await categories()
-    let styles = await styles()
-    console.log({items});
+
     this.items = items[this._category]
     this.requestUpdate();
   }
