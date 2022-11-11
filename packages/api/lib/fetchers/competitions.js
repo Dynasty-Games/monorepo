@@ -121,11 +121,13 @@ export default async () => {
 
   data.categories = staticCategories
   data.styles = staticStyles
-  
+
   await storage.put('/competitions/open', JSONToBuffer(data.open))
   await storage.put('/competitions/closed', JSONToBuffer(data.closed))
   await storage.put('/competitions/live', JSONToBuffer(data.live))
   await storage.put('/competitions/names', JSONToBuffer(data.names))
+  await storage.put('/competitions/open-names', JSONToBuffer(data.openNames))
+  await storage.put('/competitions/live-names', JSONToBuffer(data.liveNames))
   await storage.put('/competitions/competitions', JSONToBuffer(data.competitions))
   return data
 }

@@ -3,29 +3,14 @@ import cache from '../cache'
 
 const router = new Router();
 
-router.get('/styles', async ctx => {
-  let data = cache.get('info')
-  if (data) ctx.body = data.styles
-})
+router.get('/styles', async ctx => ctx.body = (await storage.get('/competitions/styles')).toString())
 
-router.get('/categories', async ctx => {
-  let data = cache.get('info')
-  if (data) ctx.body = data.categories
-})
+router.get('/categories', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString())
 
-router.get('/open-competition-names', async ctx => {
-  let data = cache.get('info')
-  if (data) ctx.body = data.openNames
-})
+router.get('/open-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString())
 
-router.get('/live-competition-names', async ctx => {
-  let data = cache.get('info')
-  if (data) ctx.body = data.liveNames
-})
+router.get('/live-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString())
 
-router.get('/competition-names', async ctx => {
-  let data = cache.get('info')
-  if (data) ctx.body = data.names
-})
+router.get('/competition-names', async ctx => ctx.body = (await storage.get('/competitions/names')).toString())
 
 export default router

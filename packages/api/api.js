@@ -2183,17 +2183,21 @@ var competitions$1 = async () => {
 
   data.categories = staticCategories;
   data.styles = staticStyles;
-  
+
   await storage.put('/competitions/open', JSONToBuffer(data.open));
   await storage.put('/competitions/closed', JSONToBuffer(data.closed));
   await storage.put('/competitions/live', JSONToBuffer(data.live));
   await storage.put('/competitions/names', JSONToBuffer(data.names));
+  await storage.put('/competitions/open-names', JSONToBuffer(data.openNames));
+  await storage.put('/competitions/live-names', JSONToBuffer(data.liveNames));
   await storage.put('/competitions/competitions', JSONToBuffer(data.competitions));
   return data
 };
 
 var competitions = async () => {
+  console.time('competitions');
   await competitions$1();
+  console.timeEnd('competitions');  
 };
 
 const twenfyFourHours = (24 * 60) * 60000;
@@ -2358,30 +2362,15 @@ class JobRunner {
 
 const router = new Router__default["default"]();
 
-router.get('/styles', async ctx => {
-  let data = cache.get('info');
-  if (data) ctx.body = data.styles;
-});
+router.get('/styles', async ctx => ctx.body = (await storage.get('/competitions/styles')).toString());
 
-router.get('/categories', async ctx => {
-  let data = cache.get('info');
-  if (data) ctx.body = data.categories;
-});
+router.get('/categories', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
 
-router.get('/open-competition-names', async ctx => {
-  let data = cache.get('info');
-  if (data) ctx.body = data.openNames;
-});
+router.get('/open-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
 
-router.get('/live-competition-names', async ctx => {
-  let data = cache.get('info');
-  if (data) ctx.body = data.liveNames;
-});
+router.get('/live-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
 
-router.get('/competition-names', async ctx => {
-  let data = cache.get('info');
-  if (data) ctx.body = data.names;
-});
+router.get('/competition-names', async ctx => ctx.body = (await storage.get('/competitions/names')).toString());
 
 class DynastyStorageClient {  
   #port
