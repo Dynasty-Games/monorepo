@@ -16,7 +16,7 @@ export default customElements.define('rankings-item', class RankingsItem extends
   }
 
   set points(value) {
-    this._points = Math.round(value * 100) / 100
+    this._points = Math.round(Number(value)).toLocaleString()
     this.requestUpdate()
   }
 
@@ -84,7 +84,7 @@ export default customElements.define('rankings-item', class RankingsItem extends
 
       }
     </style>
-    ${this.points}<span> FP</span>
+    <span>${this.points} FP</span>
     <flex-one></flex-one>
 
     ${this.address}

@@ -5,7 +5,7 @@ import { competition as getCompetition } from './../api'
 import { calendar } from './../time'
 import './../dynasty-elements/countdown.js'
 import { LitElement, html } from 'lit'
-
+import { portfolioPoints } from './../../../utils/src/utils'
 import {map} from 'lit/directives/map.js'
 export default customElements.define('rankings-view', class RankingsView extends LitElement {
   static properties = {
@@ -48,8 +48,11 @@ export default customElements.define('rankings-view', class RankingsView extends
 
     const contract = await contracts.dynastyContest.connect(connector)
     let items = await contract.members(this.category, this.competitionStyle, this.competition)
-    items = items.map(address => ({address}))
-
+    items = await Promise.all(items.map(async address => {
+      const portfolio = await contract.memberPortfolio(this.category, this.competitionStyle, this.competition, address)
+      const points = await portfolioPoints(`portfolio=${portfolio.items.join()}`)
+      return {address, points: points.total, submits: portfolio.submits.toString()}
+    }))    
     this.items = items
   }
 
