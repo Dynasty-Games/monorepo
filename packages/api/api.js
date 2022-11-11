@@ -72,12 +72,12 @@ var getMarketData = async (vsCurrency = 'usd', limit = '250', pages = '25', orde
   return items
 };
 
-const router$3 = new Router__default["default"]();
+const router$4 = new Router__default["default"]();
 
 const baseApiURL = 'https://api.coingecko.com/api/v3/';
 // TODO: currencies sould just return all info except the marketdata
 
-router$3.get('/currencies', async (ctx, next) => {
+router$4.get('/currencies', async (ctx, next) => {
   const limit = ctx.query.limit ? Number(ctx.query.limit) : 250;
   const pages = ctx.query.pages ? Number(ctx.query.pages) : 25;
   
@@ -105,17 +105,17 @@ router$3.get('/currencies', async (ctx, next) => {
   ctx.body = JSON.stringify(data, null, '\t');
 });
 
-router$3.get('/marketdata', async (ctx, next) => {
+router$4.get('/marketdata', async (ctx, next) => {
   const limit = ctx.query.limit ? Number(ctx.query.limit) : 250;
   let data = cache.get('marketdata');
   if (!data || data?.length === 0 ) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
   ctx.body = data.splice(0, limit);
 });
 
-router$3.get('/currency-info', async (ctx, next) => {
+router$4.get('/currency-info', async (ctx, next) => {
   let data = cache.get(`currency_${ctx.query.id}`);
   if (!data || new Date().getTime() > timestamps.get(`currency_${ctx.query.id}`) + (5 * 60000)) {
-    const url = `${baseApiURL}coins/${ctx.query.id}?tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false`;
+    const url = `${baseApiURL}coins/${ctx.query.id}?tickers=false&market_data=false&community_data=true&developer_data=false&sparkline=false`;
     let response = await fetch__default["default"](url);
     data = await response.json();
     data = {
@@ -127,11 +127,11 @@ router$3.get('/currency-info', async (ctx, next) => {
   ctx.body = data;
 });
 
-router$3.get('/currency-icon', async (ctx, next) => {
+router$4.get('/currency-icon', async (ctx, next) => {
   ctx.body = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/${ctx.query.symbol.toLowerCase()}.svg`;
 });
 
-const router$2 = new Router__default["default"]();
+const router$3 = new Router__default["default"]();
 
 const filter = ctx => {
   
@@ -167,22 +167,22 @@ const filter = ctx => {
 /**
  * fetch('/contest?id=lambomaker')
  */
-router$2.get('/competitions', async ctx => {
+router$3.get('/competitions', async ctx => {
   ctx.body = JSON.parse((await storage.get('/competitions/competitions')).toString());
   filter(ctx);
 });
 
-router$2.get('/open-competitions', async ctx => {
+router$3.get('/open-competitions', async ctx => {
   ctx.body = JSON.parse((await storage.get('/competitions/open')).toString());
   filter(ctx);
 });
 
-router$2.get('/closed-competitions', async ctx => {
+router$3.get('/closed-competitions', async ctx => {
   ctx.body = JSON.parse((await storage.get('/competitions/closed')).toString());
   filter(ctx);
 });
 
-router$2.get('/live-competitions', async ctx => {
+router$3.get('/live-competitions', async ctx => {
   ctx.body = JSON.parse((await storage.get('/competitions/live')).toString());  
   filter(ctx);
 });
@@ -802,7 +802,7 @@ var addresses = {
 
 // import cache from './../cache'
 // import WebSocket from 'websocket'
-const router$1 = new Router__default["default"]();
+const router$2 = new Router__default["default"]();
 
 const timedOut = {};
 
@@ -824,7 +824,7 @@ const timedOutMessage = ctx => {
   ctx.body = `${ctx.request.query.address} on timeout till ${new Date(timedOut[ctx.request.query.address] + 43200 * 1000)}`;
 };
 
-router$1.get('/faucet', async ctx => {
+router$2.get('/faucet', async ctx => {
   try {
     if (timedOut[ctx.request.query.address] + 43200 < Math.round(new Date().getTime() / 1000)) return timedOutMessage(ctx)
     let tx = await contract$1.mint(ctx.request.query.address, ethers.utils.parseUnits('100', 8));
@@ -848,7 +848,7 @@ router$1.get('/faucet', async ctx => {
   }
 });
 
-router$1.get('/faucet/tot', timedOutMessage);
+router$2.get('/faucet/tot', timedOutMessage);
 
 var marketdata = async () => {
   let data = await getMarketData('usd', '250', '25');
@@ -2375,17 +2375,37 @@ class JobRunner {
   }
 }
 
+const router$1 = new Router__default["default"]();
+
+router$1.get('/styles', async ctx => ctx.body = (await storage.get('/competitions/styles')).toString());
+
+router$1.get('/categories', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
+
+router$1.get('/open-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
+
+router$1.get('/live-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
+
+router$1.get('/competition-names', async ctx => ctx.body = (await storage.get('/competitions/names')).toString());
+
 const router = new Router__default["default"]();
 
-router.get('/styles', async ctx => ctx.body = (await storage.get('/competitions/styles')).toString());
+router.get('/portfolio-points', async ctx => {
+  const {portfolio} = ctx.request.query;
+  let stamps = await Promise.all(portfolio.map(id => storage.dir(`currencies/${id}`)));  
+  
+  let points = await Promise.all(portfolio.map(async (id, i) => {
+    stamps[i] = stamps[i].map(stamp => stamp.split('.data')[0]);
 
-router.get('/categories', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
+    stamps[i] = stamps[i].sort((a, b) => b - a);
+    return (JSON.parse((await storage.get(`currencies/${id}/${stamps[i][0]}`)).toString())).points
+  }));
 
-router.get('/open-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
+  const total = items.reduce((prev, curr) => {
+    return prev + curr
+  }, 0);
 
-router.get('/live-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
-
-router.get('/competition-names', async ctx => ctx.body = (await storage.get('/competitions/names')).toString());
+  ctx.body = {points, total}; 
+});
 
 class DynastyStorageClient {  
   #port
@@ -2461,11 +2481,12 @@ class DynastyStorageClient {
   
   server
     .use(cors__default["default"]({ origin: '*' }))
+    .use(router$4.routes())
+    .use(router$2.routes())
     .use(router$3.routes())
     .use(router$1.routes())
-    .use(router$2.routes())
     .use(router.routes())
-    .use(router$3.allowedMethods());
+    .use(router$4.allowedMethods());
   
   server.listen(8668);
 })();
