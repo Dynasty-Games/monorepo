@@ -60,7 +60,8 @@ export default async () => {
     names: [],
     openNames: [],
     liveNames: [],
-    competitions: []
+    competitions: [],
+    categories: {}
   }
 
   if (categories.length !== staticCategories.length) await storage.put('competitions/categories', JSONToBuffer(staticCategories))
@@ -70,6 +71,18 @@ export default async () => {
       for (let style = 0; style < staticStyles.length; style++) {
 
         let fetchedCompetitions = await contract.competitionsByCategoryAndStyle(category, style)
+
+        if (fetchedCompetitions.length > 0) {
+          if (!data.categories[staticCategories[category].name]) data.categories[staticCategories[category].name] = []
+
+          data.categories[staticCategories[category].name].push({
+            name: staticStyles[style].name,
+            fee: staticStyles[style].fee,
+            id: style
+          })
+          await storage.put('/competitions/categories', JSONToBuffer([data.categories]))
+        }
+
         fetchedCompetitions = fetchedCompetitions.map(competition => {
 
           const time = new Date().getTime()
@@ -119,8 +132,6 @@ export default async () => {
   // }
 
 
-  data.categories = staticCategories
-  data.styles = staticStyles
 
   await storage.put('/competitions/open', JSONToBuffer(data.open))
   await storage.put('/competitions/closed', JSONToBuffer(data.closed))

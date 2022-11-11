@@ -1,4 +1,4 @@
-import { categories } from './../../../utils/src/utils'
+import { categories, styles } from './../../../utils/src/utils'
 import '../elements/style-item'
 import {LitElement, html, css} from 'lit';
 import {map} from 'lit/directives/map.js'
@@ -38,6 +38,7 @@ export default customElements.define('styles-view', class StylesView extends Lit
 
   async #parseContest() {
     let items = await categories()
+    let styles = await styles()
     console.log({items});
     this.items = items[this._category]
     this.requestUpdate();
