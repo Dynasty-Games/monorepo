@@ -2,6 +2,7 @@ import coinmarketcap from './../apis/coinmarketcap'
 import {calculate} from './../apis/contests'
 import './../../node_modules/custom-tabs/custom-tabs'
 import './../../node_modules/custom-tabs/custom-tab'
+import {scrollbar} from  './../shared/styles'
 import { calculateFantasyPoints, calculateBaseSalary } from './../../node_modules/@dynasty-games/lib/src/lib'
 
 export default customElements.define('info-dialog', class InfoDialog extends HTMLElement {
@@ -31,6 +32,10 @@ export default customElements.define('info-dialog', class InfoDialog extends HTM
     console.log({item});
     this.item = item
     this.#tabs.select('24h')
+    let response = await fetch(`https://api.dynastygames.games/currency-info?id=${item.id}`)
+    response = await response.json()
+    this.shadowRoot.querySelector('.description').innerHTML = response.description
+
     this.shadowRoot.querySelector('.name').innerHTML = item.name
     this.shadowRoot.querySelector('.price').innerHTML = item.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
     this.shadowRoot.querySelector('img').src = item.image
@@ -116,9 +121,10 @@ export default customElements.define('info-dialog', class InfoDialog extends HTM
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 286px;
+        max-width: 760px;
+        width: 100%;
         height: 100%;
-        max-height: 297px;
+        max-height: 760px;
         margin: 0;
         z-index: 0;
         // background: var(--dialog-background-color);
@@ -179,6 +185,40 @@ export default customElements.define('info-dialog', class InfoDialog extends HTM
        custom-tab span {
          pointer-events: none;
        }
+
+       .description {
+          -webkit-user-modify: read-write-plaintext-only;
+       }
+
+       p {
+       }
+
+       .description-container {
+        
+        max-height: 400px;
+        height: 100%;
+        padding: 12px;
+        box-sizing: border-box;
+        pointer-events: auto;
+        overflow: hidden;
+        overflow-y: auto;
+        user-select: none;
+       }
+
+       ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+       ::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          -webkit-box-shadow: inset 0 0 6px rgb(34 36 36 / 50%);
+        }
+
+        ::-webkit-scrollbar-track {
+          -webkit-box-shadow: inset 0 0 6px rgb(104 113 120 / 30%);
+          border-radius: 10px;
+        }
     </style>
     <flex-column class="backdrop">
       <flex-column class="dialog">
@@ -188,7 +228,9 @@ export default customElements.define('info-dialog', class InfoDialog extends HTM
           <flex-one></flex-one>
           <custom-svg-icon icon="cancel" data-action="cancel"></custom-svg-icon>
         </flex-row>
-
+       <flex-column class="description-container">
+          <p class="description"></p>
+       </flex-column>
         <custom-tabs attr-for-selected="data-route">
 
           <custom-tab data-route="24h">
