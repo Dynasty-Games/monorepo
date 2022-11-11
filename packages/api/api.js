@@ -2392,10 +2392,16 @@ const router = new Router__default["default"]();
 router.get('/portfolio-points', async ctx => {
   let {portfolio} = ctx.request.query;
   portfolio = portfolio.split(',');
-  let stamps = await Promise.all(portfolio.map(id => storage.readDir(`currencies/${id}`)));  
-  
-  let points = await Promise.all(portfolio.map(async (id, i) => {
-    stamps[i] = stamps[i].map(stamp => stamp.split('.data')[0]);
+  let stamps = await Promise.allSettled(portfolio.map(id => storage.readDir(`currencies/${id}`)));  
+  then((results) => results.forEach((result) => console.log(result.status)));
+
+  let points = await Promise.allSettled(portfolio.map(async (id, i) => {
+    if (stamps[i].result === 'rejected') {
+      console.warn(`currency id not found: ${portfolio[i]}`);
+      return 0
+    }
+
+    stamps[i] = stamps[i].map(stamp => stamp.value.split('.data')[0]);
 
     stamps[i] = stamps[i].sort((a, b) => b - a);
     return (JSON.parse((await storage.get(`currencies/${id}/${stamps[i][0]}`)).toString())).points
