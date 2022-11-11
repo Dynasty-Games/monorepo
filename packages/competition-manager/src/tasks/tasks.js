@@ -1,12 +1,13 @@
 import createCompetitionBatch from './create-competition-batch'
 import cron from 'node-cron'
-import { isOpen, getCompetitionParams, getCompetitionsToClose, hasStarted, hasEnded, getCompetitionPortfolios, getOpenCompetitions, getStartedCompetitions, getPortfolios, getMembers } from './../utils'
+import { isOpen, getCompetitionParams, getCompetitionsToClose, hasStarted, hasEnded, getCompetitionPortfolios, getOpenCompetitions, getStartedCompetitions, getPortfolios, getMembers, portfolioPoints } from './../utils'
 import { calculate } from '../../../app/src/apis/contests'
 import getRankings from './rankings.js'
 import closeCompetition from './close-competition'
 import { BigNumber, utils } from 'ethers'
 import { isOdd } from './../utils'
 import { DynastyTreasury } from './../../../addresses/goerli.json'
+import { calculateBaseWinnings } from '../../../lib/src/lib'
 /**
  * runs everyday at 15:00
  * creates all competitions from same day 17:00 to day after 15:00
@@ -84,7 +85,7 @@ export const close = () => {
     for (const competition of competitions) {
       const members = await getMembers(competition.category, competition.style, competition.id)
       const portfolios = await getPortfolios(competition.category, competition.style, competition.id, members)
-      
+      const points = await Promise.all(portfolios.map(portfolio => portfolioPoints(`portfolio=${portfolio.join()}`)))
 
       batch.categories.push(competition.category)
       batch.styles.push(competition.style)
@@ -103,12 +104,11 @@ export const close = () => {
       // }, {})
       batch.addresses[i] = []
       batch.amounts[i] = []
-      for (const member of members) {
-        if (member !== '0x0000000000000000000000000000000000000000') {
-          batch.addresses[i].push(member)
-          batch.amounts[i].push(utils.parseUnits(String(competition.prizePool / members.length), 8))
-        }        
-      }
+      
+      const winnings = await calculateWinnings(competition.prizePool, members, points)
+      batch.addresses = winnings.members
+      batch.amounts = winnings.amounts.map(amount => utils.parseUnits(amount, 8))
+    
       i++
       // const winnings = await calculateWinnings(competition)
     }
@@ -138,11 +138,11 @@ export const rankings = () => {
   return { runner, job }
 }
 
-export const calculateWinnings = async () => {
-  const job = async () => {
-    let competitions = getEndedCompetitions()
-    competitions = await Promise.all(competitions.map(competition => getCompetitionPortfolios(competition)))
-    const portfolios = competitions.map(competition => competition.portfolios)
-    const memberPoints = await getRankings(portfolios)
-  }
-}
+// export const calculateWinnings = async () => {
+//   const job = async () => {
+//     let competitions = getEndedCompetitions()
+//     competitions = await Promise.all(competitions.map(competition => getCompetitionPortfolios(competition)))
+//     const portfolios = competitions.map(competition => competition.portfolios)
+//     const memberPoints = await getRankings(portfolios)
+//   }
+// }

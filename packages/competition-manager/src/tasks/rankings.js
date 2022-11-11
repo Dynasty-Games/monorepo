@@ -1,11 +1,16 @@
-import { liveCompetitions } from "../../../utils/src/utils"
+import { calculateWinnings } from "../../../lib/src/lib"
+import { liveCompetitions, portfolioPoints } from "../../../utils/src/utils"
 import { getCompetitionPortfolios } from "../utils"
 import { getRankings } from "../utils"
 export default async () => {
     let competitions = await liveCompetitions()
     competitions = await Promise.all(competitions.map(competition => getCompetitionPortfolios(competition)))
     competitions = competitions.filter(competition => competition.portfolios.length > 0)
-
+    
+    const points = await Promise.all(competitions[competitions.length - 1].portfolios.map(portfolio => portfolioPoints(`portfolio=${portfolio.items.join()}`)))
+    
+    const winnings = calculateWinnings(competitions[competitions.length - 1].prizePool, competitions[competitions.length - 1].members, points)
+    console.log(winnings);
     console.log({competitions});
     // const portfolios = competitions.map(competition => competition.portfolios)
 
