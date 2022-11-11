@@ -14,7 +14,7 @@ router.get('/portfolio-points', async ctx => {
     return (JSON.parse((await storage.get(`currencies/${id}/${stamps[i][0]}`)).toString())).points
   }))
 
-  const total = items.reduce((prev, curr) => {
+  const total = points.reduce((prev, curr) => {
     return prev + curr
   }, 0)
 
