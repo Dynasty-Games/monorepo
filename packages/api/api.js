@@ -2392,7 +2392,7 @@ const router = new Router__default["default"]();
 router.get('/portfolio-points', async ctx => {
   let {portfolio} = ctx.request.query;
   portfolio = portfolio.split(',');
-  let stamps = await Promise.all(portfolio.map(id => storage.dir(`currencies/${id}`)));  
+  let stamps = await Promise.all(portfolio.map(id => storage.readDir(`currencies/${id}`)));  
   
   let points = await Promise.all(portfolio.map(async (id, i) => {
     stamps[i] = stamps[i].map(stamp => stamp.split('.data')[0]);
