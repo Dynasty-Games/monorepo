@@ -34,6 +34,7 @@ export default customElements.define('contest-item', class ContestItem extends L
         width: 100px;
         min-width: 100px;
         margin-bottom: 6px;
+        border: 1px #1e3066 solid;
       }
 
       h4 {
@@ -44,7 +45,7 @@ export default customElements.define('contest-item', class ContestItem extends L
 
       custom-svg-icon {
         --svg-icon-size: 54px;
-        --svg-icon-color: var(--accent-color);
+        --svg-icon-color: #fff;
       }
     </style>
     <custom-svg-icon icon="${this.icon}"></custom-svg-icon>

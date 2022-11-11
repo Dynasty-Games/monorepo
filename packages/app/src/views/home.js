@@ -71,7 +71,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
         max-width: 640px;
         display: flex;
         width: 100%;        
-        background: #fff;
+        background: #3763e836;
         padding: 48px 0 0 48px;
         box-sizing: border-box;
         border-radius: 12px;
@@ -79,6 +79,7 @@ export default customElements.define('home-view', class HomeView extends LitElem
         pointer-events: auto;
         max-height: 364px;
         height: 100%;
+        border: 1px #1e3066 solid;
       }
 
       .ref-container {
@@ -118,20 +119,21 @@ export default customElements.define('home-view', class HomeView extends LitElem
       .right-container {
         max-width: 320px;
         width: 100%;
-        background: var(--accent-color);
+        background: #3663ed36;
         box-sizing: border-box;
         padding: 24px;
         border-radius: 12px;
+        border: 1px #243e8b solid;
       }
 
       .ref-container h3 {
         width: 100%;
         text-align: center;
-        background: var(--accent-color);
         box-sizing: border-box;
         padding: 6px;
         margin: 12px 0;
         border-radius: 12px;
+        font-size: 16px;
       }
       
       .staking {
@@ -166,12 +168,8 @@ export default customElements.define('home-view', class HomeView extends LitElem
         <flex-column  >
           <h3>${this._account ? `${this._account.slice(0, 6)}...${this._account.slice(-6)}` : ''}</h3>
 
-          <button>
-            <custom-svg-icon icon="done"></custom-svg-icon>
-            <flex-one></flex-one>
-            <strong>claim stakes</strong>
-          </button>
-          <flex-row style="padding-top: 12px;">
+          
+          <flex-row style="padding: 12px 0;">
             <button title="click to share" @click="${() => navigator.share({ url: `https://dynastygames.games?ref=${this._account}`})}">
               <custom-svg-icon icon="share"></custom-svg-icon>
               <strong>share</strong>
@@ -182,6 +180,12 @@ export default customElements.define('home-view', class HomeView extends LitElem
               <strong>copy</strong>
             </button>
           </flex-row>
+
+          <button>
+            <custom-svg-icon icon="done"></custom-svg-icon>
+            <flex-one></flex-one>
+            <strong>claim stakes</strong>
+          </button>
         </flex-column>
       </flex-column>
       <flex-one></flex-one>

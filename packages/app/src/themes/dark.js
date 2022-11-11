@@ -6,5 +6,5 @@ export default {
   'accent-color-dimmed': 'rgb(215, 16, 150 / 20%)',
   'dialog-background-color': '#000',
   'disabled-color': '#838383',
-  'contest-item-background-color': '#fff'
+  'contest-item-background-color': '#3763e836'
   }
