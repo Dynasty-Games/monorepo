@@ -76,3 +76,17 @@ export const calculateBaseSalary = (set, min = 1000, max = 9000) => {
   }
   return set
 }
+
+/**
+ * static list of categories set in contract
+ */
+export const staticCategories = [
+  { name: 'crypto' }
+]
+
+/**
+ * static list of styles set in contract
+ */
+export const staticStyles = [
+  { name: 'classic', fee: 4 }
+]

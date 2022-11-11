@@ -1,6 +1,4 @@
 import Router from '@koa/router'
-import cache from './../cache'
-import competitions from './../fetchers/competitions'
 
 const router = new Router();
 
@@ -39,46 +37,22 @@ const filter = ctx => {
  * fetch('/contest?id=lambomaker')
  */
 router.get('/competitions', async ctx => {
-  let data = cache.get('competitions')
-  if (data) ctx.body = [...data.live, ...data.open, ...data.closed]
-  else {
-    data = await competitions()
-    cache.add('competitions', data)
-    ctx.body = [...data.live, ...data.open, ...data.closed]
-  }
+  ctx.body = JSON.parse((await storage.get('/competitions/competitions')).toString())
   filter(ctx)
 })
 
 router.get('/open-competitions', async ctx => {
-  let data = cache.get('competitions')
-  if (data) ctx.body = data.open
-  else {
-    data = await competitions()
-    cache.add('competitions', data)
-    ctx.body = data.open
-  }
+  ctx.body = JSON.parse((await storage.get('/competitions/open')).toString())
   filter(ctx)
 })
 
 router.get('/closed-competitions', async ctx => {
-  let data = cache.get('competitions')
-  if (data) ctx.body = data.closed
-  else {
-    data = await competitions()
-    cache.add('competitions', data)
-    ctx.body = data.closed
-  }
+  ctx.body = awJSON.parse((await storage.get('/competitions/closed')).toString())
   filter(ctx)
 })
 
 router.get('/live-competitions', async ctx => {
-  let data = cache.get('competitions')
-  if (data) ctx.body = data.live
-  else {
-    data = await competitions()
-    cache.add('competitions', data)
-    ctx.body = data.live
-  }
+  ctx.body = JSON.parse((await storage.get('/competitions/live')).toString())  
   filter(ctx)
 })
 

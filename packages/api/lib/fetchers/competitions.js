@@ -3,79 +3,45 @@ import contestsABI from './../../../abis/DynastyContests.json'
 import { Contract, utils } from 'ethers'
 import provider from './../provider'
 import runQueue from '../queue'
+import { staticCategories, staticStyles } from '../../../lib/src/lib'
+
+
 
 const contract = new Contract(DynastyContestsProxy, contestsABI, provider)
 
-const competitionInfo = async ({category, style, id}, data) => {
+const getSavedCompetitions = async () => {
   try {
-    const params = await contract.competition(category, style, id)
-    const time = new Date().getTime()
-    const liveTime = Number(params.liveTime.toString()) * 1000
-    const endTime = Number(params.endTime.toString()) * 1000
-    const isLive = time > liveTime && time < endTime
-    if (params.endTime.toString() === '0') return
-
-    const competition = {
-      style,
-      category,
-      id: params.id.toNumber(),
-      endTime,
-      liveTime,
-      price: utils.formatUnits(params.price, 8),
-      portfolioSize: params.portfolioSize.toNumber(),
-      participants: params.members.length,
-      extraData: params.extraData !== '0x' ? JSON.parse(Buffer.from(params.extraData.replace('0x', ''), 'hex').toString()) : {},
-      name: params.name,
-      startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      prizePool: utils.formatUnits(params.prizePool, 8),      
-      members: params.members,
-      state: params.state,
-      isLive
-    }
-
-    if (params.state === 0 && endTime > time) {
-      if (isLive) {
-        data.liveNames.indexOf(params.name) === -1 && data.liveNames.push(params.name)
-        data.live.push(competition)
-      } else {        
-        data.openNames.indexOf(params.name) === -1 && data.openNames.push(params.name)
-        data.open.push(competition)
-      }
-
-    } else {
-      data.closed.push(competition)
-    }
-
-    data.names.indexOf(params.name) === -1 && data.names.push(params.name)
-  } catch (e) {
-    console.warn(style, category, id);
-    console.trace(e)
+    const saves = await storage.get('competitions/competitions')
+    return saves
+  } catch {
+    return []
   }
-  return data
+  
 }
 
-const totalCompetitions = async ({category, style, name, totalCompetitions}, data) => {  
-  if (!data.categories[name]) data.categories[name] = []
-  const _style = await contract.style(style)
-  data.categories[name].push({
-    name: _style[0],
-    fee: _style[1].toNumber(),
-    id: style
-  })
+const getSavedCategories = async () => {
+  try {
+    const saves = await storage.get('competitions/categories')
+    return saves
+  } catch {
+    return []
+  }
   
-  if (data.styles.indexOf(_style[0]) === -1) data.styles.push(_style[0])
-
-  data.items.push({
-    totalCompetitions: totalCompetitions.toNumber(),
-    category,
-    style
-  })
-  
-  return data
 }
 
+const getSavedStyles = async () => {
+  try {
+    const saves = await storage.get('competitions/styles')
+    return saves
+  } catch {
+    return []
+  }
+  
+}
 
-
+const JSONToBuffer =(json) => {
+  return Buffer.from(JSON.stringify(json))
+}
 /**
  * Fetches all competitions
  *
@@ -83,56 +49,83 @@ const totalCompetitions = async ({category, style, name, totalCompetitions}, dat
  */
 export default async () => {
   // todo: don't fetch last years competitions
-  const categoriesLength = await contract.categoriesLength()
-  const stylesLength = await contract.stylesLength()
+
+  const [categories, styles, competitions] = await Promise.all([getSavedCategories, getSavedStyles, getSavedCompetitions])
   
-  let queue = []
 
   let data = {
-    categories: {},
-    styles: [],
-    items: []
-  }
-  
-  for (let category = 0; category < categoriesLength; category++) {
-    const name = await contract.category(category)
-    for (let style = 0; style < stylesLength; style++) {    
-      try {
-        const totalCompetitions = await contract.totalCompetitions(category, style)  
-        queue.push({category, style, name, totalCompetitions})
-      } catch {
-
-      }      
-    }  
-  }
-  await runQueue(data, queue, totalCompetitions)
-
-  queue = []
-
-  for (let i = 0; i < data.items.length; i++) {
-    const totalCompetitions = data.items[i].totalCompetitions
-    const category = data.items[i].category
-    const style = data.items[i].style
-
-    for (let id = 0; id <= totalCompetitions; id++) {
-      queue.push({category, style, id})
-    }
-  }
-
-  const categories = data.categories
-  const styles = data.styles
-
-  data = {
     open: [],
     live: [],
     closed: [],
     names: [],
     openNames: [],
-    liveNames: []
+    liveNames: [],
+    competitions: []
   }
 
-  await runQueue(data, queue, competitionInfo)
-  data.categories = [categories]
-  data.styles = styles
+  if (categories.length !== staticCategories.length) await storage.put('competitions/categories', JSONToBuffer(staticCategories))
+  if (styles.length !== staticStyles.length) await storage.put('competitions/styles', JSONToBuffer(staticStyles))
+
+    for (let category = 0; category < staticCategories.length; category++) {
+      for (let style = 0; style < staticStyles.length; style++) {
+
+        let fetchedCompetitions = await contract.competitionsByCategoryAndStyle(category, style)
+        fetchedCompetitions = fetchedCompetitions.map(competition => {
+
+          const time = new Date().getTime()
+          const liveTime = Number(competition.liveTime.toString()) * 1000
+          const endTime = Number(competition.endTime.toString()) * 1000
+          const isLive = time > liveTime && time < endTime
+          
+          if (competition.endTime.toString() === '0') return
+
+          competition =  {
+            style: staticStyles[style],
+            category: staticCategories[category],
+            id: competition.id.toNumber(),
+            endTime,
+            liveTime,
+            price: utils.formatUnits(competition.price, 8),
+            portfolioSize: competition.portfolioSize.toNumber(),
+            participants: competition.members.length,
+            extraData: competition.extraData !== '0x' ? JSON.parse(Buffer.from(competition.extraData.replace('0x', ''), 'hex').toString()) : {},
+            name: competition.name,
+            startTime: Number(competition.startTime.toNumber() * 1000).toString(),
+            prizePool: utils.formatUnits(competition.prizePool, 8),      
+            members: competition.members,
+            state: competition.state,
+            isLive
+          }
+
+          if (competition.state === 0 && endTime > time) {
+            if (isLive) {
+              data.liveNames.indexOf(competition.name) === -1 && data.liveNames.push(competition.name)
+              data.live.push(competition)
+            } else {        
+              data.openNames.indexOf(competition.name) === -1 && data.openNames.push(competition.name)
+              data.open.push(competition)
+            }
+          } else {
+            data.closed.push(competition)
+          }
+
+          data.names.indexOf(competition.name) === -1 && data.names.push(competition.name)
+    
+          return competition
+        })
+        data.competitions = [...data.competitions, ...fetchedCompetitions]
+      }
+    }
+  // }
+
+
+  data.categories = staticCategories
+  data.styles = staticStyles
+  
+  await storage.put('/competitions/open', JSONToBuffer(data.open))
+  await storage.put('/competitions/closed', JSONToBuffer(data.closed))
+  await storage.put('/competitions/live', JSONToBuffer(data.live))
+  await storage.put('/competitions/names', JSONToBuffer(data.names))
+  await storage.put('/competitions/competitions', JSONToBuffer(data.competitions))
   return data
 }

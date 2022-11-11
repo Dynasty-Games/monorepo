@@ -17,7 +17,7 @@ const provider = getDefaultProvider(network, {
 const usdc = new Contract(addresses.FakeUSDC, erc20, provider)
 const dynastyContest = new Contract(addresses.DynastyContestsProxy, ContestABI, provider)
 const credit = new Contract(addresses.DynastyFantasyCreditProxy, CreditABI, provider)
-
+dynastyContest.competitionsByCategoryAndStyle(0, 0).then(result => console.log(result))
 const apiURL = 'api.dynastygames.games'
 
 globalThis.contracts = {

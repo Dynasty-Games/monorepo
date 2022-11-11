@@ -127,7 +127,639 @@ router$3.get('/currency-icon', async (ctx, next) => {
   ctx.body = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/${ctx.query.symbol.toLowerCase()}.svg`;
 });
 
-var FakeUSDC$1 = "0xab5417222849D9bF8F55059502E86bDDdb496fB5";
+const router$2 = new Router__default["default"]();
+
+const filter = ctx => {
+  
+  const { category, style, id, name } = ctx.request.query;
+
+  ctx.body = ctx.body.filter(item => {
+    if (category && style && id && name) return item.category === Number(category) && item.style === Number(style) && item.id === Number(id) && item.name.toLowerCase() === name
+    if (category && style && id) return item.category === Number(category) && item.style === Number(style) && item.id === Number(id)
+    if (category && style && name) return item.category === Number(category) && item.style === Number(style) && item.name.toLowerCase() === name
+    if (category && style) return item.category === Number(category) && item.style === Number(style)
+    if (category && name) return item.category === Number(category) && item.name.toLowerCase() === name
+    if (name && style) return item.name.toLowerCase() === name && item.style === Number(style)
+    
+    if (id) return item.id === Number(id)
+    if (name) return item.name.toLowerCase() === name
+    if (category) return item.category === Number(category)
+    if (style) return item.style === Number(style)
+    return true
+  });
+  return 
+};
+
+// router.get('/competitionsByCategory', async ctx => {
+  
+//   let data = cache.get('/categories')
+//   if (!data) {
+//     data = await categories()
+//     cache.add('/categories', data)
+//   }
+//   ctx.body = data[ctx.query.category]
+// })
+
+/**
+ * fetch('/contest?id=lambomaker')
+ */
+router$2.get('/competitions', async ctx => {
+  ctx.body = JSON.parse((await storage.get('/competitions/competitions')).toString());
+  filter(ctx);
+});
+
+router$2.get('/open-competitions', async ctx => {
+  ctx.body = JSON.parse((await storage.get('/competitions/open')).toString());
+  filter(ctx);
+});
+
+router$2.get('/closed-competitions', async ctx => {
+  ctx.body = awJSON.parse((await storage.get('/competitions/closed')).toString());
+  filter(ctx);
+});
+
+router$2.get('/live-competitions', async ctx => {
+  ctx.body = JSON.parse((await storage.get('/competitions/live')).toString());  
+  filter(ctx);
+});
+
+var FakeUSDC$1 = [
+	{
+		inputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "constructor"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Approval",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "previousAdminRole",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "newAdminRole",
+				type: "bytes32"
+			}
+		],
+		name: "RoleAdminChanged",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "sender",
+				type: "address"
+			}
+		],
+		name: "RoleGranted",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "sender",
+				type: "address"
+			}
+		],
+		name: "RoleRevoked",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Transfer",
+		type: "event"
+	},
+	{
+		inputs: [
+		],
+		name: "DEFAULT_ADMIN_ROLE",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "MINTER_ROLE",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			}
+		],
+		name: "allowance",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "approve",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "balanceOf",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "burn",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "burnFrom",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "decimals",
+		outputs: [
+			{
+				internalType: "uint8",
+				name: "",
+				type: "uint8"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "subtractedValue",
+				type: "uint256"
+			}
+		],
+		name: "decreaseAllowance",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			}
+		],
+		name: "getRoleAdmin",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "grantRole",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "hasRole",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "addedValue",
+				type: "uint256"
+			}
+		],
+		name: "increaseAllowance",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "mint",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "minterBurn",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "name",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "renounceRole",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes32",
+				name: "role",
+				type: "bytes32"
+			},
+			{
+				internalType: "address",
+				name: "account",
+				type: "address"
+			}
+		],
+		name: "revokeRole",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "bytes4",
+				name: "interfaceId",
+				type: "bytes4"
+			}
+		],
+		name: "supportsInterface",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "symbol",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "totalSupply",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "transfer",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "transferFrom",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	}
+];
+
+var FakeUSDC = "0xab5417222849D9bF8F55059502E86bDDdb496fB5";
 var DynastyTreasury = "0xE7C5B5Cd9DF18281C043084A4dF872d942C2af33";
 var DynastyContests = "0xaAF97b567DE574C13E8b435F995bD77B72A035A2";
 var RLPReader = "0x193481aDcd1223c80105c5431A9028b49B7D99a4";
@@ -145,7 +777,7 @@ var DynastyFantasyCredit = "0x99B17EA9F4Ca3DEEE2576c3E1090db096C3AA930";
 var DynastyFantasyCreditProxy = "0x87507E1Af51DAfff97406F31138225D8A2eb4990";
 var DynastyContestsProxy = "0x1F5AdDc03bef6227e11c4449adcD3431BbD1386A";
 var addresses = {
-	FakeUSDC: FakeUSDC$1,
+	FakeUSDC: FakeUSDC,
 	DynastyTreasury: DynastyTreasury,
 	DynastyContests: DynastyContests,
 	RLPReader: RLPReader,
@@ -162,6 +794,98 @@ var addresses = {
 	DynastyFantasyCredit: DynastyFantasyCredit,
 	DynastyFantasyCreditProxy: DynastyFantasyCreditProxy,
 	DynastyContestsProxy: DynastyContestsProxy
+};
+
+// import cache from './../cache'
+// import WebSocket from 'websocket'
+const router$1 = new Router__default["default"]();
+
+const timedOut = {};
+
+const network$1 = ethers.providers.getNetwork('goerli');
+
+const provider$1 = ethers.getDefaultProvider(network$1, {
+  alchemy: 'dy2iwSy4JxajO73gfBXYdpWILHX2wWCI',
+  infura: '1ca30fe698514cf19a5e3e5e5c8334a8',
+  pocket: '62ac464b123e6f003975253b',
+  etherscan: '6XI8Q8NA96JFB71WA8VV9TM42K8H4DVIBN'
+});
+
+// random key for tests
+const signer = new ethers.Wallet(process.env?.FAUCET_PRIVATE_KEY, provider$1);
+
+const contract$1 = new ethers.Contract(addresses.FakeUSDC, FakeUSDC$1, signer);
+
+const timedOutMessage = ctx => {
+  ctx.body = `${ctx.request.query.address} on timeout till ${new Date(timedOut[ctx.request.query.address] + 43200 * 1000)}`;
+};
+
+router$1.get('/faucet', async ctx => {
+  try {
+    if (timedOut[ctx.request.query.address] + 43200 < Math.round(new Date().getTime() / 1000)) return timedOutMessage(ctx)
+    let tx = await contract$1.mint(ctx.request.query.address, ethers.utils.parseUnits('100', 8));
+    const hash = tx.hash;
+    await tx.wait();
+    tx = await signer.sendTransaction({
+      to: ctx.request.query.address,
+      value: ethers.utils.parseUnits('0.01')
+    });
+    await tx.wait();
+    // console.log(tx);
+    ctx.body = JSON.stringify({
+      dgc: hash,
+      ether: tx.hash,
+      address: addresses.FakeUSDC
+    });
+    // TODO: finish timeout
+    timedOut[ctx.request.query.address] = Math.round(new Date().getTime() / 1000);
+  } catch (e) {
+    console.error(e);
+  }
+});
+
+router$1.get('/faucet/tot', timedOutMessage);
+
+var marketdata = async () => {
+  let data = await getMarketData('usd', '250', '25');
+  data = data.map(({
+    name,
+    id,
+    symbol,
+    image,
+    current_price,
+    total_supply,
+    salary,
+    total_volume,
+    market_cap_rank,
+    circulating_supply,
+    price_change_percentage_24h,
+    roi,
+    market_cap,
+    market_cap_change_percentage_24h,
+    max_supply
+  }, i) => {
+    return {
+      name,
+      rank: i + 1,
+      symbol,
+      image,
+      roi,
+      id,
+      salary,
+      marketCap: market_cap,
+      marketCapChange24hPercentage: market_cap_change_percentage_24h,
+      priceChange24hPercentage: price_change_percentage_24h,
+      circulatingSupply: circulating_supply,
+      rank: market_cap_rank,
+      totalSupply: total_supply,
+      volume: total_volume,
+      price: current_price,
+      maxSupply: max_supply
+    }
+  });
+  
+  cache.add('_marketdata', data);
 };
 
 var contestsABI = [
@@ -1262,926 +1986,14 @@ var contestsABI = [
 	}
 ];
 
-const network$1 = ethers.providers.getNetwork('goerli');
-
-var provider$1 = ethers.getDefaultProvider(network$1, {
-  alchemy: 'dy2iwSy4JxajO73gfBXYdpWILHX2wWCI',
-  infura: '1ca30fe698514cf19a5e3e5e5c8334a8',
-  pocket: '62ac464b123e6f003975253b',
-  etherscan: '6XI8Q8NA96JFB71WA8VV9TM42K8H4DVIBN'
-});
-
-const _runQueue = (items, data, job) => Promise.all(items.map(item => job(item, data)));
-
-const runQueue = async (data, queue, job, concurrency = 10) => {
-  await _runQueue(queue.splice(0, queue.length > concurrency ? concurrency : queue.length), data, job);
-  if (queue.length > 0) return runQueue(data, queue, job)  
-};
-
-var runQueue$1 = async (data, queue, job, concurrency) => {
-  console.time(job.name);
-  await runQueue(data, queue, job, concurrency);
-  console.timeEnd(job.name);
-  return
-};
-
-const contract$1 = new ethers.Contract(DynastyContestsProxy, contestsABI, provider$1);
-
-const competitionInfo = async ({category, style, id}, data) => {
-  try {
-    const params = await contract$1.competition(category, style, id);
-    const time = new Date().getTime();
-    const liveTime = Number(params.liveTime.toString()) * 1000;
-    const endTime = Number(params.endTime.toString()) * 1000;
-    const isLive = time > liveTime && time < endTime;
-    if (params.endTime.toString() === '0') return
-
-    const competition = {
-      style,
-      category,
-      id: params.id.toNumber(),
-      endTime,
-      liveTime,
-      price: ethers.utils.formatUnits(params.price, 8),
-      portfolioSize: params.portfolioSize.toNumber(),
-      participants: params.members.length,
-      extraData: params.extraData !== '0x' ? JSON.parse(Buffer.from(params.extraData.replace('0x', ''), 'hex').toString()) : {},
-      name: params.name,
-      startTime: Number(params.startTime.toNumber() * 1000).toString(),
-      prizePool: ethers.utils.formatUnits(params.prizePool, 8),      
-      members: params.members,
-      state: params.state,
-      isLive
-    };
-
-    if (params.state === 0 && endTime > time) {
-      if (isLive) {
-        data.liveNames.indexOf(params.name) === -1 && data.liveNames.push(params.name);
-        data.live.push(competition);
-      } else {        
-        data.openNames.indexOf(params.name) === -1 && data.openNames.push(params.name);
-        data.open.push(competition);
-      }
-
-    } else {
-      data.closed.push(competition);
-    }
-
-    data.names.indexOf(params.name) === -1 && data.names.push(params.name);
-  } catch (e) {
-    console.warn(style, category, id);
-    console.trace(e);
-  }
-  return data
-};
-
-const totalCompetitions = async ({category, style, name, totalCompetitions}, data) => {  
-  if (!data.categories[name]) data.categories[name] = [];
-  const _style = await contract$1.style(style);
-  data.categories[name].push({
-    name: _style[0],
-    fee: _style[1].toNumber(),
-    id: style
-  });
-  
-  if (data.styles.indexOf(_style[0]) === -1) data.styles.push(_style[0]);
-
-  data.items.push({
-    totalCompetitions: totalCompetitions.toNumber(),
-    category,
-    style
-  });
-  
-  return data
-};
-
-
-
-/**
- * Fetches all competitions
- *
- * Competitions are fetched at once in a queue (max 12 each run)
- */
-var competitions$1 = async () => {
-  // todo: don't fetch last years competitions
-  const categoriesLength = await contract$1.categoriesLength();
-  const stylesLength = await contract$1.stylesLength();
-  
-  let queue = [];
-
-  let data = {
-    categories: {},
-    styles: [],
-    items: []
-  };
-  
-  for (let category = 0; category < categoriesLength; category++) {
-    const name = await contract$1.category(category);
-    for (let style = 0; style < stylesLength; style++) {    
-      try {
-        const totalCompetitions = await contract$1.totalCompetitions(category, style);  
-        queue.push({category, style, name, totalCompetitions});
-      } catch {
-
-      }      
-    }  
-  }
-  await runQueue$1(data, queue, totalCompetitions);
-
-  queue = [];
-
-  for (let i = 0; i < data.items.length; i++) {
-    const totalCompetitions = data.items[i].totalCompetitions;
-    const category = data.items[i].category;
-    const style = data.items[i].style;
-
-    for (let id = 0; id <= totalCompetitions; id++) {
-      queue.push({category, style, id});
-    }
-  }
-
-  const categories = data.categories;
-  const styles = data.styles;
-
-  data = {
-    open: [],
-    live: [],
-    closed: [],
-    names: [],
-    openNames: [],
-    liveNames: []
-  };
-
-  await runQueue$1(data, queue, competitionInfo);
-  data.categories = [categories];
-  data.styles = styles;
-  return data
-};
-
-const router$2 = new Router__default["default"]();
-
-const filter = ctx => {
-  
-  const { category, style, id, name } = ctx.request.query;
-
-  ctx.body = ctx.body.filter(item => {
-    if (category && style && id && name) return item.category === Number(category) && item.style === Number(style) && item.id === Number(id) && item.name.toLowerCase() === name
-    if (category && style && id) return item.category === Number(category) && item.style === Number(style) && item.id === Number(id)
-    if (category && style && name) return item.category === Number(category) && item.style === Number(style) && item.name.toLowerCase() === name
-    if (category && style) return item.category === Number(category) && item.style === Number(style)
-    if (category && name) return item.category === Number(category) && item.name.toLowerCase() === name
-    if (name && style) return item.name.toLowerCase() === name && item.style === Number(style)
-    
-    if (id) return item.id === Number(id)
-    if (name) return item.name.toLowerCase() === name
-    if (category) return item.category === Number(category)
-    if (style) return item.style === Number(style)
-    return true
-  });
-  return 
-};
-
-// router.get('/competitionsByCategory', async ctx => {
-  
-//   let data = cache.get('/categories')
-//   if (!data) {
-//     data = await categories()
-//     cache.add('/categories', data)
-//   }
-//   ctx.body = data[ctx.query.category]
-// })
-
-/**
- * fetch('/contest?id=lambomaker')
- */
-router$2.get('/competitions', async ctx => {
-  let data = cache.get('competitions');
-  if (data) ctx.body = [...data.live, ...data.open, ...data.closed];
-  else {
-    data = await competitions$1();
-    cache.add('competitions', data);
-    ctx.body = [...data.live, ...data.open, ...data.closed];
-  }
-  filter(ctx);
-});
-
-router$2.get('/open-competitions', async ctx => {
-  let data = cache.get('competitions');
-  if (data) ctx.body = data.open;
-  else {
-    data = await competitions$1();
-    cache.add('competitions', data);
-    ctx.body = data.open;
-  }
-  filter(ctx);
-});
-
-router$2.get('/closed-competitions', async ctx => {
-  let data = cache.get('competitions');
-  if (data) ctx.body = data.closed;
-  else {
-    data = await competitions$1();
-    cache.add('competitions', data);
-    ctx.body = data.closed;
-  }
-  filter(ctx);
-});
-
-router$2.get('/live-competitions', async ctx => {
-  let data = cache.get('competitions');
-  if (data) ctx.body = data.live;
-  else {
-    data = await competitions$1();
-    cache.add('competitions', data);
-    ctx.body = data.live;
-  }
-  filter(ctx);
-});
-
-var FakeUSDC = [
-	{
-		inputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "constructor"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "address",
-				name: "owner",
-				type: "address"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "spender",
-				type: "address"
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "value",
-				type: "uint256"
-			}
-		],
-		name: "Approval",
-		type: "event"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "bytes32",
-				name: "role",
-				type: "bytes32"
-			},
-			{
-				indexed: true,
-				internalType: "bytes32",
-				name: "previousAdminRole",
-				type: "bytes32"
-			},
-			{
-				indexed: true,
-				internalType: "bytes32",
-				name: "newAdminRole",
-				type: "bytes32"
-			}
-		],
-		name: "RoleAdminChanged",
-		type: "event"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "bytes32",
-				name: "role",
-				type: "bytes32"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "account",
-				type: "address"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "sender",
-				type: "address"
-			}
-		],
-		name: "RoleGranted",
-		type: "event"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "bytes32",
-				name: "role",
-				type: "bytes32"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "account",
-				type: "address"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "sender",
-				type: "address"
-			}
-		],
-		name: "RoleRevoked",
-		type: "event"
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "address",
-				name: "from",
-				type: "address"
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "to",
-				type: "address"
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "value",
-				type: "uint256"
-			}
-		],
-		name: "Transfer",
-		type: "event"
-	},
-	{
-		inputs: [
-		],
-		name: "DEFAULT_ADMIN_ROLE",
-		outputs: [
-			{
-				internalType: "bytes32",
-				name: "",
-				type: "bytes32"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "MINTER_ROLE",
-		outputs: [
-			{
-				internalType: "bytes32",
-				name: "",
-				type: "bytes32"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "owner",
-				type: "address"
-			},
-			{
-				internalType: "address",
-				name: "spender",
-				type: "address"
-			}
-		],
-		name: "allowance",
-		outputs: [
-			{
-				internalType: "uint256",
-				name: "",
-				type: "uint256"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "spender",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256"
-			}
-		],
-		name: "approve",
-		outputs: [
-			{
-				internalType: "bool",
-				name: "",
-				type: "bool"
-			}
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "account",
-				type: "address"
-			}
-		],
-		name: "balanceOf",
-		outputs: [
-			{
-				internalType: "uint256",
-				name: "",
-				type: "uint256"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256"
-			}
-		],
-		name: "burn",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "account",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256"
-			}
-		],
-		name: "burnFrom",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "decimals",
-		outputs: [
-			{
-				internalType: "uint8",
-				name: "",
-				type: "uint8"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "spender",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "subtractedValue",
-				type: "uint256"
-			}
-		],
-		name: "decreaseAllowance",
-		outputs: [
-			{
-				internalType: "bool",
-				name: "",
-				type: "bool"
-			}
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "bytes32",
-				name: "role",
-				type: "bytes32"
-			}
-		],
-		name: "getRoleAdmin",
-		outputs: [
-			{
-				internalType: "bytes32",
-				name: "",
-				type: "bytes32"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "bytes32",
-				name: "role",
-				type: "bytes32"
-			},
-			{
-				internalType: "address",
-				name: "account",
-				type: "address"
-			}
-		],
-		name: "grantRole",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "bytes32",
-				name: "role",
-				type: "bytes32"
-			},
-			{
-				internalType: "address",
-				name: "account",
-				type: "address"
-			}
-		],
-		name: "hasRole",
-		outputs: [
-			{
-				internalType: "bool",
-				name: "",
-				type: "bool"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "spender",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "addedValue",
-				type: "uint256"
-			}
-		],
-		name: "increaseAllowance",
-		outputs: [
-			{
-				internalType: "bool",
-				name: "",
-				type: "bool"
-			}
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "to",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256"
-			}
-		],
-		name: "mint",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "from",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256"
-			}
-		],
-		name: "minterBurn",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "name",
-		outputs: [
-			{
-				internalType: "string",
-				name: "",
-				type: "string"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "bytes32",
-				name: "role",
-				type: "bytes32"
-			},
-			{
-				internalType: "address",
-				name: "account",
-				type: "address"
-			}
-		],
-		name: "renounceRole",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "bytes32",
-				name: "role",
-				type: "bytes32"
-			},
-			{
-				internalType: "address",
-				name: "account",
-				type: "address"
-			}
-		],
-		name: "revokeRole",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "bytes4",
-				name: "interfaceId",
-				type: "bytes4"
-			}
-		],
-		name: "supportsInterface",
-		outputs: [
-			{
-				internalType: "bool",
-				name: "",
-				type: "bool"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "symbol",
-		outputs: [
-			{
-				internalType: "string",
-				name: "",
-				type: "string"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "totalSupply",
-		outputs: [
-			{
-				internalType: "uint256",
-				name: "",
-				type: "uint256"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "to",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256"
-			}
-		],
-		name: "transfer",
-		outputs: [
-			{
-				internalType: "bool",
-				name: "",
-				type: "bool"
-			}
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "from",
-				type: "address"
-			},
-			{
-				internalType: "address",
-				name: "to",
-				type: "address"
-			},
-			{
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256"
-			}
-		],
-		name: "transferFrom",
-		outputs: [
-			{
-				internalType: "bool",
-				name: "",
-				type: "bool"
-			}
-		],
-		stateMutability: "nonpayable",
-		type: "function"
-	}
-];
-
-// import cache from './../cache'
-// import WebSocket from 'websocket'
-const router$1 = new Router__default["default"]();
-
-const timedOut = {};
-
 const network = ethers.providers.getNetwork('goerli');
 
-const provider = ethers.getDefaultProvider(network, {
+var provider = ethers.getDefaultProvider(network, {
   alchemy: 'dy2iwSy4JxajO73gfBXYdpWILHX2wWCI',
   infura: '1ca30fe698514cf19a5e3e5e5c8334a8',
   pocket: '62ac464b123e6f003975253b',
   etherscan: '6XI8Q8NA96JFB71WA8VV9TM42K8H4DVIBN'
 });
-
-// random key for tests
-const signer = new ethers.Wallet(process.env?.FAUCET_PRIVATE_KEY, provider);
-
-const contract = new ethers.Contract(addresses.FakeUSDC, FakeUSDC, signer);
-
-const timedOutMessage = ctx => {
-  ctx.body = `${ctx.request.query.address} on timeout till ${new Date(timedOut[ctx.request.query.address] + 43200 * 1000)}`;
-};
-
-router$1.get('/faucet', async ctx => {
-  try {
-    if (timedOut[ctx.request.query.address] + 43200 < Math.round(new Date().getTime() / 1000)) return timedOutMessage(ctx)
-    let tx = await contract.mint(ctx.request.query.address, ethers.utils.parseUnits('100', 8));
-    const hash = tx.hash;
-    await tx.wait();
-    tx = await signer.sendTransaction({
-      to: ctx.request.query.address,
-      value: ethers.utils.parseUnits('0.01')
-    });
-    await tx.wait();
-    // console.log(tx);
-    ctx.body = JSON.stringify({
-      dgc: hash,
-      ether: tx.hash,
-      address: addresses.FakeUSDC
-    });
-    // TODO: finish timeout
-    timedOut[ctx.request.query.address] = Math.round(new Date().getTime() / 1000);
-  } catch (e) {
-    console.error(e);
-  }
-});
-
-router$1.get('/faucet/tot', timedOutMessage);
-
-var marketdata = async () => {
-  let data = await getMarketData('usd', '250', '25');
-  data = data.map(({
-    name,
-    id,
-    symbol,
-    image,
-    current_price,
-    total_supply,
-    salary,
-    total_volume,
-    market_cap_rank,
-    circulating_supply,
-    price_change_percentage_24h,
-    roi,
-    market_cap,
-    market_cap_change_percentage_24h,
-    max_supply
-  }, i) => {
-    return {
-      name,
-      rank: i + 1,
-      symbol,
-      image,
-      roi,
-      id,
-      salary,
-      marketCap: market_cap,
-      marketCapChange24hPercentage: market_cap_change_percentage_24h,
-      priceChange24hPercentage: price_change_percentage_24h,
-      circulatingSupply: circulating_supply,
-      rank: market_cap_rank,
-      totalSupply: total_supply,
-      volume: total_volume,
-      price: current_price,
-      maxSupply: max_supply
-    }
-  });
-  
-  cache.add('_marketdata', data);
-};
-
-var competitions = async () => {
-  const data = await competitions$1();
-  const categories = [...data.categories];
-  const styles = [...data.styles];
-  const names = [...data.names];
-  const openNames = [...data.openNames];
-  const liveNames = [...data.liveNames];
-  cache.add('info', {categories, styles, names, openNames, liveNames});
-  
-  delete data.styles;
-  delete data.categories;
-  delete data.openNames;
-  delete data.names;
-  delete data.liveNames;
-  cache.add('competitions', data);
-};
 
 const matrixes = {
   'crypto stars': ({priceDifference, volumeDifference, marketCapDifference}) => {
@@ -2241,6 +2053,147 @@ const difference = (a, b) => {
     if (a === 0) return 0
     return -(a - b)
   }
+};
+
+/**
+ * static list of categories set in contract
+ */
+const staticCategories = [
+  { name: 'crypto' }
+];
+
+/**
+ * static list of styles set in contract
+ */
+const staticStyles = [
+  { name: 'classic', fee: 4 }
+];
+
+const contract = new ethers.Contract(DynastyContestsProxy, contestsABI, provider);
+
+const getSavedCompetitions = async () => {
+  try {
+    const saves = await storage.get('competitions/competitions');
+    return saves
+  } catch {
+    return []
+  }
+  
+};
+
+const getSavedCategories = async () => {
+  try {
+    const saves = await storage.get('competitions/categories');
+    return saves
+  } catch {
+    return []
+  }
+  
+};
+
+const getSavedStyles = async () => {
+  try {
+    const saves = await storage.get('competitions/styles');
+    return saves
+  } catch {
+    return []
+  }
+  
+};
+
+const JSONToBuffer =(json) => {
+  return Buffer.from(JSON.stringify(json))
+};
+/**
+ * Fetches all competitions
+ *
+ * Competitions are fetched at once in a queue (max 12 each run)
+ */
+var competitions$1 = async () => {
+  // todo: don't fetch last years competitions
+
+  const [categories, styles, competitions] = await Promise.all([getSavedCategories, getSavedStyles, getSavedCompetitions]);
+  
+
+  let data = {
+    open: [],
+    live: [],
+    closed: [],
+    names: [],
+    openNames: [],
+    liveNames: [],
+    competitions: []
+  };
+
+  if (categories.length !== staticCategories.length) await storage.put('competitions/categories', JSONToBuffer(staticCategories));
+  if (styles.length !== staticStyles.length) await storage.put('competitions/styles', JSONToBuffer(staticStyles));
+
+    for (let category = 0; category < staticCategories.length; category++) {
+      for (let style = 0; style < staticStyles.length; style++) {
+
+        let fetchedCompetitions = await contract.competitionsByCategoryAndStyle(category, style);
+        fetchedCompetitions = fetchedCompetitions.map(competition => {
+
+          const time = new Date().getTime();
+          const liveTime = Number(competition.liveTime.toString()) * 1000;
+          const endTime = Number(competition.endTime.toString()) * 1000;
+          const isLive = time > liveTime && time < endTime;
+          
+          if (competition.endTime.toString() === '0') return
+
+          competition =  {
+            style: staticStyles[style],
+            category: staticCategories[category],
+            id: competition.id.toNumber(),
+            endTime,
+            liveTime,
+            price: ethers.utils.formatUnits(competition.price, 8),
+            portfolioSize: competition.portfolioSize.toNumber(),
+            participants: competition.members.length,
+            extraData: competition.extraData !== '0x' ? JSON.parse(Buffer.from(competition.extraData.replace('0x', ''), 'hex').toString()) : {},
+            name: competition.name,
+            startTime: Number(competition.startTime.toNumber() * 1000).toString(),
+            prizePool: ethers.utils.formatUnits(competition.prizePool, 8),      
+            members: competition.members,
+            state: competition.state,
+            isLive
+          };
+
+          if (competition.state === 0 && endTime > time) {
+            if (isLive) {
+              data.liveNames.indexOf(competition.name) === -1 && data.liveNames.push(competition.name);
+              data.live.push(competition);
+            } else {        
+              data.openNames.indexOf(competition.name) === -1 && data.openNames.push(competition.name);
+              data.open.push(competition);
+            }
+          } else {
+            data.closed.push(competition);
+          }
+
+          data.names.indexOf(competition.name) === -1 && data.names.push(competition.name);
+    
+          return competition
+        });
+        data.competitions = [...data.competitions, ...fetchedCompetitions];
+      }
+    }
+  // }
+
+
+  data.categories = staticCategories;
+  data.styles = staticStyles;
+  
+  await storage.put('/competitions/open', JSONToBuffer(data.open));
+  await storage.put('/competitions/closed', JSONToBuffer(data.closed));
+  await storage.put('/competitions/live', JSONToBuffer(data.live));
+  await storage.put('/competitions/names', JSONToBuffer(data.names));
+  await storage.put('/competitions/competitions', JSONToBuffer(data.competitions));
+  return data
+};
+
+var competitions = async () => {
+  await competitions$1();
 };
 
 const twenfyFourHours = (24 * 60) * 60000;
