@@ -47,7 +47,7 @@ router.get('/marketdata', async (ctx, next) => {
 router.get('/currency-info', async (ctx, next) => {
   let data = cache.get(`currency_${ctx.query.id}`)
   if (!data || new Date().getTime() > timestamps.get(`currency_${ctx.query.id}`) + (5 * 60000)) {
-    const url = `${baseApiURL}coins/${ctx.query.id}?tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false`
+    const url = `${baseApiURL}coins/${ctx.query.id}?tickers=false&market_data=false&community_data=true&developer_data=false&sparkline=false`
     let response = await fetch(url)
     data = await response.json()
     data = {
