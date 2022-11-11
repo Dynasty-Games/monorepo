@@ -2395,7 +2395,7 @@ router.get('/portfolio-points', async ctx => {
   let stamps = await Promise.allSettled(portfolio.map(id => storage.readDir(`currencies/${id}`)));
 
   let points = await Promise.allSettled(portfolio.map(async (id, i) => {
-    if (stamps[i].result === 'rejected') {
+    if (stamps[i].status === 'rejected') {
       console.warn(`currency id not found: ${portfolio[i]}`);
       return 0
     }
