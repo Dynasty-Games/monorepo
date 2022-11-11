@@ -5,8 +5,7 @@ const router = new Router();
 router.get('/portfolio-points', async ctx => {
   let {portfolio} = ctx.request.query
   portfolio = portfolio.split(',')
-  let stamps = await Promise.allSettled(portfolio.map(id => storage.readDir(`currencies/${id}`)))  
-  then((results) => results.forEach((result) => console.log(result.status)));
+  let stamps = await Promise.allSettled(portfolio.map(id => storage.readDir(`currencies/${id}`)))
 
   let points = await Promise.allSettled(portfolio.map(async (id, i) => {
     if (stamps[i].result === 'rejected') {
