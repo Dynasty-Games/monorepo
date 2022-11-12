@@ -142,8 +142,9 @@ export const calculateWinnings = (pool, members, points) => {
   
   const amountFor = {}
   for (const percentage of Object.keys(matchingWeights)) {    
-    const amountForWeight = (pool / 100 * percentage) 
-    left -=  amountForWeight
+    const amountForWeight = (pool / 100 * percentage).toFixed(8)
+    const amountPer = (amountForWeight / matchingWeights[percentage]).toFixed(8)
+    left -=  (amountPer * matchingWeights[percentage])
     amountFor[percentage] = matchingWeights[percentage] > 0 ? amountForWeight / matchingWeights[percentage] : isNaN(matchingWeights[percentage]) ? 0 : matchingWeights[percentage]
   }
   
@@ -162,8 +163,6 @@ export const calculateWinnings = (pool, members, points) => {
     amounts = amounts.map(_amount => _amount + amount)
   }
   
-
-
   return {amounts, members: _members, left}
 }
 

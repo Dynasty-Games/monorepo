@@ -7,7 +7,7 @@ import closeCompetition from './close-competition'
 import { BigNumber, utils } from 'ethers'
 import { isOdd } from './../utils'
 import { DynastyTreasury } from './../../../addresses/goerli.json'
-import { calculateBaseWinnings } from '../../../lib/src/lib'
+import { calculateBaseWinnings, calculateWinnings } from '../../../lib/src/lib'
 import { portfolioPoints } from '../../../utils/src/utils'
 /**
  * runs everyday at 15:00
@@ -86,7 +86,7 @@ export const close = () => {
     for (const competition of competitions) {
       const members = await getMembers(competition.category, competition.style, competition.id)
       const portfolios = await getPortfolios(competition.category, competition.style, competition.id, members)
-      const points = await Promise.all(portfolios.map(portfolio => portfolioPoints(`portfolio=${portfolio.join()}`)))
+      const points = await Promise.all(portfolios.map(portfolio => portfolioPoints(`portfolio=${portfolio.items.join()}`)))
       
       batch.categories.push(competition.category)
       batch.styles.push(competition.style)
@@ -107,8 +107,8 @@ export const close = () => {
       batch.amounts[i] = []
       
       const winnings = await calculateWinnings(competition.prizePool, members, points)
-      batch.addresses = winnings.members
-      batch.amounts = winnings.amounts.map(amount => utils.parseUnits(amount, 8))
+      batch.addresses[i] = winnings.members
+      batch.amounts[i] = winnings.amounts.map(amount => utils.parseUnits(amount.toString(), 8))
     
       i++
       // const winnings = await calculateWinnings(competition)

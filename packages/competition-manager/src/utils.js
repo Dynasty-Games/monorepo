@@ -1,9 +1,6 @@
-import fetch from 'node-fetch'
 import { calculateFantasyPoints } from '@dynasty-games/lib'
 import { dynastyContest as contract } from './contracts'
-import { closedCompetitions } from '../../utils/src/utils'
-
-export const apiURL = `https://api.dynastygames.games`
+import { closedCompetitions, currencies } from '../../utils/src/utils'
 
 export const isOdd = number => {
   return Math.abs(number % 2) === 1
@@ -129,11 +126,11 @@ const currencyJob = async (currency, year) => {
 
 export const getPortfolioPoints = async (portfolios, year) =>  {
   try {
-    let response = await fetch(`${apiURL}/currencies?limit=250&pages=3`)
+    let response = await currencies('limit=250&pages=3')
     response = await response.json()
-    const currencies = await Promise.all(response.map(currency => currencyJob(currency, year)))
+    response = await Promise.all(response.map(currency => currencyJob(currency, year)))
     const currenciesById = {}
-    for (const currency of currencies) {
+    for (const currency of response) {
       currenciesById[currency.id] = currency
     }
 
@@ -206,4 +203,21 @@ export const getMembers = async (category, style, id) => {
 
 export const getPortfolios = async (category, style, id, members) => {
   return Promise.all(members.map(member => contract.memberPortfolio(category, style, id, member)))
+}
+
+export const portfolioPoints = async (portfolio) => {
+  
+  let stamps = await Promise.all(portfolio.map(id => storage.readDir(`currencies/${id}`)))  
+  let points = await Promise.all(portfolio.map(async (id, i) => {
+    stamps[i] = stamps[i].map(stamp => stamp.split('.data')[0])
+
+    stamps[i] = stamps[i].sort((a, b) => b - a)
+    return (JSON.parse((await storage.get(`currencies/${id}/${stamps[i][0]}`)).toString())).points
+  }))
+
+  const total = points.reduce((prev, curr) => {
+    return prev + curr
+  }, 0)
+
+  return {total, points}
 }
