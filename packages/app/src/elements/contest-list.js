@@ -1,8 +1,9 @@
 import {LitElement, html} from 'lit';
 import {map} from 'lit/directives/map.js'
-import './contest-type-info'
+import { closedCompetitions, openCompetitions } from './../api'
+import { scrollbar } from './../shared/styles'
 
-export default customElements.define('contest-type', class ContestType extends LitElement {
+export default customElements.define('contest-list', class ContestList extends LitElement {
   static properties = {
     items: {
       type: Array,
@@ -25,31 +26,34 @@ export default customElements.define('contest-type', class ContestType extends L
     super()
   }
 
-  set items(value) {
-    this._items = value
-    this.requestUpdate()
+
+  async #loadUserItems() {
+    const contract = contracts.dynastyContest.connect(connector)
+    let competitions = [...await closedCompetitions(), ...await openCompetitions()]
+    const category = 0
+    const style = 0
+
+    competitions = competitions.filter(({members}) => (members.find(member => member === connector.accounts[0])))
+    competitions = competitions.sort((a, b) => b.endTime - a.endTime)
+
+    console.log(competitions);
+    
+
+    if (competitions.length > 0) {
+      this.items = competitions
+    }
+
+    if (this.timeout) clearTimeout(this.timeout)
+    this.timeout = setTimeout(() => {
+      this.#loadUserItems()
+    }, 30000);
   }
 
-  get items() {
-    return this._items
-  }
-
-  set type(value) {
-    this._type = value
-    this.requestUpdate()
-  }
-
-  get type() {
-    return this._type
-  }
-
-  set description(value) {
-    this._description = value
-    this.requestUpdate()
-  }
-
-  get description() {
-    return this._description
+  async connectedCallback() {
+    super.connectedCallback()
+    
+    pubsub.subscribe("wallet.ready", this.#loadUserItems.bind(this))
+    pubsub.subscribers?.["wallet.ready"]?.value && this.#loadUserItems()
   }
 
   #click(event) {
@@ -74,6 +78,9 @@ export default customElements.define('contest-type', class ContestType extends L
         flex-direction: column;
         color: var(--main-color);
         font-family: 'Noto Sans', sans-serif;
+        overflow: hidden;
+        width: 100%;
+        max-width: 640px;
       }
 
       competition-info-item {
@@ -103,11 +110,12 @@ export default customElements.define('contest-type', class ContestType extends L
         font-size: 16px;
       }
       .container {
-        padding: 10px 24px 0 24px;
+        padding: 10px 12px 12px 0;
         box-sizing: border-box;
         pointer-events: auto;
         cursor: pointer;
         overflow-y: auto;
+        width: 100%;
       }
 
       custom-svg-icon {
@@ -117,19 +125,16 @@ export default customElements.define('contest-type', class ContestType extends L
       [disabled] {
         pointer-events: none !important;
       }
-    </style>
-    <flex-row class="toggle" @click="${this.#toggle}">
-      <flex-column>
-        <h3>${this.type}</h3>
-      </flex-column>
-      <flex-one></flex-one>
-      ${this.shown ? html`<custom-svg-icon icon="icons::arrow-drop-up"></custom-svg-icon>` : html`<custom-svg-icon icon="icons::arrow-drop-down"></custom-svg-icon>`}
+      competition-info-item {
+        width: 100%;
+      }
 
-    </flex-row>
-    <flex-column class="container" ?hidden=${!this.shown}>
-      ${map(this.items, item => html`
-        <contest-type-info name="${item.name}">
-          ${map(item.items, item => html`<competition-info-item
+      ${scrollbar}
+    </style>
+    
+    <flex-column class="container">
+      
+          ${map(this.items, item => html`<competition-info-item
             name="${item.name}"
             category="${item.category}"
             competitionStyle=${item.style}
@@ -140,8 +145,7 @@ export default customElements.define('contest-type', class ContestType extends L
             date="${item.startTime.toString()}"
             @click="${this.#click}"
             ?disabled="${item.startTime > new Date().getTime()}"></competition-info-item>`)}
-        </contest-type-info>
-        `)}
+        
 
     </flex-column>
     `

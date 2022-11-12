@@ -1,6 +1,5 @@
 import '../elements/competition-info-item'
 import { liveCompetitions } from '../api'
-import '../elements/contest-type'
 import categories from './../data/contests'
 import {LitElement, html, css} from 'lit';
 import {map} from 'lit/directives/map.js'

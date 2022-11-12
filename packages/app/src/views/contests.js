@@ -1,8 +1,6 @@
 import './../elements/competition-info-item'
-import { closedCompetitions, openCompetitions } from './../api'
-import './../elements/contest-type'
 import {LitElement, html, css} from 'lit';
-import {map} from 'lit/directives/map.js'
+import './../elements/contest-list'
 
 
 export default customElements.define('contests-view', class ContestsView extends LitElement {
@@ -16,58 +14,7 @@ export default customElements.define('contests-view', class ContestsView extends
     super()
   }
 
-  async #loadUserItems() {
-    const contract = contracts.dynastyContest.connect(connector)
-    let competitions = [...await closedCompetitions(), ...await openCompetitions()]
-    const category = 0
-    const style = 0
-
-    competitions = competitions.filter(({members}) => (members.find(member => member === connector.accounts[0])))
-
-    let competitionMembers = await Promise.allSettled(
-      competitions.map(
-        async ({category, style, id}, i) => {
-          const members = await contract.members(category, style, id)
-          return {
-            category,
-            style,
-            id,
-            members,
-            i
-          }
-        }
-        )
-    )
-
-    competitionMembers = await Promise.all(competitionMembers.filter(({status, value}) => status === 'fulfilled' && value.members.indexOf(connector.accounts[0]) !== -1))
-    competitionMembers = competitionMembers.map(({value}) => value)
-    
-    competitionMembers = competitionMembers.reduce((set, current) => {
-      const params = competitions[current.i]
-      const name = competitions[current.i].name.toLowerCase()
-      params.members = current.members
-      set[name] = set[name] || { name, items: [] }
-      set[name].items.push(params)
-      return set
-    }, {})
-
-    if (Object.keys(competitionMembers).length > 0) {
-      this.items = [
-        {type: 'classic', description: 'create a 8 crypto lineup', items: JSON.stringify(Object.values(competitionMembers))}
-      ]
-    }
-    if (this.timeout) clearTimeout(this.timeout)
-    this.timeout = setTimeout(() => {
-      this.#loadUserItems()
-    }, 30000);
-  }
-
-  async connectedCallback() {
-    super.connectedCallback()
-    
-    pubsub.subscribe("wallet.ready", this.#loadUserItems.bind(this))
-    pubsub.subscribers?.["wallet.ready"]?.value && this.#loadUserItems()
-  }
+ 
 
   back() {
     history.back()
@@ -115,7 +62,7 @@ export default customElements.define('contests-view', class ContestsView extends
 
       .container {
         width: 100%;
-        max-width: 760px;
+        max-width: 640px;
       }
 
       competition-info-item {
@@ -136,7 +83,7 @@ export default customElements.define('contests-view', class ContestsView extends
         height: 54px;
       }
       .inner-header {
-        max-width: 760px;
+        max-width: 640px;
         width: 100%;
         align-items: center;
         height: 54px;
@@ -162,13 +109,7 @@ export default customElements.define('contests-view', class ContestsView extends
       </flex-row>
     </flex-row>
 
-    <flex-one></flex-one>
-    <flex-column class="container">
-      ${this.items?.length > 0 ? map(this.items, item => html`<contest-type description="${item.description}" type="${item.type}" items="${item.items}"></contest-type>`) : html`
-      <flex-column style="height: 100%; align-items: center; justify-content: center;"><h3>Your entered contests will appear here</h3></flex-column>
-      `}
-    </flex-column>
-    <flex-one></flex-one>
+    <contest-list></contest-list>
     `
   }
 })
