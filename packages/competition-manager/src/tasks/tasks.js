@@ -80,6 +80,7 @@ export const close = () => {
       ids: [],
       amounts: [],
       addresses: [],
+      competitions: [],
       tokenId: 0
     }
     let i = 0
@@ -91,25 +92,16 @@ export const close = () => {
       batch.categories.push(competition.category)
       batch.styles.push(competition.style)
       batch.ids.push(competition.id)
-
-
-      // const matches = members.reduce((set, p) => {
-      //   if (!set[portfolios[i].submits]) set[portfolios[i].submits] = 0
-      //   if (isOdd(set[portfolios[i].submits])) {
-      //     set[portfolios[i].submits - 1] += 1
-      //   } else {
-      //     set[portfolios[i].submits] += 1
-      //   }
-      //   i++
-      //   return set
-      // }, {})
+      
       batch.addresses[i] = []
       batch.amounts[i] = []
       
       const winnings = await calculateWinnings(competition.prizePool, members, points)
       batch.addresses[i] = winnings.members
       batch.amounts[i] = winnings.amounts.map(amount => utils.parseUnits(amount.toString(), 8))
-    
+
+      competition.result = points
+      batch.competitions[i] = competition
       i++
       // const winnings = await calculateWinnings(competition)
     }
@@ -117,9 +109,13 @@ export const close = () => {
     console.log(batch);
     for (let i = 0; i < batch.categories.length; i++) {
       await closeCompetition(batch.categories[i], batch.styles[i], batch.ids[i], batch.amounts[i], batch.addresses[i])
+      const competition = batch.competitions[i]
+      await storage.put(`/competitions/results/${competition.id}`, Buffer.from(JSON.stringify(competition)))
     }
     
     console.log(`closed ${competitions.length} @${new Date().toLocaleString()}`);
+
+    
   }
   const runner = cron.schedule('5 1,3,5,7,9,11,13,15,17,19,21,23 * * *', job)
   return { runner, job }

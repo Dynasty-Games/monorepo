@@ -56,4 +56,9 @@ router.get('/live-competitions', async ctx => {
   filter(ctx)
 })
 
+router.get('/competition-result', async ctx => {
+  ctx.body = JSON.parse((await storage.get(`/competitions/results/${ctx.query.id}`)).toString())  
+  filter(ctx)
+})
+
 export default router

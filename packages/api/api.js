@@ -187,6 +187,11 @@ router$3.get('/live-competitions', async ctx => {
   filter(ctx);
 });
 
+router$3.get('/competition-result', async ctx => {
+  ctx.body = JSON.parse((await storage.get(`/competitions/results/${ctx.query.id}`)).toString());  
+  filter(ctx);
+});
+
 var FakeUSDC$1 = [
 	{
 		inputs: [
@@ -2035,7 +2040,7 @@ const calculateDifference = (a, b) => {
   a = Number(a);
   b = Number(b);
   if (isNaN(a) || isNaN(b)) throw new Error(isNaN(a) ? `a: ${a} isNaN` :  `b: ${b} isNaN`)
-
+  if (a === b) return 0
   if (a < b) {
     if (b === 0) return 0
     return ((b - a) / b) * 100
