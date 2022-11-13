@@ -6,7 +6,7 @@
     "serve": "jsproject --serve ./www --port 5877",
     "pack": "webpack",
     "c": "rollup -c",
-    "cc": "rollup -c release.rollup.config.js",
+    "cc": "rollup -c release.rollup.config.js && npx workbox-cli generateSW workbox-config.js",
     "w": "rollup -c -w",
     "deploy": "npm run cc && firebase deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
