@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <link rel="manifest" href="./manifest.json">
     <title>DynastyGames</title>
+    <meta name="theme-color" content="#dcad65"/>
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register("/sw.js");
@@ -22,7 +23,7 @@
       }
     </style>
   </head>
-  <body>
+  <body style="--main-background:linear-gradient(180deg, #35145c 0% 0%, #0a0a0a 30% 60%, #012f53 100%);">
     <app-shell></app-shell>
     <script src="./shell.js" type="module"></script>
   </body>
