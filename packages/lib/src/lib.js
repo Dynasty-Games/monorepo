@@ -108,7 +108,8 @@ const winningsByWeight = {
 }
 
 export const calculateWinnings = (pool, members, points) => {
-  console.log(points, members);
+  if (points.length === 0 || members.length === 0) return {amounts: [], members, points}
+  
   points = points.map((points, i) => {
     points.member = members[i]
     return points
@@ -135,7 +136,7 @@ export const calculateWinnings = (pool, members, points) => {
     return set
   }, {50: 0, 30: 0, 10: 0, 5: 0, 2: 0, 1: 0})
   // const bases = calculateBaseWinnings(points)
-  console.log({points});
+
 
   let amounts = []
   const _members = []  
