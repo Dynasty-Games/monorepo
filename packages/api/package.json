@@ -25,8 +25,9 @@
     "@dynasty-games/lib": "^0.1.4",
     "@koa/cors": "^3.3.0",
     "@koa/router": "^10.1.1",
+    "@multiavatar/multiavatar": "^1.0.7",
     "dotenv": "^16.0.1",
-    "ethers": "^5.6.9",
+    "ethers": "^5.7.2",
     "koa": "^2.13.4",
     "node-cron": "^3.0.2"
   },

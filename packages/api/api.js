@@ -7,6 +7,7 @@ var fetch = require('node-fetch');
 var ethers = require('ethers');
 require('dotenv/config');
 var cron = require('node-cron');
+var multiavatar = require('@multiavatar/multiavatar');
 var client = require('socket-request-client');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -15,7 +16,9 @@ var Koa__default = /*#__PURE__*/_interopDefaultLegacy(Koa);
 var cors__default = /*#__PURE__*/_interopDefaultLegacy(cors);
 var Router__default = /*#__PURE__*/_interopDefaultLegacy(Router);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
+var ethers__default = /*#__PURE__*/_interopDefaultLegacy(ethers);
 var cron__default = /*#__PURE__*/_interopDefaultLegacy(cron);
+var multiavatar__default = /*#__PURE__*/_interopDefaultLegacy(multiavatar);
 var client__default = /*#__PURE__*/_interopDefaultLegacy(client);
 
 globalThis.__cache__ = globalThis.__cache__ || {};
@@ -72,12 +75,12 @@ var getMarketData = async (vsCurrency = 'usd', limit = '250', pages = '25', orde
   return items
 };
 
-const router$4 = new Router__default["default"]();
+const router$5 = new Router__default["default"]();
 
 const baseApiURL = 'https://api.coingecko.com/api/v3/';
 // TODO: currencies sould just return all info except the marketdata
 
-router$4.get('/currencies', async (ctx, next) => {
+router$5.get('/currencies', async (ctx, next) => {
   const limit = ctx.query.limit ? Number(ctx.query.limit) : 250;
   const pages = ctx.query.pages ? Number(ctx.query.pages) : 25;
   
@@ -105,14 +108,14 @@ router$4.get('/currencies', async (ctx, next) => {
   ctx.body = JSON.stringify(data, null, '\t');
 });
 
-router$4.get('/marketdata', async (ctx, next) => {
+router$5.get('/marketdata', async (ctx, next) => {
   const limit = ctx.query.limit ? Number(ctx.query.limit) : 250;
   let data = cache.get('marketdata');
   if (!data || data?.length === 0 ) data = await getMarketData(ctx.query.vsCurrency || 'usd', limit, ctx.query.pages);
   ctx.body = data.splice(0, limit);
 });
 
-router$4.get('/currency-info', async (ctx, next) => {
+router$5.get('/currency-info', async (ctx, next) => {
   let data = cache.get(`currency_${ctx.query.id}`);
   if (!data || new Date().getTime() > timestamps.get(`currency_${ctx.query.id}`) + (5 * 60000)) {
     const url = `${baseApiURL}coins/${ctx.query.id}?tickers=false&market_data=false&community_data=true&developer_data=false&sparkline=false`;
@@ -127,11 +130,11 @@ router$4.get('/currency-info', async (ctx, next) => {
   ctx.body = data;
 });
 
-router$4.get('/currency-icon', async (ctx, next) => {
+router$5.get('/currency-icon', async (ctx, next) => {
   ctx.body = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/${ctx.query.symbol.toLowerCase()}.svg`;
 });
 
-const router$3 = new Router__default["default"]();
+const router$4 = new Router__default["default"]();
 
 const filter = ctx => {
   
@@ -167,27 +170,27 @@ const filter = ctx => {
 /**
  * fetch('/contest?id=lambomaker')
  */
-router$3.get('/competitions', async ctx => {
+router$4.get('/competitions', async ctx => {
   ctx.body = JSON.parse((await storage.get('/competitions/competitions')).toString());
   filter(ctx);
 });
 
-router$3.get('/open-competitions', async ctx => {
+router$4.get('/open-competitions', async ctx => {
   ctx.body = JSON.parse((await storage.get('/competitions/open')).toString());
   filter(ctx);
 });
 
-router$3.get('/closed-competitions', async ctx => {
+router$4.get('/closed-competitions', async ctx => {
   ctx.body = JSON.parse((await storage.get('/competitions/closed')).toString());
   filter(ctx);
 });
 
-router$3.get('/live-competitions', async ctx => {
+router$4.get('/live-competitions', async ctx => {
   ctx.body = JSON.parse((await storage.get('/competitions/live')).toString());  
   filter(ctx);
 });
 
-router$3.get('/competition-result', async ctx => {
+router$4.get('/competition-result', async ctx => {
   ctx.body = JSON.parse((await storage.get(`/competitions/results/${ctx.query.id}`)).toString());  
   filter(ctx);
 });
@@ -807,7 +810,7 @@ var addresses = {
 
 // import cache from './../cache'
 // import WebSocket from 'websocket'
-const router$2 = new Router__default["default"]();
+const router$3 = new Router__default["default"]();
 
 const timedOut = {};
 
@@ -829,7 +832,7 @@ const timedOutMessage = ctx => {
   ctx.body = `${ctx.request.query.address} on timeout till ${new Date(timedOut[ctx.request.query.address] + 43200 * 1000)}`;
 };
 
-router$2.get('/faucet', async ctx => {
+router$3.get('/faucet', async ctx => {
   try {
     if (timedOut[ctx.request.query.address] + 43200 < Math.round(new Date().getTime() / 1000)) return timedOutMessage(ctx)
     let tx = await contract$1.mint(ctx.request.query.address, ethers.utils.parseUnits('100', 8));
@@ -853,7 +856,7 @@ router$2.get('/faucet', async ctx => {
   }
 });
 
-router$2.get('/faucet/tot', timedOutMessage);
+router$3.get('/faucet/tot', timedOutMessage);
 
 var marketdata = async () => {
   let data = await getMarketData('usd', '250', '25');
@@ -2380,21 +2383,21 @@ class JobRunner {
   }
 }
 
+const router$2 = new Router__default["default"]();
+
+router$2.get('/styles', async ctx => ctx.body = (await storage.get('/competitions/styles')).toString());
+
+router$2.get('/categories', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
+
+router$2.get('/open-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
+
+router$2.get('/live-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
+
+router$2.get('/competition-names', async ctx => ctx.body = (await storage.get('/competitions/names')).toString());
+
 const router$1 = new Router__default["default"]();
 
-router$1.get('/styles', async ctx => ctx.body = (await storage.get('/competitions/styles')).toString());
-
-router$1.get('/categories', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
-
-router$1.get('/open-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
-
-router$1.get('/live-competition-names', async ctx => ctx.body = (await storage.get('/competitions/categories')).toString());
-
-router$1.get('/competition-names', async ctx => ctx.body = (await storage.get('/competitions/names')).toString());
-
-const router = new Router__default["default"]();
-
-router.get('/portfolio-points', async ctx => {
+router$1.get('/portfolio-points', async ctx => {
   let {portfolio} = ctx.request.query;
   portfolio = portfolio.split(',');
   let stamps = await Promise.all(portfolio.map(id => storage.readDir(`currencies/${id}`)));  
@@ -2410,6 +2413,53 @@ router.get('/portfolio-points', async ctx => {
   }, 0);
 
   ctx.body = {points, total};
+});
+
+const router = new Router__default["default"]();
+
+const domain = {
+  name: 'Dynasty Games',
+  version: '1',
+  // chainId: 1,
+  // verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
+};
+
+router.get('/account', async ctx => {
+  let {address} = ctx.request.query;
+  const avatar = multiavatar__default["default"](address);
+  ctx.body = {avatar};
+});
+
+router.get('/account/avatar', async ctx => {
+  let {address} = ctx.request.query;
+  ctx.body = multiavatar__default["default"](address);
+});
+
+router.put('/account/portfolio', async ctx => {
+  let {address, portfolio, id, style, category, signature } = ctx.request.query;
+  const message = {
+    type: 'PortfolioEdit',
+    value: portfolio.split(','),
+    category: Number(category),
+    style: Number(style),
+    id: Number(id)
+  };
+  const signerAddr = await ethers__default["default"].utils.verifyTypedData(domain, types['PortfolioEdit'], message, signature);
+
+  if (signerAddr === address) {
+    
+  // todo: signature valid?
+    await storage.put(`/portfolios/${address}/${id}`, Buffer.from(portfolio));
+    ctx.response.status = 200;
+  } else {
+    ctx.response.status = 401;
+  }
+});
+
+router.get('/account/portfolio', async ctx => {
+  let {address, competitionId } = ctx.request.query;
+  const portfolio = await storage.get(`/portfolios/${address}/${competitionId}`);
+  ctx.body = portfolio.toString().split(',');
 });
 
 class DynastyStorageClient {  
@@ -2486,12 +2536,13 @@ class DynastyStorageClient {
   
   server
     .use(cors__default["default"]({ origin: '*' }))
+    .use(router$5.routes())
+    .use(router$3.routes())
     .use(router$4.routes())
     .use(router$2.routes())
-    .use(router$3.routes())
     .use(router$1.routes())
     .use(router.routes())
-    .use(router$4.allowedMethods());
+    .use(router$5.allowedMethods());
   
   server.listen(8668);
 })();
