@@ -21,7 +21,7 @@ export const AccountEdit = {
   ]
 }
 
-export const type = {
+export default {
   PortfolioEdit,
   AccountEdit
 }
