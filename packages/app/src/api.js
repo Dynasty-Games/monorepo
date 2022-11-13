@@ -3,6 +3,8 @@ import erc20 from './data/abis/erc20'
 import addresses from './../../addresses/goerli'
 import ContestABI from './../../abis/DynastyContests.json'
 import CreditABI from './../../abis/DynastyFantasyCredit.json'
+import { accountPortfolioSave } from '../../utils/src/utils'
+import types from '../../signer-types/types'
 
 const network = providers.getNetwork('goerli')
 
@@ -12,7 +14,12 @@ const provider = getDefaultProvider(network, {
   pocket: '62ac464b123e6f003975253b',
   etherscan: '6XI8Q8NA96JFB71WA8VV9TM42K8H4DVIBN'
 })
-
+const domain = {
+  name: 'Dynasty Games',
+  version: '1',
+  // chainId: 1,
+  // verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
+};
 // 0x07865c6e87b9f70255377e024ace6630c1eaa37f orig USDC GOERLI
 const usdc = new Contract(addresses.FakeUSDC, erc20, provider)
 const dynastyContest = new Contract(addresses.DynastyContestsProxy, ContestABI, provider)
@@ -90,6 +97,24 @@ export const gameCredits = async () => {
   return utils.formatUnits(units, 8)
 }
 
+export const signTypedData = async (type, value, category, style, id) => {
+// The data to sign
+let message = {
+  type,
+  value
+}
+if (type === 'PortfolioEdit') {    
+  message = {
+    ...message,
+    category,
+    style,
+    id
+  }
+}
+
+return await connector._signTypedData(domain, types[type], message);
+}
+
 export const signMessage = (type, category, style, id, value) => {
   let message = {
     type,
@@ -104,11 +129,12 @@ export const signMessage = (type, category, style, id, value) => {
     }
   }
   const data = JSON.stringify(message).toString('hex')
-  const bytes = _ethers.utils.arrayify(data)
-  return connector.signMessage(bytes)
+  // const bytes = _ethers.utils.arrayify(data)
+  return connector.signMessage(data)
 }
 
-
+globalThis.signMessage = signTypedData
 export const editPortfolio = async ({category, style, id, portfolio}) => {
-  fetch()
+  const signature = await signTypedData('PortfolioEdit', portfolio, category, style, id)
+  await accountPortfolioSave(`address=${connector.accounts[0]}&id=${id}&style${style}&portfolio=${portfolio.join()}&category=${category}&signature=${signature}`)
 }

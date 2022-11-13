@@ -6,6 +6,7 @@
     <link rel="manifest" href="./manifest.json">
     <title>DynastyGames</title>
     <meta name="theme-color" content="#dcad65"/>
+    <link rel="modulepreload" href="./shell.js" as="script">
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register("/sw.js");

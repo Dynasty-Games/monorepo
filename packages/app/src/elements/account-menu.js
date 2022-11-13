@@ -3,6 +3,7 @@ import './dropdown'
 import './balance'
 import './credit'
 import { balance, gameCredits } from './../api'
+import { avatar } from '../../../utils/src/utils'
 
 export default customElements.define('account-menu-element', class AccountMenuElement extends LitElement {
   static properties = {
@@ -39,15 +40,10 @@ export default customElements.define('account-menu-element', class AccountMenuEl
     if (value !== 'undefined' && value !== undefined) {
       const connectAction = this.shadowRoot.querySelector(`[data-action="connect"]`)
 
-      if (!globalThis.multiavatar) {
-        let importee = await import('@multiavatar/multiavatar/esm')
-        globalThis.multiavatar = importee.default
-      }
-
       connectAction.dataset.action = 'menu'
 
 
-      let svgCode = multiavatar(value)
+      let svgCode = await avatar(`address=${value}`)
       connectAction.innerHTML = svgCode
       balanceElement.amount = await balance(this.account)
       creditElement.amount = await gameCredits(this.account)

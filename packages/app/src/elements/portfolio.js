@@ -126,8 +126,8 @@ export default customElements.define('portfolio-element', class PortfolioElement
     if (els.length > 8 || salary - item.salary < 0) this.submitDisabled = true
   }
 
-  #save() {
-    // editPortfolio(currentCompetition)
+  async #save() {
+    await editPortfolio(currentCompetition)
   }
 
   #clear() {

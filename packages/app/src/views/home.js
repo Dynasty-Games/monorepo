@@ -3,6 +3,7 @@ import './../elements/balance'
 import './../elements/credit'
 import { gameCredits, balance } from '../api'
 import { scrollbar } from '../shared/styles'
+import { avatar } from '../../../utils/src/utils'
 
 export default customElements.define('home-view', class HomeView extends LitElement {
   static properties = {
@@ -27,19 +28,15 @@ export default customElements.define('home-view', class HomeView extends LitElem
     const balanceElement = this.querySelector('balance-element.usdc')
     const creditElement = this.querySelector('credit-element')
     if (value) {
-      (async () => {
-        if (!globalThis.multiavatar) {
-          let importee = await import('@multiavatar/multiavatar/esm')
-          globalThis.multiavatar = importee.default
-        }
+      requestIdleCallback(async () => {
     
-        let svgCode = multiavatar(value)
+        let svgCode = await avatar(`address=${value}`)
         this.querySelector('.avatar').innerHTML = svgCode
 
         balanceElement.amount = await balance(value)
         creditElement.amount = await gameCredits(value)
         totalBalanceElement.amount = Number(balanceElement.amount) + Number(creditElement.amount)
-      })()
+      })
     } else {
       balanceElement.amount = 0
       creditElement.amount = 0

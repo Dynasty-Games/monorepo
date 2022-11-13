@@ -4,6 +4,7 @@ import { execSync } from 'child_process'
 import {readFileSync, writeFileSync} from 'fs'
 import cleaner from 'rollup-plugin-cleaner';
 import replace from '@rollup/plugin-replace';
+import { terser } from 'rollup-plugin-terser';
 try {
   execSync('rm -rf www/themes/*.js')
   execSync('rm -rf www/*.js')
@@ -44,7 +45,8 @@ export default [{
     json(),
     nodeResolve({
       browser: true
-    })
+    }),
+    terser()
   ]
 }, {
   input: ['src/themes/dark.js', 'src/themes/default.js'],
