@@ -206,10 +206,10 @@ export default customElements.define('home-view', class HomeView extends LitElem
 
 <custom-dialog ?hidden="${!this.dialogShown}" ?busy="${this.busyShown}">
   <flex-one></flex-one>
-  <h4>0.01 ETH sended</h4>
+  <h4>0.01 ETH sent</h4>
   <a href="https://goerli.etherscan.io/tx/${this.etherTX}">${this.etherTX.slice(0, 10)}...${this.etherTX.slice(-10)}</a>
 
-  <h4>100 USDD sended</h4>
+  <h4>100 USDD sent</h4>
   <a href="https://goerli.etherscan.io/tx/${this.dgcTX}">${this.dgcTX.slice(0, 10)}...${this.dgcTX.slice(-10)}</a>
   <flex-two></flex-two>
 
