@@ -1,5 +1,6 @@
 import {LitElement, html} from 'lit';
 import {map} from 'lit/directives/map.js'
+import '@lit-labs/virtualizer'
 
 import './portfolio-selector-item'
 import {scrollbar} from './../shared/styles'
@@ -19,6 +20,7 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
   }
   constructor() {
     super()
+    this.items = []
     pubsub.subscribe('load-user-portfolio', this.#init.bind(this))
     pubsub.subscribe('portfolio-item-selected', this.#itemSelected.bind(this))
     pubsub.subscribe('portfolio-item-removed', this.#itemRemoved.bind(this))
@@ -35,11 +37,17 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
   }
 
   #reset() {
-    this.items.forEach(item => item.overSalary = false)
+    this.items.forEach(item => {
+      item.overSalary = false
+    })
+
+    const els = Array.from(this.shadowRoot.querySelectorAll('portfolio-selector-item'))
+    els.forEach(el => el.removeAttribute('hidden'))
   }
 
   #init(items) {
-    if (Array.isArray(items)) this.filter = items
+    console.log({items});
+    if (Array.isArray(items) && items?.length > 0) this.filter = items
     else this.filter = []
 
     this.shadowRoot.querySelector('input').value = ''
@@ -68,17 +76,22 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
    */
   #search() {
     if (this.searchTimeaout) clearTimeout(this.searchTimeaout)
-
+    const items = []
     this.searchTimeaout = setTimeout(() => {
       const query = this.shadowRoot.querySelector('input').value
 
-      Array.from(this.shadowRoot.querySelectorAll('portfolio-selector-item')).forEach(item => {
+      currentCompetition.items.forEach(item => {
         if (this.filter.indexOf(item.id) === -1) {
-          if (item.id.includes(query) || item.name.includes(query) ||
-              item.symbol.includes(query)) item.removeAttribute('hidden')
-              else item.setAttribute('hidden', '')
+          if (item.id.includes(query) ||
+              item.name.includes(query) ||
+              item.symbol.includes(query)) {
+                const overSalary = this.shadowRoot.querySelector(`portfolio-selector-item[id=${item.id}]`)?.hasAttribute('over-salary')
+                item.overSalary = overSalary
+                items.push(item)
+              }
         }
       })
+      this.items = items
     }, 250);
   }
 
@@ -140,6 +153,10 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
         box-sizing: border-box;
       }
 
+      portfolio-selector-item {
+        width: 100%;
+      }
+
       ${scrollbar}
 
       @media(min-width: 680px) {
@@ -152,21 +169,25 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
         }
       }
     </style>
-      <flex-column class="list">
-        ${map(this.items, item => html`
-          <portfolio-selector-item
-            ?over-salary="${item.overSalary}"
-            href="${item.href}"
-            salary="${item.salary}"
-            name="${item.name}"
-            symbol="${item.symbol}"
-            image="${item.image}"
-            data-id="${item.id}"
-            id="${item.id}"
-            data-action="show-info">
-            </portfolio-selector-item>
-          `)}
-      </flex-column>
+    <flex-column class="list">
+      <lit-virtualizer
+        scroller
+        style="pointer-events: auto; height: 100%;"
+        .items=${this.items}
+        .renderItem=${item => html`<portfolio-selector-item
+        ?over-salary="${item.overSalary}"
+        href="${item.href}"
+        salary="${item.salary}"
+        name="${item.name}"
+        symbol="${item.symbol}"
+        image="${item.image}"
+        data-id="${item.id}"
+        id="${item.id}"
+        data-action="show-info">
+        </portfolio-selector-item>
+        `}
+      ></lit-virtualizer>
+    </flex-column>
 
     <flex-row style="justify-content: center; align-items: center; padding: 12px; width: 100%; box-sizing: border-box;">
       <input placeholder="search" @input="${this.#search}"></input>

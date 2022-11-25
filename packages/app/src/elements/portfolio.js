@@ -62,7 +62,7 @@ export default customElements.define('portfolio-element', class PortfolioElement
   }
 
   async #loadUserItems(ids) {
-    this.#clear()
+    await this.#reset()
     this.submitDisabled = true
     const contract = await contracts.dynastyContest.connect(connector)
     let edits
@@ -130,20 +130,26 @@ export default customElements.define('portfolio-element', class PortfolioElement
     await editPortfolio(currentCompetition)
   }
 
-  #clear() {
-    if (currentCompetition.portfolio.length == 0) return
-    this.positionsFilled = 0
+  #reset() {
     currentCompetition.portfolio = []
-    pubsub.publish('load-user-portfolio', [])
-    pubsub.publish('portfolio-salary-reset')
+    this.positionsFilled = 0
     let els = Array.from(this.shadowRoot.querySelectorAll(`[index]`))
     els.forEach(el => el.setAttribute('placeholder', 'true'));
+    pubsub.publish('portfolio-salary-reset')
+    this.submitDisabled = true
+    
+  }
 
+  #clear() {
+    if (currentCompetition.portfolio.length == 0) return
+    this.#reset()
+    pubsub.publish('load-user-portfolio', [])
     // firebase.set(
     //   firebase.child(globalThis.userRef, currentCompetition.address),
     //   null
     // )
-    this.submitDisabled = true
+    
+    return 
   }
 
   #select() {
