@@ -9,7 +9,8 @@ export default customElements.define('portfolio-item', class PortfolioItem exten
       type: String
     },
     placeholder: {
-      type: Boolean
+      type: Boolean,
+      reflect: true
     },
     image: {
       type: String

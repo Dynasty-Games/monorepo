@@ -64,6 +64,9 @@ export default customElements.define('portfolio-element', class PortfolioElement
   async #loadUserItems(ids) {
     await this.#reset()
     this.submitDisabled = true
+    
+    
+    
     const contract = await contracts.dynastyContest.connect(connector)
     let edits
     try {
@@ -77,10 +80,6 @@ export default customElements.define('portfolio-element', class PortfolioElement
 
     let i = 0
     let salary = currentCompetition.maxSalary
-    
-    const els = Array.from(this.shadowRoot.querySelectorAll(`[index]`))
-    els.forEach(el => el.reset())
-    console.log(els);
 
     this.positionsFilled = 0
 
@@ -134,7 +133,7 @@ export default customElements.define('portfolio-element', class PortfolioElement
     currentCompetition.portfolio = []
     this.positionsFilled = 0
     let els = Array.from(this.shadowRoot.querySelectorAll(`[index]`))
-    els.forEach(el => el.setAttribute('placeholder', 'true'));
+    els.forEach(el => el.reset());
     pubsub.publish('portfolio-salary-reset')
     this.submitDisabled = true
     

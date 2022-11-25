@@ -18,6 +18,8 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
       type: Array
     }
   }
+
+  #currentSalary = 0
   constructor() {
     super()
     this.items = []
@@ -29,11 +31,12 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
   }
 
   #updateSalary(salary) {
+    this.#currentSalary = salary
     const els = Array.from(this.shadowRoot.querySelectorAll('portfolio-selector-item'))
-    els.forEach((item, i) => {
-      if (salary - item.salary < 0) item.setAttribute('over-salary', '')
-      else item.removeAttribute('over-salary')
-    });
+    this.items = this.items.map(item => {
+      item.overSalary = salary - item.salary < 0
+      return item
+    })
   }
 
   #reset() {
@@ -46,6 +49,7 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
   }
 
   #init(items) {
+    this.#currentSalary = 0
     console.log({items});
     if (Array.isArray(items) && items?.length > 0) this.filter = items
     else this.filter = []
@@ -59,15 +63,19 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
     if (currentCompetition.portfolio.length === 8) return
     currentCompetition.portfolio.push(detail.id)
     this.filter.push(detail.id)
-    this.shadowRoot.querySelector(`portfolio-selector-item[id=${detail.id}]`).setAttribute('hidden', '')
+    this.items = currentCompetition.items.filter(item => this.filter.indexOf(item.id) === -1)
+    this.shadowRoot.querySelector(`portfolio-selector-item[id=${detail.id}]`)?.setAttribute('hidden', '')
   }
 
   #itemRemoved(detail) {
+    console.log(detail);
+    console.log(detail.id);
     if (this.filter.length === 0) return
 
     this.filter.splice(this.filter.indexOf(detail.id), 1)
     currentCompetition.portfolio.splice(detail.id, 1)
-    this.shadowRoot.querySelector(`portfolio-selector-item[id=${detail.id}]`).removeAttribute('hidden')
+    this.items = currentCompetition.items.filter(item => this.filter.indexOf(item.id) === -1)
+    this.shadowRoot.querySelector(`portfolio-selector-item[id=${detail.id}]`)?.removeAttribute('hidden')
   }
 
   // TODO: PUBSUB!!!
@@ -79,19 +87,22 @@ export default customElements.define('portfolio-selector', class PortfolioSelect
     const items = []
     this.searchTimeaout = setTimeout(() => {
       const query = this.shadowRoot.querySelector('input').value
-
-      currentCompetition.items.forEach(item => {
-        if (this.filter.indexOf(item.id) === -1) {
-          if (item.id.includes(query) ||
-              item.name.includes(query) ||
-              item.symbol.includes(query)) {
-                const overSalary = this.shadowRoot.querySelector(`portfolio-selector-item[id=${item.id}]`)?.hasAttribute('over-salary')
-                item.overSalary = overSalary
-                items.push(item)
-              }
-        }
-      })
-      this.items = items
+      if (query.length === 0) this.items = currentCompetition.items.filter(item => this.filter.indexOf(item.id) === -1)
+      else {
+        currentCompetition.items.forEach(item => {
+          if (this.filter.indexOf(item.id) === -1) {
+            if (item.id.includes(query) ||
+                item.name.includes(query) ||
+                item.symbol.includes(query)) {
+                  const overSalary = this.shadowRoot.querySelector(`portfolio-selector-item[id=${item.id}]`)?.hasAttribute('over-salary')
+                  item.overSalary = overSalary
+                  items.push(item)
+                }
+          }
+        })
+        this.items = items.filter(item => this.filter.indexOf(item.id) === -1)
+      }      
+      this.#updateSalary(this.#currentSalary)
     }, 250);
   }
 
