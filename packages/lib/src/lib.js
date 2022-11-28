@@ -90,26 +90,13 @@ const getWeight = (points) => {
   if (points.weight > 50 && points.weight < 70) return 10
   if (points.weight > 70 && points.weight < 90) return 30
   if (points.weight > 80 && points.weight < 100) return 50
-  if (points.weight === 100) return 50
-}
-
-const winningsByWeight = {
-  100: 50,
-  90: 50,
-  80: 30,
-  70: 30,
-  60: 10,
-  50: 10,
-  40: 5,
-  30: 2,
-  20: 2,
-  10: 1,
-  0: 0
+  if (points.weight === 100) return 70
 }
 
 export const calculateWinnings = (pool, members, points) => {
   if (points.length === 0 || members.length === 0) return {amounts: [], members, points}
-  
+  pool = Number(pool)
+
   points = points.map((points, i) => {
     points.member = members[i]
     return points
@@ -132,9 +119,9 @@ export const calculateWinnings = (pool, members, points) => {
     if (points.weight > 50 && points.weight < 70) set[10] += 1
     if (points.weight > 70 && points.weight < 90) set[30] += 1
     if (points.weight > 80 && points.weight < 100) set[50] += 1
-    if (points.weight === 100) set[50] += 1
+    if (points.weight === 100) set[70] += 1
     return set
-  }, {50: 0, 30: 0, 10: 0, 5: 0, 2: 0, 1: 0})
+  }, {70: 0, 50: 0, 30: 0, 10: 0, 5: 0, 2: 0, 1: 0})
   // const bases = calculateBaseWinnings(points)
 
 
