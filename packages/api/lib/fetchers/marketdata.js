@@ -12,7 +12,6 @@ export default async (vsCurrency = 'usd', limit = '250', pages = '25', order = '
       const url = `${baseApiURL}coins/markets${query}`
       const response = await fetch(url)
       const item = await response.json()
-      console.log(item);
       if (response.status) {
         if (response.status.error_code === HITTED_RATE_LIMIT) {
           // todo handle
