@@ -1,4 +1,4 @@
-const {calculateFantasyPoints} = require('./dist/lib.js')
+import {calculateFantasyPoints} from './lib.js'
 
 console.log(calculateFantasyPoints({
   priceDifference: -51,
