@@ -5,7 +5,7 @@ export default [{
   input: 'lib/api.js',
   output: [{
     dir: './',
-    format: 'cjs'
+    format: 'es'
   }],
   plugins: [
     json()

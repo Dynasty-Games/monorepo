@@ -4,6 +4,7 @@
   "description": "",
   "main": "api.js",
   "module": "lib/api.js",
+  "type": "module",
   "scripts": {
     "build": "rollup -c",
     "test": "node test.js"

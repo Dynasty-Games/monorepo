@@ -1,25 +1,12 @@
-'use strict';
-
-var Koa = require('koa');
-var cors = require('@koa/cors');
-var Router = require('@koa/router');
-var fetch = require('node-fetch');
-var ethers = require('ethers');
-require('dotenv/config');
-var cron = require('node-cron');
-var multiavatar = require('@multiavatar/multiavatar');
-var client = require('socket-request-client');
-
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-var Koa__default = /*#__PURE__*/_interopDefaultLegacy(Koa);
-var cors__default = /*#__PURE__*/_interopDefaultLegacy(cors);
-var Router__default = /*#__PURE__*/_interopDefaultLegacy(Router);
-var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
-var ethers__default = /*#__PURE__*/_interopDefaultLegacy(ethers);
-var cron__default = /*#__PURE__*/_interopDefaultLegacy(cron);
-var multiavatar__default = /*#__PURE__*/_interopDefaultLegacy(multiavatar);
-var client__default = /*#__PURE__*/_interopDefaultLegacy(client);
+import Koa from 'koa';
+import cors from '@koa/cors';
+import Router from '@koa/router';
+import fetch$1 from 'node-fetch';
+import ethers, { providers, getDefaultProvider, Wallet, Contract, utils } from 'ethers';
+import 'dotenv/config';
+import cron from 'node-cron';
+import multiavatar from '@multiavatar/multiavatar';
+import client from 'socket-request-client';
 
 globalThis.__cache__ = globalThis.__cache__ || {};
 
@@ -63,19 +50,28 @@ var timestamps = {
 
 const baseApiURL$1 = 'https://api.coingecko.com/api/v3/';
 
-var getMarketData = async (vsCurrency = 'usd', limit = '250', pages = '25', order = 'market_cap_desc') => {
+var getMarketData = async (vsCurrency = 'usd', limit = '250', pages = '25', order = 'market_cap_desc') => {  
   let items = [];
-  for (let i = 1; i <= Number(pages); i++) {
-    const query = `?vs_currency=${vsCurrency}&order=${order}&per_page=${limit}&page=${i}&sparkline=false`;
-    const url = `${baseApiURL$1}coins/markets${query}`;
-    const response = await fetch__default["default"](url);
-    const item = await response.json();
-    if (Array.isArray(item)) items = [...items, ...item];
+  try {
+    let items = [];
+    for (let i = 1; i <= Number(pages); i++) {
+      const query = `?vs_currency=${vsCurrency}&order=${order}&per_page=${limit}&page=${i}&sparkline=false`;
+      const url = `${baseApiURL$1}coins/markets${query}`;
+      const response = await fetch(url);
+      const item = await response.json();
+      console.log(item);
+      if (Array.isArray(item)) items = [...items, ...item];
+    }
+    
+  } catch (error) {
+    console.log(error);
+    throw error
   }
+  console.log(items);
   return items
 };
 
-const router$5 = new Router__default["default"]();
+const router$5 = new Router();
 
 const baseApiURL = 'https://api.coingecko.com/api/v3/';
 // TODO: currencies sould just return all info except the marketdata
@@ -119,7 +115,7 @@ router$5.get('/currency-info', async (ctx, next) => {
   let data = cache.get(`currency_${ctx.query.id}`);
   if (!data || new Date().getTime() > timestamps.get(`currency_${ctx.query.id}`) + (5 * 60000)) {
     const url = `${baseApiURL}coins/${ctx.query.id}?tickers=false&market_data=false&community_data=true&developer_data=false&sparkline=false`;
-    let response = await fetch__default["default"](url);
+    let response = await fetch$1(url);
     data = await response.json();
     data = {
       description: data.description.en,
@@ -134,7 +130,7 @@ router$5.get('/currency-icon', async (ctx, next) => {
   ctx.body = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/${ctx.query.symbol.toLowerCase()}.svg`;
 });
 
-const router$4 = new Router__default["default"]();
+const router$4 = new Router();
 
 const filter = ctx => {
   
@@ -810,13 +806,13 @@ var addresses = {
 
 // import cache from './../cache'
 // import WebSocket from 'websocket'
-const router$3 = new Router__default["default"]();
+const router$3 = new Router();
 
 const timedOut = {};
 
-const network$1 = ethers.providers.getNetwork('goerli');
+const network$1 = providers.getNetwork('goerli');
 
-const provider$1 = ethers.getDefaultProvider(network$1, {
+const provider$1 = getDefaultProvider(network$1, {
   alchemy: 'dy2iwSy4JxajO73gfBXYdpWILHX2wWCI',
   infura: '1ca30fe698514cf19a5e3e5e5c8334a8',
   pocket: '62ac464b123e6f003975253b',
@@ -824,9 +820,9 @@ const provider$1 = ethers.getDefaultProvider(network$1, {
 });
 
 // random key for tests
-const signer = new ethers.Wallet(process.env?.FAUCET_PRIVATE_KEY, provider$1);
+const signer = new Wallet(process.env?.FAUCET_PRIVATE_KEY, provider$1);
 
-const contract$1 = new ethers.Contract(addresses.FakeUSDC, FakeUSDC$1, signer);
+const contract$1 = new Contract(addresses.FakeUSDC, FakeUSDC$1, signer);
 
 const timedOutMessage = ctx => {
   ctx.body = `${ctx.request.query.address} on timeout till ${new Date(timedOut[ctx.request.query.address] + 43200 * 1000)}`;
@@ -835,12 +831,12 @@ const timedOutMessage = ctx => {
 router$3.get('/faucet', async ctx => {
   try {
     if (timedOut[ctx.request.query.address] + 43200 < Math.round(new Date().getTime() / 1000)) return timedOutMessage(ctx)
-    let tx = await contract$1.mint(ctx.request.query.address, ethers.utils.parseUnits('100', 8));
+    let tx = await contract$1.mint(ctx.request.query.address, utils.parseUnits('100', 8));
     const hash = tx.hash;
     await tx.wait();
     tx = await signer.sendTransaction({
       to: ctx.request.query.address,
-      value: ethers.utils.parseUnits('0.01')
+      value: utils.parseUnits('0.01')
     });
     await tx.wait();
     // console.log(tx);
@@ -859,45 +855,50 @@ router$3.get('/faucet', async ctx => {
 router$3.get('/faucet/tot', timedOutMessage);
 
 var marketdata = async () => {
-  let data = await getMarketData('usd', '250', '25');
-  data = data.map(({
-    name,
-    id,
-    symbol,
-    image,
-    current_price,
-    total_supply,
-    salary,
-    total_volume,
-    market_cap_rank,
-    circulating_supply,
-    price_change_percentage_24h,
-    roi,
-    market_cap,
-    market_cap_change_percentage_24h,
-    max_supply
-  }, i) => {
-    return {
+  try {
+    let data = await getMarketData('usd', '250', '25');
+    data = data.map(({
       name,
-      rank: i + 1,
+      id,
       symbol,
       image,
-      roi,
-      id,
+      current_price,
+      total_supply,
       salary,
-      marketCap: market_cap,
-      marketCapChange24hPercentage: market_cap_change_percentage_24h,
-      priceChange24hPercentage: price_change_percentage_24h,
-      circulatingSupply: circulating_supply,
-      rank: market_cap_rank,
-      totalSupply: total_supply,
-      volume: total_volume,
-      price: current_price,
-      maxSupply: max_supply
-    }
-  });
-  
-  cache.add('_marketdata', data);
+      total_volume,
+      market_cap_rank,
+      circulating_supply,
+      price_change_percentage_24h,
+      roi,
+      market_cap,
+      market_cap_change_percentage_24h,
+      max_supply
+    }, i) => {
+      return {
+        name,
+        rank: i + 1,
+        symbol,
+        image,
+        roi,
+        id,
+        salary,
+        marketCap: market_cap,
+        marketCapChange24hPercentage: market_cap_change_percentage_24h,
+        priceChange24hPercentage: price_change_percentage_24h,
+        circulatingSupply: circulating_supply,
+        rank: market_cap_rank,
+        totalSupply: total_supply,
+        volume: total_volume,
+        price: current_price,
+        maxSupply: max_supply
+      }
+    });
+    
+    cache.add('_marketdata', data);
+  } catch (error) {
+    console.warn('marketdata');
+    console.warn(error);
+  }
 };
 
 var contestsABI = [
@@ -1998,9 +1999,9 @@ var contestsABI = [
 	}
 ];
 
-const network = ethers.providers.getNetwork('goerli');
+const network = providers.getNetwork('goerli');
 
-var provider = ethers.getDefaultProvider(network, {
+var provider = getDefaultProvider(network, {
   alchemy: 'dy2iwSy4JxajO73gfBXYdpWILHX2wWCI',
   infura: '1ca30fe698514cf19a5e3e5e5c8334a8',
   pocket: '62ac464b123e6f003975253b',
@@ -2081,7 +2082,7 @@ const staticStyles = [
   { name: 'classic', fee: 4, id: 0 }
 ];
 
-const contract = new ethers.Contract(DynastyContestsProxy, contestsABI, provider);
+const contract = new Contract(DynastyContestsProxy, contestsABI, provider);
 
 const getSavedCompetitions = async () => {
   try {
@@ -2172,13 +2173,13 @@ var competitions$1 = async () => {
             id: competition.id.toNumber(),
             endTime,
             liveTime,
-            price: ethers.utils.formatUnits(competition.price, 8),
+            price: utils.formatUnits(competition.price, 8),
             portfolioSize: competition.portfolioSize.toNumber(),
             participants: competition.members.length,
             extraData: competition.extraData !== '0x' ? JSON.parse(Buffer.from(competition.extraData.replace('0x', ''), 'hex').toString()) : {},
             name: competition.name,
             startTime: Number(competition.startTime.toNumber() * 1000).toString(),
-            prizePool: ethers.utils.formatUnits(competition.prizePool, 8),      
+            prizePool: utils.formatUnits(competition.prizePool, 8),      
             members: competition.members,
             state: competition.state,
             isLive
@@ -2376,14 +2377,14 @@ class JobRunner {
 
     await job();
     // every hour
-    cron__default["default"].schedule('0 */1 * * *', job);
+    cron.schedule('0 */1 * * *', job);
     // every 5 minutes
     await competitions();
-    cron__default["default"].schedule('*/1 * * * *', competitions);      
+    cron.schedule('*/1 * * * *', competitions);      
   }
 }
 
-const router$2 = new Router__default["default"]();
+const router$2 = new Router();
 
 router$2.get('/styles', async ctx => ctx.body = (await storage.get('/competitions/styles')).toString());
 
@@ -2395,7 +2396,7 @@ router$2.get('/live-competition-names', async ctx => ctx.body = (await storage.g
 
 router$2.get('/competition-names', async ctx => ctx.body = (await storage.get('/competitions/names')).toString());
 
-const router$1 = new Router__default["default"]();
+const router$1 = new Router();
 
 router$1.get('/portfolio-points', async ctx => {
   let {portfolio} = ctx.request.query;
@@ -2443,7 +2444,7 @@ var types = {
   AccountEdit
 };
 
-const router = new Router__default["default"]();
+const router = new Router();
 
 const domain = {
   name: 'Dynasty Games',
@@ -2454,13 +2455,13 @@ const domain = {
 
 router.get('/account', async ctx => {
   let {address} = ctx.request.query;
-  const avatar = multiavatar__default["default"](address);
+  const avatar = multiavatar(address);
   ctx.body = {avatar};
 });
 
 router.get('/account/avatar', async ctx => {
   let {address} = ctx.request.query;
-  ctx.body = multiavatar__default["default"](address);
+  ctx.body = multiavatar(address);
 });
 
 router.put('/account/portfolio', async ctx => {
@@ -2472,7 +2473,7 @@ router.put('/account/portfolio', async ctx => {
     style: Number(style),
     id: Number(id)
   };
-  const signerAddr = await ethers__default["default"].utils.verifyTypedData(domain, types['PortfolioEdit'], message, signature);
+  const signerAddr = await ethers.utils.verifyTypedData(domain, types['PortfolioEdit'], message, signature);
 
   if (signerAddr === address) {
     
@@ -2503,7 +2504,7 @@ class DynastyStorageClient {
   }
 
   async #init() {
-    this.#client = await client__default["default"](`ws://localhost:${this.#port}`, 'dynasty-data-storage-v1.0.0', {retry: true});
+    this.#client = await client(`ws://localhost:${this.#port}`, 'dynasty-data-storage-v1.0.0', {retry: true});
     return this
   }
 
@@ -2556,21 +2557,19 @@ class DynastyStorageClient {
   }
 }
 
-(async () => {
-  globalThis.storage = await new DynastyStorageClient();
+globalThis.storage = await new DynastyStorageClient();
 
-  new JobRunner();
-  const server = new Koa__default["default"]();
-  
-  server
-    .use(cors__default["default"]({ origin: '*' }))
-    .use(router$5.routes())
-    .use(router$3.routes())
-    .use(router$4.routes())
-    .use(router$2.routes())
-    .use(router$1.routes())
-    .use(router.routes())
-    .use(router$5.allowedMethods());
-  
-  server.listen(8668);
-})();
+new JobRunner();
+const server = new Koa();
+
+server
+  .use(cors({ origin: '*' }))
+  .use(router$5.routes())
+  .use(router$3.routes())
+  .use(router$4.routes())
+  .use(router$2.routes())
+  .use(router$1.routes())
+  .use(router.routes())
+  .use(router$5.allowedMethods());
+
+server.listen(8668);
