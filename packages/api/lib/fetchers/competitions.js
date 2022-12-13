@@ -1,9 +1,8 @@
 import {DynastyContestsProxy} from './../../../addresses/goerli.json'
 import contestsABI from './../../../abis/DynastyContests.json'
 import { Contract, utils } from 'ethers'
-import provider from './../provider'
-import runQueue from '../queue'
-import { staticCategories, staticStyles } from '../../../lib/src/lib'
+import provider from './../provider.js'
+import { staticCategories, staticStyles } from '../../../lib/lib.js'
 
 
 

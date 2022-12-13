@@ -1,7 +1,7 @@
-import {DynastyContest} from '@dynasty-games/addresses/goerli.json'
-import contestsABI from '@dynasty-games/abis/DynastyContest-ABI.json'
+import {DynastyContest} from '@dynasty-games/addresses/goerli.json' assert {type: 'json'}
+import contestsABI from '@dynasty-games/abis/DynastyContest-ABI.json' assert {type: 'json'}
 import { Contract, utils } from 'ethers'
-import provider from '../provider'
+import provider from '../provider.js'
 
 const queue = []
 

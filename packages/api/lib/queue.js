@@ -6,8 +6,13 @@ const runQueue = async (data, queue, job, concurrency = 10) => {
 }
 
 export default async (data, queue, job, concurrency) => {
-  console.time(job.name);
-  await runQueue(data, queue, job, concurrency)
-  console.timeEnd(job.name);
+  console.log('running queue');
+  try {
+    console.time(job.name);
+    await runQueue(data, queue, job, concurrency)
+    console.timeEnd(job.name);
+  } catch (error) {
+    console.warn(error);
+  }
   return
 }

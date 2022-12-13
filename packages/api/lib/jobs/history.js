@@ -1,5 +1,5 @@
 import cache from './../cache.js'
-import { calculateFantasyPoints, calculateDifference, difference } from './../../../lib/src/lib'
+import { calculateFantasyPoints, calculateDifference, difference } from '../../../lib/lib.js'
 
 const twenfyFourHours = (24 * 60) * 60000
 const twelveHours = (12 * 60) * 60000

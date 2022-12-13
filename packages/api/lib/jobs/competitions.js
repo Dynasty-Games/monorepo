@@ -1,5 +1,5 @@
 import cache from './../cache.js'
-import competitions from './../fetchers/competitions'
+import competitions from './../fetchers/competitions.js'
 
 export default async () => {
   console.time('competitions');

@@ -1,6 +1,6 @@
-import marketdata from './marketdata'
-import competitions from './competitions'
-import history from './history'
+import marketdata from './marketdata.js'
+import competitions from './competitions.js'
+import history from './history.js'
 import cron from 'node-cron'
 
 // import firebase from './../firebase'
