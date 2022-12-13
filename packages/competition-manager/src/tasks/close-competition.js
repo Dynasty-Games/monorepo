@@ -1,4 +1,4 @@
-import { dynastyContest } from "../contracts";
+import { dynastyContest } from "../contracts.js";
 
 
 export default async (category, styles, id, amounts, addresses) => {

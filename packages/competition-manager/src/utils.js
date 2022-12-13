@@ -1,4 +1,4 @@
-import { calculateFantasyPoints } from '@dynasty-games/lib'
+import { calculateFantasyPoints } from './../../lib/lib.js'
 import { dynastyContest as contract } from './contracts'
 import { closedCompetitions, currencies } from '../../utils/src/utils'
 

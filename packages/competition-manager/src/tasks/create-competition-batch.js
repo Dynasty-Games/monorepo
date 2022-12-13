@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { dynastyContest } from '../contracts'
+import { dynastyContest } from '../contracts.js'
 
 export default async (startTimes, name, extraData, duration = 86400) => { // 12hours in seconds
 

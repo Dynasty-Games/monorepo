@@ -1,5 +1,5 @@
 import addresses from './../../addresses/goerli.json'
-import { getDefaultProvider, Contract, utils, providers, Wallet } from 'ethers'
+import { getDefaultProvider, Contract, providers, Wallet } from 'ethers'
 import ContestABI from './../../abis/DynastyContests.json'
 
 import secureEnv from 'secure-env'

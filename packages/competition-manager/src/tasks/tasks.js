@@ -1,14 +1,11 @@
-import createCompetitionBatch from './create-competition-batch'
+import createCompetitionBatch from './create-competition-batch.js'
 import cron from 'node-cron'
-import { isOpen, getCompetitionParams, getCompetitionsToClose, hasStarted, hasEnded, getCompetitionPortfolios, getOpenCompetitions, getStartedCompetitions, getPortfolios, getMembers } from './../utils'
-import { calculate } from '../../../app/src/apis/contests'
+import { getCompetitionsToClose, getPortfolios, getMembers } from './../utils.js'
 import getRankings from './rankings.js'
 import closeCompetition from './close-competition'
-import { BigNumber, utils } from 'ethers'
-import { isOdd } from './../utils'
-import { DynastyTreasury } from './../../../addresses/goerli.json'
-import { calculateBaseWinnings, calculateWinnings } from '../../../lib/src/lib'
-import { portfolioPoints } from '../../../utils/src/utils'
+import { utils } from 'ethers'
+import { calculateWinnings } from '../../../lib/lib.js'
+import { portfolioPoints } from '../../../utils/src/utils.js'
 /**
  * runs everyday at 15:00
  * creates all competitions from same day 17:00 to day after 15:00

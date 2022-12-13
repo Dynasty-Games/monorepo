@@ -1,7 +1,7 @@
-import { calculateWinnings } from "../../../lib/src/lib"
-import { liveCompetitions, portfolioPoints } from "../../../utils/src/utils"
-import { getCompetitionPortfolios } from "../utils"
-import { getRankings } from "../utils"
+import { calculateWinnings } from "../../../lib/lib.js"
+import { liveCompetitions, portfolioPoints } from "../../../utils/src/utils.js"
+import { getCompetitionPortfolios } from "../utils.js"
+import { getRankings } from "../utils.js"
 export default async () => {
     let competitions = await liveCompetitions()
     competitions = await Promise.all(competitions.map(competition => getCompetitionPortfolios(competition)))
