@@ -1,5 +1,5 @@
 import server from 'socket-request-server'
-import Storage from './storage'
+import Storage from './storage.js'
 
 export default class DynastyStorageServer {  
   #port

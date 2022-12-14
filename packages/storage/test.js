@@ -1,6 +1,6 @@
-const Client = require('./storage-client');
-const Server = require('./storage-server');
-const test = require('tape')
+import Client from './src/client.js'
+import Server from './src/server.js'
+import test from 'tape'
 
 
 test('test storage write/read/delete', async tape => {

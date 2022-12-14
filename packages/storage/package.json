@@ -1,9 +1,13 @@
 {
   "name": "@dynasty-games/storage",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Storage handler & client for internal database interaction",
-  "main": "storage.js",
-  "module": "src/storage.js",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./src/client.js",
+    "./server": "./src/server.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c"
@@ -28,11 +32,10 @@
     "interface-datastore": "^6.1.1",
     "it-all": "^1.0.6",
     "koa": "^2.13.4",
-    "socket-request-client": "^1.6.3",
-    "socket-request-server": "^1.5.2"
+    "socket-request-client": "^1.7.1",
+    "socket-request-server": "^1.6.2"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^13.3.0",
     "rollup": "^2.77.0",
     "tape": "^5.5.3"
   }

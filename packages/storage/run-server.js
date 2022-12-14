@@ -1,2 +1,2 @@
-const Server = require('./storage-server');
-new Server()
+const Server = await import('./src/server.js');
+new Server.default()

@@ -13,11 +13,20 @@ export default class DynastyStorageClient {
   }
 
   async #init() {
-    this.#client = await client(`ws://localhost:${this.#port}`, 'dynasty-data-storage-v1.0.0', {retry: true});
+    await this.#initClient()
     return this
   }
 
-  #request(url, key, value) {
+  async #initClient() {
+    this.#client = await client(`ws://localhost:${this.#port}`, 'dynasty-data-storage-v1.0.0', {retry: true, timeout: 10_000, times: 10});
+  }
+
+  async #beforeRequest() {
+    if (this.#client.connectionState() !== 'open') await this.#initClient()
+  }
+
+  async #request(url, key, value) {
+    await this.#beforeRequest()
     return this.#client.request({
       url,
       params: {

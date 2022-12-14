@@ -5,19 +5,16 @@ import base32 from '@vandeurenglenn/base32';
 import { stat } from 'node:fs/promises';
 import {
   MemoryDatastore,
-  ShardingDatastore,
   TieredDatastore
-} from './../node_modules/datastore-core/esm/src/index'
+} from 'datastore-core'
 
-import { NextToLast } from './../node_modules/datastore-core/esm/src/shard';
-import { FsDatastore } from './../node_modules/datastore-fs/esm/src/index'
+import { FsDatastore } from 'datastore-fs'
 import { createHash } from 'crypto';
 import { mkdirSync } from 'fs';
 import { access } from 'fs/promises';
 import { constants } from 'fs';
 import globby from 'globby';
 import queue from '@vandeurenglenn/queue'
-
 
 try {
   mkdirSync(join(homedir(), '.dynasty/data'))
@@ -27,7 +24,6 @@ try {
 
 const store = new FsDatastore(join(homedir(), '.dynasty/data'))
 const memoryStore = new MemoryDatastore()
-// const dataStore = new ShardingDatastore(store, new NextToLast(2))
 const stores = new TieredDatastore([memoryStore, store])
 
 
