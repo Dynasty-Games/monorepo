@@ -7,7 +7,7 @@ import Runner from './jobs/runner.js'
 import info from './routes/info.js'
 import portfolio from './routes/portfolio.js'
 import account from './routes/account.js'
-import DynastyStorageClient from '../../storage/src/storage-client.js';
+import DynastyStorageClient from '../../storage/client.js';
 
 globalThis.storage = await new DynastyStorageClient()
 
