@@ -1,4 +1,4 @@
-import { calculateBaseSalary } from "../../lib/src/lib";
+import { calculateBaseSalary } from "../../lib/lib.js";
 import { currencies } from "../../utils/src/utils";
 import { competition } from "./api";
 

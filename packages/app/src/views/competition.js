@@ -1,12 +1,9 @@
 
 import {scrollbar} from './../shared/styles'
-import {currencies} from './../../../utils/src/utils'
 import './../elements/portfolio'
 import './../elements/portfolio-selector'
-import { competition } from './../api.js'
 import './../dynasty-elements/countdown.js'
 import { LitElement, html } from 'lit'
-import { calculateBaseSalary } from './../../../lib/src/lib'
 import { getCompetitionData } from '../utils'
 
 export default customElements.define('competition-view', class CompetitionView extends LitElement {

@@ -1,9 +1,6 @@
-import coinmarketcap from './../apis/coinmarketcap'
-import {calculate} from './../apis/contests'
-import './../../node_modules/custom-tabs/custom-tabs'
-import './../../node_modules/custom-tabs/custom-tab'
-import {scrollbar} from  './../shared/styles'
-import { calculateFantasyPoints, calculateBaseSalary } from './../../node_modules/@dynasty-games/lib/src/lib'
+import './../../node_modules/custom-tabs/custom-tabs.js'
+import './../../node_modules/custom-tabs/custom-tab.js'
+import { calculateFantasyPoints, calculateBaseSalary } from '@dynasty-games/lib'
 
 export default customElements.define('info-dialog', class InfoDialog extends HTMLElement {
   constructor() {

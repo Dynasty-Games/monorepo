@@ -1,12 +1,10 @@
 
 import {scrollbar} from './../shared/styles'
 import './../elements/member-rankings-item'
-import { competition as getCompetition, currencies as getCurrencies } from './../api'
 import './../dynasty-elements/countdown.js'
 import { LitElement, html } from 'lit'
 
 import {map} from 'lit/directives/map.js'
-import { calculateBaseSalary } from '../../../lib/src/lib'
 import { getCompetitionData } from '../utils'
 
 export default customElements.define('member-rankings-view', class MemberRankingsView extends LitElement {

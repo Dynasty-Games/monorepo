@@ -1,5 +1,4 @@
-import coinmarketcap from './../apis/coinmarketcap'
-import './../elements/currency-info-item'
+import './../elements/currency-info-item.js'
 
 export default customElements.define('currency-select-dialog', class CurrencySelectDialog extends HTMLElement {
   constructor() {

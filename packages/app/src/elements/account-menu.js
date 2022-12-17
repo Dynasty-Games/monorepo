@@ -2,8 +2,8 @@ import { LitElement, html } from 'lit'
 import './dropdown'
 import './balance'
 import './credit'
-import { balance, gameCredits } from './../api'
-import { avatar } from '../../../utils/src/utils'
+import { balance, gameCredits } from './../api.js'
+import { avatar } from '../../../utils/src/utils.js'
 
 export default customElements.define('account-menu-element', class AccountMenuElement extends LitElement {
   static properties = {

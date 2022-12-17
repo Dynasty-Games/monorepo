@@ -141,7 +141,7 @@ export const calculateWinnings = (pool, members, points) => {
     const amount = amountFor[percentage]
     point.amount = amount
     amounts.push(amount > 0 ? amount : 0)
-    _members.push(point.member)    
+    _members.push(point.member)
   }
 
   if (left > 0) {
