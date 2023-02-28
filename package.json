@@ -19,7 +19,8 @@
   "homepage": "https://github.com/VandeurenGlenn/contracts#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.1",
-    "@openzeppelin/contracts-upgradeable": "^4.7.2"
+    "@openzeppelin/contracts-upgradeable": "^4.7.2",
+    "@poanet/solidity-flattener": "^3.0.8"
   },
   "devDependencies": {
     "@leofcoin/project-deploy": "^1.3.1",

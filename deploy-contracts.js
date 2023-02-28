@@ -23,8 +23,8 @@ let tx
   // const contestsProxy = await deploy('contracts/DynastyContestsProxy.sol', undefined, undefined, network, secret)
   const fakeUSDC = await deploy('contracts/FakeUSDC.sol', undefined, undefined, network, secret)
   const treasury = await deploy('contracts/DynastyTreasury.sol', undefined, undefined, network, secret)
-  // const contests = await deploy('contracts/DynastyContests.sol', [], undefined, network, secret)
-
+  const contests = await deploy('contracts/contests/DynastyContests.sol', [], undefined, network, secret)
+return
   let proxyManager = await deploy('contracts/proxy/ProxyManager.sol', [], undefined, network, secret)
   let proxyContract = new Contract(addresses.ProxyManager, PROXY_ABI, proxyManager.signer)
   let contract;
@@ -65,15 +65,15 @@ let tx
     // }
 
     // const contests = await deploy('contracts/contests/DynastyContests.sol', [], undefined, network, secret)
-    // if (contests?.address) {
-    //   const contestsProxy = await deploy('contracts/contests/DynastyContestsProxy.sol', [contests.address, addresses.ProxyManager, '0x'], undefined, network, secret)
-    //   tx = await proxyContract.upgrade(contestsProxy.address, contests.address)
-    //   await tx.wait()
+    if (addresses.DynastyContests) {
+      // const contestsProxy = await deploy('contracts/contests/DynastyContestsProxy.sol', [contests.address, addresses.ProxyManager, '0x'], undefined, network, secret)
+      tx = await proxyContract.upgrade(addresses.DynastyContestsProxy, addresses.DynastyContests)
+      await tx.wait()
       
-    //   contract = new Contract(contestsProxy.address, require('./packages/abis/DynastyContests.json'), proxyManager.signer)
-    //   tx = await contract.initialize()
-    //   await tx.wait()
-    // }
+      contract = new Contract(addresses.DynastyContestsProxy, require('./packages/abis/DynastyContests.json'), proxyManager.signer)
+      tx = await contract.initialize()
+      await tx.wait()
+    }
   }
   
   const RLPReader = await deploy('contracts/RLPReader.sol', [], [], network, secret)

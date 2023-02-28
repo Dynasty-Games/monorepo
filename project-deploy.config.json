@@ -13,7 +13,7 @@
       "chainId": 56
     },
     "goerli": {
-      "rpcUrl": "https://goerli.prylabs.net",
+      "rpcUrl": "https://goerli.blockpi.network/v1/rpc/public",
       "chainId": 5
     },
     "mumbai": {

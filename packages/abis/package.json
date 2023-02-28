@@ -2,6 +2,10 @@
   "name": "@dynasty-games/abis",
   "version": "0.1.13",
   "description": "",
+  "exports": {
+    "dynasty-staking": "./DynastyStaking.json",
+    "dynasty-contests": "./DynastyContests.json"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
